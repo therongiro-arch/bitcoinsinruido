@@ -647,7 +647,7 @@ export default function LiveGlobe() {
         )}
       </div>
 
-      <div className="mt-4 w-full max-w-md min-h-[42px] px-4 py-2 rounded-xl border border-line bg-bg-card/60 backdrop-blur flex items-center justify-center text-center">
+      <div className="mt-4 w-full max-w-full sm:max-w-md min-h-[42px] px-3 sm:px-4 py-2 rounded-xl border border-line bg-bg-card/60 backdrop-blur flex items-center justify-center text-center overflow-hidden">
         {lastBigBuy ? (
           <div className="text-xs font-mono flex flex-wrap items-center gap-x-2 gap-y-0.5 justify-center">
             <span className="text-btc font-semibold">● COMPRA EN VIVO</span>
@@ -667,7 +667,7 @@ export default function LiveGlobe() {
         )}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-mono text-ink-dim">
+      <div className="mt-3 w-full max-w-full flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] sm:text-[11px] font-mono text-ink-dim px-2">
         {(Object.entries(CATEGORY_COLOR) as Array<[keyof typeof CATEGORY_COLOR, string]>).map(([key, color]) => (
           <span key={key} className="inline-flex items-center gap-1.5">
             <span className="inline-block w-2 h-2 rounded-full" style={{ background: color }} aria-hidden="true" />
@@ -677,7 +677,7 @@ export default function LiveGlobe() {
         <span className="text-ink-dim/70">tamaño ∝ BTC acumulado</span>
       </div>
 
-      <p className="mt-2 max-w-md text-center text-[10px] leading-relaxed text-ink-dim">
+      <p className="mt-2 max-w-md w-full text-center text-[10px] leading-relaxed text-ink-dim px-2">
         {ACCUMULATION.length} ubicaciones · {formatBtc(TOTAL_TRACKED_BTC)} acumulados.
         Datos de DOJ, BitcoinTreasuries y análisis on-chain (~Q2 2026). El globo
         gira y enfoca cada compra ≥ 1 ₿ que llega vía WebSocket a Binance, Coinbase,
