@@ -1,4 +1,6 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
+
 const pathname = Astro.url.pathname;
 const isActive = (href: string) =>
   href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -19,23 +21,26 @@ const links = [
       </span>
     </a>
 
-    <ul class="flex items-center gap-1 sm:gap-3 text-sm">
-      {links.map(({ href, label }) => (
-        <li>
-          <a
-            href={href}
-            class:list={[
-              'px-2 sm:px-3 py-1.5 rounded-md transition',
-              isActive(href)
-                ? 'text-btc'
-                : 'text-ink-muted hover:text-ink',
-            ]}
-            aria-current={isActive(href) ? 'page' : undefined}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div class="flex items-center gap-1 sm:gap-2">
+      <ul class="flex items-center gap-1 sm:gap-3 text-sm">
+        {links.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={[
+                'px-2 sm:px-3 py-1.5 rounded-md transition',
+                isActive(href)
+                  ? 'text-btc'
+                  : 'text-ink-muted hover:text-ink',
+              ]}
+              aria-current={isActive(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <ThemeToggle />
+    </div>
   </nav>
 </header>

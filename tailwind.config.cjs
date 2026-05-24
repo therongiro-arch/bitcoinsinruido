@@ -1,25 +1,26 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
         bg: {
-          DEFAULT: '#0a0a0b',
-          soft: '#111113',
-          card: '#15151a',
+          DEFAULT: 'rgb(var(--bg) / <alpha-value>)',
+          soft: 'rgb(var(--bg-soft) / <alpha-value>)',
+          card: 'rgb(var(--bg-card) / <alpha-value>)',
         },
         ink: {
-          DEFAULT: '#f5f5f4',
-          muted: '#a1a1aa',
-          dim: '#6e6e69',
+          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
+          muted: 'rgb(var(--ink-muted) / <alpha-value>)',
+          dim: 'rgb(var(--ink-dim) / <alpha-value>)',
         },
         btc: {
           DEFAULT: '#f7931a',
           dim: '#a85f00',
           glow: 'rgba(247,147,26,0.18)',
         },
-        line: '#26262b',
+        line: 'rgb(var(--line) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter Variable', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
