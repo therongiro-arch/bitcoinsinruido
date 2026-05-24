@@ -1,14 +1,40 @@
+# --- Node / npm / yarn ---
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+*.tgz
+
+# --- Build outputs ---
 dist/
 .astro/
 .cache/
+.output/
+
+# --- Vite ---
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# --- Env / secrets ---
 .env
 .env.local
 .env.*.local
-.DS_Store
-.vscode/
-.idea/
-*.log
+
+# --- Cloudflare Wrangler ---
 .wrangler/
 workers/*/node_modules/
 workers/*/dist/
+
+# --- Editors / OS ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.tern-port
+
+# --- Logs ---
+*.log
+logs/
