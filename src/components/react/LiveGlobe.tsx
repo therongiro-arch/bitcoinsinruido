@@ -13,10 +13,9 @@ import {
 
 const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
 
-const COUNTRIES_URL =
-  'https://raw.githubusercontent.com/vasturiano/three-globe/master/example/datasets/ne_110m_admin_0_countries.geojson';
-const COUNTRIES_URL_FALLBACK =
-  'https://cdn.jsdelivr.net/gh/vasturiano/three-globe@master/example/datasets/ne_110m_admin_0_countries.geojson';
+// Bundled with the site under /public/data/. Strip-down Natural Earth 110m
+// (only the `name` property kept, ~170 KB gzipped). No external CDN dependency.
+const COUNTRIES_URL = '/data/countries.geojson';
 
 const MIN_BTC = 1;
 const RING_DURATION_MS = 3000;
@@ -51,8 +50,10 @@ function formatBtc(btc: number): string {
   return `${btc.toLocaleString('es-ES')} ₿`;
 }
 
-// Build the Bitcoin coin texture: gold radial gradient with ₿ symbol and 21M.
-function makeCoinTexture(): THREE.Texture {
+// Build a Bitcoin coin face texture. When `mirror` is true, the inner content
+// is drawn horizontally flipped so the back of the cylinder reads correctly
+// (CylinderGeometry's bottom cap is shown mirrored by default).
+function makeCoinTexture(mirror = false): THREE.Texture {
   const SIZE = 1024;
   const canvas = document.createElement('canvas');
   canvas.width = SIZE;
@@ -61,7 +62,7 @@ function makeCoinTexture(): THREE.Texture {
   if (!ctx) return new THREE.Texture();
   const c = SIZE / 2;
 
-  // Radial gold gradient
+  // Background (no mirroring — it's symmetrical anyway).
   const g = ctx.createRadialGradient(c, c - 60, 80, c, c, c - 30);
   g.addColorStop(0, '#fde68a');
   g.addColorStop(0.45, '#f7931a');
@@ -70,32 +71,31 @@ function makeCoinTexture(): THREE.Texture {
   ctx.beginPath();
   ctx.arc(c, c, c - 10, 0, Math.PI * 2);
   ctx.fill();
-
-  // Outer ring
   ctx.strokeStyle = 'rgba(253, 230, 138, 0.95)';
   ctx.lineWidth = 14;
   ctx.beginPath();
   ctx.arc(c, c, c - 30, 0, Math.PI * 2);
   ctx.stroke();
-
-  // Inner subtle ring
   ctx.strokeStyle = 'rgba(120, 60, 0, 0.5)';
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.arc(c, c, c - 75, 0, Math.PI * 2);
   ctx.stroke();
 
-  // ₿ symbol — large
+  // Text — pre-mirror for the back face.
+  ctx.save();
+  if (mirror) {
+    ctx.translate(SIZE, 0);
+    ctx.scale(-1, 1);
+  }
   ctx.fillStyle = '#1a0e00';
   ctx.font = 'bold 580px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('₿', c, c - 70);
-
-  // 21M label below
-  ctx.fillStyle = '#1a0e00';
   ctx.font = 'bold 170px ui-monospace, "JetBrains Mono", "Menlo", monospace';
   ctx.fillText('21M', c, c + 290);
+  ctx.restore();
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.anisotropy = 8;
@@ -109,9 +109,17 @@ function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => voi
   const thickness = 8;
   const geo = new THREE.CylinderGeometry(radius, radius, thickness, 96, 1);
 
-  const faceTex = makeCoinTexture();
-  const faceMat = new THREE.MeshStandardMaterial({
-    map: faceTex,
+  const frontTex = makeCoinTexture(false);
+  const backTex = makeCoinTexture(true);
+  const frontMat = new THREE.MeshStandardMaterial({
+    map: frontTex,
+    metalness: 0.6,
+    roughness: 0.28,
+    emissive: new THREE.Color('#f7931a'),
+    emissiveIntensity: 0.18,
+  });
+  const backMat = new THREE.MeshStandardMaterial({
+    map: backTex,
     metalness: 0.6,
     roughness: 0.28,
     emissive: new THREE.Color('#f7931a'),
@@ -125,7 +133,7 @@ function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => voi
     emissiveIntensity: 0.15,
   });
   // CylinderGeometry has 3 material slots: [side, top, bottom]
-  const coin = new THREE.Mesh(geo, [sideMat, faceMat, faceMat]);
+  const coin = new THREE.Mesh(geo, [sideMat, frontMat, backMat]);
   // Lay the coin so its faces look at the camera (flipping like a real coin).
   coin.rotation.x = Math.PI / 2;
 
@@ -137,9 +145,11 @@ function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => voi
     coin,
     dispose: () => {
       geo.dispose();
-      faceMat.dispose();
+      frontMat.dispose();
+      backMat.dispose();
       sideMat.dispose();
-      faceTex.dispose();
+      frontTex.dispose();
+      backTex.dispose();
     },
   };
 }
@@ -171,22 +181,18 @@ export default function LiveGlobe() {
     };
   }, []);
 
-  // Load countries GeoJSON (with CDN fallback)
+  // Load countries GeoJSON bundled with the site
   useEffect(() => {
     let alive = true;
-    const tryFetch = async (url: string) => {
-      try {
-        const r = await fetch(url);
-        if (!r.ok) return null;
-        return (await r.json()) as { features?: any[] } | null;
-      } catch {
-        return null;
-      }
-    };
     (async () => {
-      let data = await tryFetch(COUNTRIES_URL);
-      if (!data?.features) data = await tryFetch(COUNTRIES_URL_FALLBACK);
-      if (alive && data?.features) setCountries(data.features);
+      try {
+        const r = await fetch(COUNTRIES_URL);
+        if (!r.ok) return;
+        const data = (await r.json()) as { features?: any[] };
+        if (alive && data?.features) setCountries(data.features);
+      } catch {
+        /* If countries fail to load the rest of the globe still renders. */
+      }
     })();
     return () => {
       alive = false;
