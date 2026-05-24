@@ -94,8 +94,11 @@ function makeCoinColorTexture(mirror = false): THREE.Texture {
   // Engraved text (dark amber so the bump map carries the depth illusion)
   ctx.save();
   if (mirror) {
-    ctx.translate(SIZE, 0);
-    ctx.scale(-1, 1);
+    // Rotate the back-face content 180° so when the cylinder bottom cap
+    // is shown (after the y-rotation that aligns the front cap) the text
+    // reads upright instead of upside-down.
+    ctx.translate(SIZE, SIZE);
+    ctx.scale(-1, -1);
   }
   ctx.fillStyle = '#3a1d00';
   ctx.font = 'bold 560px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
@@ -141,8 +144,11 @@ function makeCoinBumpTexture(mirror = false): THREE.Texture {
   // Engraved text — pure black so bump pushes it down clearly
   ctx.save();
   if (mirror) {
-    ctx.translate(SIZE, 0);
-    ctx.scale(-1, 1);
+    // Rotate the back-face content 180° so when the cylinder bottom cap
+    // is shown (after the y-rotation that aligns the front cap) the text
+    // reads upright instead of upside-down.
+    ctx.translate(SIZE, SIZE);
+    ctx.scale(-1, -1);
   }
   ctx.fillStyle = '#000000';
   ctx.font = 'bold 560px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
