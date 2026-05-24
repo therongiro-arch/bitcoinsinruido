@@ -66,6 +66,33 @@ export default {
       return jsonResponse(result, 200);
     }
 
+    // CORS proxy for Bitso public trades — Bitso's REST API does not send
+    // `Access-Control-Allow-Origin`, so we mirror it through the Worker.
+    if (url.pathname === '/proxy/bitso/trades') {
+      const book = url.searchParams.get('book') || 'btc_mxn';
+      const limit = url.searchParams.get('limit') || '10';
+      const safeBook = /^[a-z_]+$/.test(book) ? book : 'btc_mxn';
+      const safeLimit = /^\d{1,3}$/.test(limit) ? limit : '10';
+      const target = `https://api.bitso.com/v3/trades/?book=${safeBook}&limit=${safeLimit}`;
+      try {
+        const resp = await fetch(target, {
+          headers: { 'User-Agent': 'BitcoinSinRuidoProxy/1.0' },
+          cf: { cacheTtl: 4, cacheEverything: true } as RequestInitCfProperties,
+        });
+        const body = await resp.text();
+        return new Response(body, {
+          status: resp.status,
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'public, max-age=4',
+            ...corsHeaders(),
+          },
+        });
+      } catch (err) {
+        return jsonResponse({ success: false, error: String(err) }, 502);
+      }
+    }
+
     if (url.pathname === '/rejected.json') {
       const raw = (await env.NEWS_KV.get(env.REJECTED_KEY)) ?? '[]';
       return new Response(raw, {

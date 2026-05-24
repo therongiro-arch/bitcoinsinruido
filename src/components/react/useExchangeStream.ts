@@ -358,7 +358,8 @@ function connectBitso(): () => void {
   const tick = async () => {
     if (stopped || document.visibilityState !== 'visible') return;
     try {
-      const res = await fetch('https://api.bitso.com/v3/trades/?book=btc_mxn&limit=10', {
+      // Goes through our own CORS-friendly Worker proxy.
+      const res = await fetch('https://news.bitcoinsinruidos.com/proxy/bitso/trades?book=btc_mxn&limit=10', {
         cache: 'no-store',
       });
       if (!res.ok) return;
