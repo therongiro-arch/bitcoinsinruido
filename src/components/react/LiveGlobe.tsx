@@ -50,10 +50,8 @@ function formatBtc(btc: number): string {
   return `${btc.toLocaleString('es-ES')} ₿`;
 }
 
-// Build a Bitcoin coin face texture. When `mirror` is true, the inner content
-// is drawn horizontally flipped so the back of the cylinder reads correctly
-// (CylinderGeometry's bottom cap is shown mirrored by default).
-function makeCoinTexture(mirror = false): THREE.Texture {
+// Color texture: gold gradient + dark engraved-looking text.
+function makeCoinColorTexture(mirror = false): THREE.Texture {
   const SIZE = 1024;
   const canvas = document.createElement('canvas');
   canvas.width = SIZE;
@@ -62,39 +60,97 @@ function makeCoinTexture(mirror = false): THREE.Texture {
   if (!ctx) return new THREE.Texture();
   const c = SIZE / 2;
 
-  // Background (no mirroring — it's symmetrical anyway).
-  const g = ctx.createRadialGradient(c, c - 60, 80, c, c, c - 30);
-  g.addColorStop(0, '#fde68a');
-  g.addColorStop(0.45, '#f7931a');
-  g.addColorStop(1, '#7a4500');
+  // Polished gold radial gradient
+  const g = ctx.createRadialGradient(c - 80, c - 120, 60, c, c + 20, c - 20);
+  g.addColorStop(0, '#fff4cf');
+  g.addColorStop(0.25, '#f4c558');
+  g.addColorStop(0.55, '#d68f1a');
+  g.addColorStop(0.85, '#9a5e08');
+  g.addColorStop(1, '#5a3500');
   ctx.fillStyle = g;
   ctx.beginPath();
-  ctx.arc(c, c, c - 10, 0, Math.PI * 2);
+  ctx.arc(c, c, c - 6, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(253, 230, 138, 0.95)';
-  ctx.lineWidth = 14;
+
+  // Polished outer rim
+  ctx.strokeStyle = 'rgba(255, 235, 170, 0.9)';
+  ctx.lineWidth = 10;
   ctx.beginPath();
-  ctx.arc(c, c, c - 30, 0, Math.PI * 2);
+  ctx.arc(c, c, c - 24, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.strokeStyle = 'rgba(120, 60, 0, 0.5)';
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = 'rgba(70, 30, 0, 0.55)';
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.arc(c, c, c - 75, 0, Math.PI * 2);
+  ctx.arc(c, c, c - 36, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Text — pre-mirror for the back face.
+  // Inner bevel ring
+  ctx.strokeStyle = 'rgba(100, 50, 0, 0.4)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 70, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Engraved text (dark amber so the bump map carries the depth illusion)
   ctx.save();
   if (mirror) {
     ctx.translate(SIZE, 0);
     ctx.scale(-1, 1);
   }
-  ctx.fillStyle = '#1a0e00';
-  ctx.font = 'bold 580px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#3a1d00';
+  ctx.font = 'bold 560px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('₿', c, c - 70);
-  ctx.font = 'bold 170px ui-monospace, "JetBrains Mono", "Menlo", monospace';
-  ctx.fillText('21M', c, c + 290);
+  ctx.fillText('₿', c, c - 60);
+  ctx.font = 'bold 150px ui-monospace, "JetBrains Mono", "Menlo", monospace';
+  ctx.fillText('21M', c, c + 280);
+  ctx.restore();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.anisotropy = 8;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+// Bump map: grayscale where dark = recessed (engraving). The rest of the
+// coin face is white (flat surface).
+function makeCoinBumpTexture(mirror = false): THREE.Texture {
+  const SIZE = 1024;
+  const canvas = document.createElement('canvas');
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.Texture();
+  const c = SIZE / 2;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // Outer bevel (slightly raised ring)
+  ctx.strokeStyle = '#d8d8d8';
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 30, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.strokeStyle = '#aaaaaa';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 70, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Engraved text — pure black so bump pushes it down clearly
+  ctx.save();
+  if (mirror) {
+    ctx.translate(SIZE, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.fillStyle = '#000000';
+  ctx.font = 'bold 560px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('₿', c, c - 60);
+  ctx.font = 'bold 150px ui-monospace, "JetBrains Mono", "Menlo", monospace';
+  ctx.fillText('21M', c, c + 280);
   ctx.restore();
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -104,38 +160,63 @@ function makeCoinTexture(mirror = false): THREE.Texture {
 }
 
 function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => void } {
-  // Globe radius in three-globe units is 100. Coin clearly smaller and centered.
-  const radius = 58;
-  const thickness = 8;
-  const geo = new THREE.CylinderGeometry(radius, radius, thickness, 96, 1);
+  // Smaller, more realistic gold coin floating in the globe core.
+  const radius = 36;
+  const thickness = 5;
+  const geo = new THREE.CylinderGeometry(radius, radius, thickness, 128, 1);
 
-  const frontTex = makeCoinTexture(false);
-  const backTex = makeCoinTexture(true);
+  const frontColor = makeCoinColorTexture(false);
+  const backColor = makeCoinColorTexture(true);
+  const frontBump = makeCoinBumpTexture(false);
+  const backBump = makeCoinBumpTexture(true);
+
+  const sharedMatOpts = {
+    metalness: 0.92,
+    roughness: 0.22,
+    emissive: new THREE.Color('#2a1500'),
+    emissiveIntensity: 0.05,
+    bumpScale: 0.6,
+  } as const;
+
   const frontMat = new THREE.MeshStandardMaterial({
-    map: frontTex,
-    metalness: 0.6,
-    roughness: 0.28,
-    emissive: new THREE.Color('#f7931a'),
-    emissiveIntensity: 0.18,
+    ...sharedMatOpts,
+    map: frontColor,
+    bumpMap: frontBump,
   });
   const backMat = new THREE.MeshStandardMaterial({
-    map: backTex,
-    metalness: 0.6,
-    roughness: 0.28,
-    emissive: new THREE.Color('#f7931a'),
-    emissiveIntensity: 0.18,
+    ...sharedMatOpts,
+    map: backColor,
+    bumpMap: backBump,
   });
+
+  // Reeded edge texture for the coin rim — vertical stripes.
+  const edgeCanvas = document.createElement('canvas');
+  edgeCanvas.width = 512;
+  edgeCanvas.height = 32;
+  const ec = edgeCanvas.getContext('2d');
+  if (ec) {
+    ec.fillStyle = '#9a5e08';
+    ec.fillRect(0, 0, 512, 32);
+    ec.fillStyle = '#5a3500';
+    for (let x = 0; x < 512; x += 8) {
+      ec.fillRect(x, 0, 3, 32);
+    }
+  }
+  const edgeTex = new THREE.CanvasTexture(edgeCanvas);
+  edgeTex.wrapS = THREE.RepeatWrapping;
+  edgeTex.repeat.set(1, 1);
+
   const sideMat = new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#b06800'),
-    metalness: 0.85,
+    map: edgeTex,
+    metalness: 0.9,
     roughness: 0.35,
-    emissive: new THREE.Color('#3a1f00'),
-    emissiveIntensity: 0.15,
+    color: new THREE.Color('#c98a18'),
   });
-  // CylinderGeometry has 3 material slots: [side, top, bottom]
+
   const coin = new THREE.Mesh(geo, [sideMat, frontMat, backMat]);
-  // Lay the coin so its faces look at the camera (flipping like a real coin).
   coin.rotation.x = Math.PI / 2;
+  // Slight tilt so the coin reads as 3D even when not spinning.
+  coin.rotation.z = 0.08;
 
   const pivot = new THREE.Group();
   pivot.add(coin);
@@ -148,8 +229,11 @@ function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => voi
       frontMat.dispose();
       backMat.dispose();
       sideMat.dispose();
-      frontTex.dispose();
-      backTex.dispose();
+      frontColor.dispose();
+      backColor.dispose();
+      frontBump.dispose();
+      backBump.dispose();
+      edgeTex.dispose();
     },
   };
 }
@@ -227,7 +311,15 @@ export default function LiveGlobe() {
     }
     globeRef.current.pointOfView?.({ lat: 15, lng: -30, altitude: 2.4 }, 0);
 
+    // Force real transparency — three-globe sometimes leaves a black clear
+    // color on the renderer even when the canvas itself is transparent.
+    const renderer = globeRef.current.renderer?.();
+    if (renderer) {
+      renderer.setClearColor(0x000000, 0);
+      renderer.setClearAlpha?.(0);
+    }
     const scene: THREE.Scene | undefined = globeRef.current.scene?.();
+    if (scene) scene.background = null;
     if (scene && !coinRef.current) {
       const c = buildCoin();
       coinRef.current = c;
