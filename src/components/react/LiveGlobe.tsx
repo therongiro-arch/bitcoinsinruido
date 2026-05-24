@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExchangeStream, EXCHANGES } from './useExchangeStream';
-import type { Trade } from '../../lib/exchanges';
+import type { Trade, ExchangeId } from '../../lib/exchanges';
 
 // Lazy import so three.js + globe.gl bundle isn't pulled in until this island mounts.
 const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
@@ -15,11 +15,31 @@ interface Arc {
   label: string;
 }
 
+interface Ring {
+  lat: number;
+  lng: number;
+  color: string;
+  ts: number;
+}
+
+interface Marker {
+  id: ExchangeId;
+  name: string;
+  city: string;
+  lat: number;
+  lng: number;
+  color: string;
+  pulsing: boolean;
+}
+
 const ARC_DURATION_MS = 1800;
-const MAX_ARCS = 25;
+const RING_DURATION_MS = 2200;
+const PULSE_MS = 1400;
+const MAX_ARCS = 18;
+const MAX_RINGS = 30;
 
 // Center of mass for the destination of each arc — Atlantic point as a neutral
-// "global" target. The arcs visualise a real trade leaving the exchange HQ.
+// "global" target so arcs always travel outward and visualise flow.
 const TARGET_LAT = 0;
 const TARGET_LON = -20;
 
@@ -33,6 +53,9 @@ export default function LiveGlobe() {
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
   const [size, setSize] = useState({ w: 480, h: 480 });
   const [arcs, setArcs] = useState<Arc[]>([]);
+  const [rings, setRings] = useState<Ring[]>([]);
+  // pulsing: exchangeId -> timestamp of last trade
+  const [pulsing, setPulsing] = useState<Record<string, number>>({});
   const { trades, connected } = useExchangeStream();
   const lastSeenTsRef = useRef<number>(0);
   const reduced = useMemo(reducedMotion, []);
@@ -62,12 +85,29 @@ export default function LiveGlobe() {
     return () => ro.disconnect();
   }, []);
 
-  // Convert new trades into arcs.
+  // Convert new trades into arc + ring + pulse. Only "compras" (side === 'buy')
+  // since the user wants to see WHERE BTC is being bought right now.
   useEffect(() => {
     if (!trades.length) return;
     const newest = trades[trades.length - 1];
     if (newest.ts <= lastSeenTsRef.current) return;
     lastSeenTsRef.current = newest.ts;
+
+    // Only count buys. If the exchange did not report a side, fall back to
+    // showing the event anyway so the globe stays alive when streams omit side.
+    if (newest.side && newest.side !== 'buy') return;
+
+    const now = Date.now();
+
+    setPulsing((prev) => ({ ...prev, [newest.exchange]: now }));
+
+    setRings((prev) => {
+      const next = [
+        ...prev,
+        { lat: newest.lat, lng: newest.lon, color: newest.color, ts: now },
+      ];
+      return next.length > MAX_RINGS ? next.slice(-MAX_RINGS) : next;
+    });
 
     const arc: Arc = {
       startLat: newest.lat,
@@ -75,8 +115,8 @@ export default function LiveGlobe() {
       endLat: TARGET_LAT,
       endLng: TARGET_LON,
       color: newest.color,
-      ts: Date.now(),
-      label: `${newest.exchangeName} · ${newest.amountBtc.toFixed(4)} BTC · $${Math.round(newest.priceUsd).toLocaleString('en-US')}`,
+      ts: now,
+      label: `${newest.exchangeName} · compra ${newest.amountBtc.toFixed(4)} BTC · $${Math.round(newest.priceUsd).toLocaleString('en-US')}`,
     };
     setArcs((prev) => {
       const next = [...prev, arc];
@@ -84,27 +124,45 @@ export default function LiveGlobe() {
     });
   }, [trades]);
 
-  // Garbage-collect arcs after their animation completes.
+  // Single periodic GC for arcs / rings / pulse state.
   useEffect(() => {
-    if (!arcs.length) return;
-    const id = setTimeout(() => {
+    const id = setInterval(() => {
       const now = Date.now();
-      setArcs((prev) => prev.filter((a) => now - a.ts < ARC_DURATION_MS + 500));
-    }, ARC_DURATION_MS + 500);
-    return () => clearTimeout(id);
-  }, [arcs]);
+      setArcs((prev) => {
+        const filtered = prev.filter((a) => now - a.ts < ARC_DURATION_MS + 500);
+        return filtered.length === prev.length ? prev : filtered;
+      });
+      setRings((prev) => {
+        const filtered = prev.filter((r) => now - r.ts < RING_DURATION_MS);
+        return filtered.length === prev.length ? prev : filtered;
+      });
+      setPulsing((prev) => {
+        let changed = false;
+        const next: Record<string, number> = {};
+        for (const [k, t] of Object.entries(prev)) {
+          if (now - t < PULSE_MS) next[k] = t;
+          else changed = true;
+        }
+        return changed ? next : prev;
+      });
+    }, 250);
+    return () => clearInterval(id);
+  }, []);
 
-  // Static points = exchange HQs.
-  const points = useMemo(
+  // BTC markers: one HTML element per exchange HQ. The `pulsing` flag is part
+  // of the data object so react-globe.gl re-renders when it flips.
+  const markers = useMemo<Marker[]>(
     () =>
       Object.values(EXCHANGES).map((e) => ({
+        id: e.id,
+        name: e.name,
+        city: e.city,
         lat: e.lat,
         lng: e.lon,
         color: e.color,
-        size: 0.6,
-        label: `${e.name} · ${e.city}`,
+        pulsing: !!pulsing[e.id],
       })),
-    [],
+    [pulsing],
   );
 
   const connectedCount = Object.values(connected).filter(Boolean).length;
@@ -123,18 +181,51 @@ export default function LiveGlobe() {
             bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
             atmosphereColor="#f7931a"
             atmosphereAltitude={0.18}
+            // Arcs — subtle flow line from each buy origin
             arcsData={reduced ? [] : arcs}
             arcColor={(d: Arc) => d.color}
-            arcStroke={0.5}
-            arcDashLength={0.5}
-            arcDashGap={1}
+            arcStroke={0.3}
+            arcDashLength={0.4}
+            arcDashGap={2}
             arcDashAnimateTime={ARC_DURATION_MS}
-            arcLabel={(d: Arc) => `<div style="font:12px ui-monospace,monospace;background:#0a0a0bcc;color:#f5f5f4;border:1px solid #26262b;border-radius:6px;padding:4px 8px">${d.label}</div>`}
-            pointsData={points}
-            pointAltitude={0.01}
-            pointRadius={0.7}
-            pointColor={(d: any) => d.color}
-            pointLabel={(d: any) => `<div style="font:12px ui-monospace,monospace;background:#0a0a0bcc;color:#f5f5f4;border:1px solid #26262b;border-radius:6px;padding:4px 8px">${d.label}</div>`}
+            arcAltitudeAutoScale={0.4}
+            arcLabel={(d: Arc) =>
+              `<div style="font:12px ui-monospace,monospace;background:#0a0a0bcc;color:#f5f5f4;border:1px solid #26262b;border-radius:6px;padding:4px 8px">${d.label}</div>`
+            }
+            // Rings — expanding "ping" effect at the buy origin
+            ringsData={reduced ? [] : rings}
+            ringColor={(d: Ring) => () => d.color}
+            ringMaxRadius={4}
+            ringPropagationSpeed={2.2}
+            ringRepeatPeriod={0}
+            ringAltitude={0.005}
+            // ₿ markers — one per exchange HQ, pulses when a trade fires
+            htmlElementsData={markers}
+            htmlAltitude={0.02}
+            htmlElement={(d: Marker) => {
+              const el = document.createElement('div');
+              const big = d.pulsing ? 34 : 22;
+              const glow = d.pulsing ? 28 : 10;
+              const opacity = d.pulsing ? 1 : 0.92;
+              el.style.cssText = [
+                `color:${d.color}`,
+                `font-size:${big}px`,
+                'font-weight:900',
+                'line-height:1',
+                'font-family:ui-sans-serif,system-ui,Segoe UI,sans-serif',
+                `text-shadow:0 0 ${glow}px ${d.color}, 0 0 6px ${d.color}`,
+                'transform:translate(-50%,-50%)',
+                'transition:font-size 0.22s ease-out, text-shadow 0.22s ease-out',
+                'pointer-events:auto',
+                'cursor:pointer',
+                'user-select:none',
+                `opacity:${opacity}`,
+              ].join(';');
+              el.textContent = '₿'; // ₿
+              el.title = `${d.name} · ${d.city}`;
+              el.setAttribute('aria-label', `${d.name} ${d.city}`);
+              return el;
+            }}
             enablePointerInteraction
           />
         ) : (
@@ -153,13 +244,16 @@ export default function LiveGlobe() {
         {lastTrade && (
           <>
             <span aria-hidden="true">·</span>
-            <span>último: {lastTrade.exchangeName} {lastTrade.amountBtc.toFixed(3)} BTC</span>
+            <span>
+              última compra: {lastTrade.exchangeName} {lastTrade.amountBtc.toFixed(3)} BTC
+            </span>
           </>
         )}
       </div>
 
       <p className="mt-1 max-w-xs text-center text-[10px] leading-relaxed text-ink-dim">
-        Ubicación aproximada por sede del exchange. Bitcoin es un protocolo global, sin geolocalización inherente.
+        Cada ₿ marca un exchange donde se acaban de registrar compras de BTC.
+        Ubicación aproximada por sede del exchange — Bitcoin es un protocolo global, sin geolocalización inherente.
       </p>
     </div>
   );
