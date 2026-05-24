@@ -1,61 +1,64 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useExchangeStream, EXCHANGES } from './useExchangeStream';
-import type { Trade, ExchangeId } from '../../lib/exchanges';
+import { useExchangeStream } from './useExchangeStream';
+import type { Trade } from '../../lib/exchanges';
+import {
+  ACCUMULATION,
+  CATEGORY_COLOR,
+  CATEGORY_LABEL,
+  TOTAL_TRACKED_BTC,
+  sizeForBtc,
+  type AccumulationPoint,
+} from '../../lib/accumulation';
 
 const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
 
-interface Arc {
-  startLat: number;
-  startLng: number;
-  endLat: number;
-  endLng: number;
-  color: string;
-  ts: number;
-  label: string;
-}
+const MIN_BTC = 1; // Only purchases of >= 1 BTC trigger the live overlay
+const RING_DURATION_MS = 3000;
+const PULSE_MS = 3500;
+const FOCUS_HOLD_MS = 3800; // pause auto-rotation while a big purchase is highlighted
+const MAX_RINGS = 12;
+const AUTO_ROTATE_SPEED = 0.35;
+const POV_TRANSITION_MS = 1100;
 
 interface Ring {
   lat: number;
   lng: number;
   color: string;
   ts: number;
+  label: string;
 }
 
-interface PointMarker {
-  id: ExchangeId;
-  name: string;
-  city: string;
-  lat: number;
-  lng: number;
-  color: string;
+interface DisplayPoint extends AccumulationPoint {
   pulsing: boolean;
+  color: string;
+  size: number;
 }
-
-const ARC_DURATION_MS = 1800;
-const RING_DURATION_MS = 2200;
-const PULSE_MS = 1400;
-const MAX_ARCS = 18;
-const MAX_RINGS = 30;
-
-const TARGET_LAT = 0;
-const TARGET_LON = -20;
 
 function reducedMotion(): boolean {
   if (typeof window === 'undefined') return false;
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 }
 
+function formatBtc(btc: number): string {
+  if (btc >= 1_000_000) return `${(btc / 1_000_000).toFixed(2)} M ₿`;
+  if (btc >= 1_000) return `${Math.round(btc / 1_000)} K ₿`;
+  return `${btc.toLocaleString('es-ES')} ₿`;
+}
+
 export default function LiveGlobe() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const globeRef = useRef<any>(null);
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
   const [size, setSize] = useState({ w: 480, h: 480 });
-  const [arcs, setArcs] = useState<Arc[]>([]);
   const [rings, setRings] = useState<Ring[]>([]);
   const [pulsing, setPulsing] = useState<Record<string, number>>({});
-  const { trades, connected } = useExchangeStream();
+  const [lastBigBuy, setLastBigBuy] = useState<Trade | null>(null);
+  const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSeenTsRef = useRef<number>(0);
+  const { trades, connected } = useExchangeStream();
   const reduced = useMemo(reducedMotion, []);
 
+  // Load the globe component on first mount.
   useEffect(() => {
     let alive = true;
     void loadGlobe().then((Cmp) => {
@@ -66,12 +69,13 @@ export default function LiveGlobe() {
     };
   }, []);
 
+  // Responsive sizing.
   useEffect(() => {
     if (!containerRef.current) return;
     const el = containerRef.current;
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const w = Math.max(280, Math.min(560, entry.contentRect.width));
+        const w = Math.max(280, Math.min(600, entry.contentRect.width));
         setSize({ w, h: w });
       }
     });
@@ -79,53 +83,79 @@ export default function LiveGlobe() {
     return () => ro.disconnect();
   }, []);
 
+  // Enable auto-rotation once the globe is mounted.
+  useEffect(() => {
+    if (!GlobeCmp || !globeRef.current) return;
+    const controls = globeRef.current.controls?.();
+    if (!controls) return;
+    controls.autoRotate = !reduced;
+    controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
+    controls.enableZoom = false;
+    controls.enablePan = false;
+    // Slight initial tilt for a more "planet" feel
+    globeRef.current.pointOfView?.({ lat: 15, lng: -30, altitude: 2.2 }, 0);
+  }, [GlobeCmp, reduced]);
+
+  // React to live trades: only ≥ MIN_BTC, side=buy. Pan the camera, push a
+  // ring, mark the matching accumulation point as pulsing, then resume rotate.
   useEffect(() => {
     if (!trades.length) return;
     const newest = trades[trades.length - 1];
     if (newest.ts <= lastSeenTsRef.current) return;
-    lastSeenTsRef.current = newest.ts;
-
-    // Most exchanges expose side; if missing, treat the event as a buy so the
-    // globe always reacts to real flow rather than going silent.
     if (newest.side && newest.side !== 'buy') return;
+    if (newest.amountBtc < MIN_BTC) return;
+    lastSeenTsRef.current = newest.ts;
 
     const now = Date.now();
 
-    setPulsing((prev) => ({ ...prev, [newest.exchange]: now }));
+    setLastBigBuy(newest);
 
     setRings((prev) => {
       const next = [
         ...prev,
-        { lat: newest.lat, lng: newest.lon, color: newest.color, ts: now },
+        {
+          lat: newest.lat,
+          lng: newest.lon,
+          color: newest.color,
+          ts: now,
+          label: `${newest.exchangeName} · ${newest.amountBtc.toFixed(2)} BTC · $${Math.round(newest.priceUsd * newest.amountBtc).toLocaleString('en-US')}`,
+        },
       ];
       return next.length > MAX_RINGS ? next.slice(-MAX_RINGS) : next;
     });
 
-    const arc: Arc = {
-      startLat: newest.lat,
-      startLng: newest.lon,
-      endLat: TARGET_LAT,
-      endLng: TARGET_LON,
-      color: newest.color,
-      ts: now,
-      label: `${newest.exchangeName} · compra ${newest.amountBtc.toFixed(4)} BTC · $${Math.round(newest.priceUsd).toLocaleString('en-US')}`,
-    };
-    setArcs((prev) => {
-      const next = [...prev, arc];
-      return next.length > MAX_ARCS ? next.slice(-MAX_ARCS) : next;
-    });
-  }, [trades]);
+    // Pulse the matching accumulation point (if any)
+    const match = ACCUMULATION.find((p) => p.matchExchange === newest.exchange);
+    if (match) {
+      setPulsing((prev) => ({ ...prev, [match.id]: now }));
+    }
 
+    // Camera focus
+    if (globeRef.current && !reduced) {
+      const controls = globeRef.current.controls?.();
+      if (controls) controls.autoRotate = false;
+      globeRef.current.pointOfView?.(
+        { lat: newest.lat, lng: newest.lon, altitude: 2 },
+        POV_TRANSITION_MS,
+      );
+
+      if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
+      focusTimerRef.current = setTimeout(() => {
+        if (globeRef.current) {
+          const c = globeRef.current.controls?.();
+          if (c) c.autoRotate = true;
+        }
+      }, FOCUS_HOLD_MS);
+    }
+  }, [trades, reduced]);
+
+  // Periodic GC.
   useEffect(() => {
     const id = setInterval(() => {
       const now = Date.now();
-      setArcs((prev) => {
-        const filtered = prev.filter((a) => now - a.ts < ARC_DURATION_MS + 500);
-        return filtered.length === prev.length ? prev : filtered;
-      });
       setRings((prev) => {
-        const filtered = prev.filter((r) => now - r.ts < RING_DURATION_MS);
-        return filtered.length === prev.length ? prev : filtered;
+        const f = prev.filter((r) => now - r.ts < RING_DURATION_MS);
+        return f.length === prev.length ? prev : f;
       });
       setPulsing((prev) => {
         let changed = false;
@@ -136,33 +166,32 @@ export default function LiveGlobe() {
         }
         return changed ? next : prev;
       });
-    }, 250);
+    }, 400);
     return () => clearInterval(id);
   }, []);
 
-  const markers = useMemo<PointMarker[]>(
+  // Static accumulation layer with reactivity baked into the data so the
+  // globe knows when to re-render the changed ones.
+  const displayPoints = useMemo<DisplayPoint[]>(
     () =>
-      Object.values(EXCHANGES).map((e) => ({
-        id: e.id,
-        name: e.name,
-        city: e.city,
-        lat: e.lat,
-        lng: e.lon,
-        color: e.color,
-        pulsing: !!pulsing[e.id],
+      ACCUMULATION.map((p) => ({
+        ...p,
+        pulsing: !!pulsing[p.id],
+        color: CATEGORY_COLOR[p.category],
+        size: sizeForBtc(p.btc),
       })),
     [pulsing],
   );
 
   const connectedCount = Object.values(connected).filter(Boolean).length;
-  const totalExchanges = Object.keys(EXCHANGES).length;
-  const lastTrade: Trade | null = trades.length ? trades[trades.length - 1] : null;
+  const totalExchanges = 5;
 
   return (
     <div ref={containerRef} className="relative w-full h-full flex flex-col items-center justify-center">
-      <div className="relative" style={{ width: size.w, height: size.h }} aria-hidden="true">
+      <div className="relative" style={{ width: size.w, height: size.h }}>
         {GlobeCmp ? (
           <GlobeCmp
+            ref={globeRef}
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
@@ -170,49 +199,27 @@ export default function LiveGlobe() {
             bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
             atmosphereColor="#f7931a"
             atmosphereAltitude={0.18}
-            // Glow points underneath labels so the marker is visible even
-            // before three.js TextGeometry finishes loading the font.
-            pointsData={markers}
-            pointLat={(d: PointMarker) => d.lat}
-            pointLng={(d: PointMarker) => d.lng}
-            pointColor={(d: PointMarker) => d.color}
-            pointAltitude={(d: PointMarker) => (d.pulsing ? 0.04 : 0.015)}
-            pointRadius={(d: PointMarker) => (d.pulsing ? 0.9 : 0.55)}
-            pointResolution={6}
-            pointLabel={(d: PointMarker) =>
-              `<div style="font:12px ui-monospace,monospace;background:#0a0a0bcc;color:#f5f5f4;border:1px solid #26262b;border-radius:6px;padding:4px 8px">${d.name} · ${d.city}</div>`
+            showAtmosphere
+            // Accumulation points (always visible)
+            pointsData={displayPoints}
+            pointLat={(d: DisplayPoint) => d.lat}
+            pointLng={(d: DisplayPoint) => d.lng}
+            pointColor={(d: DisplayPoint) => d.color}
+            pointAltitude={(d: DisplayPoint) => (d.pulsing ? 0.05 : 0.01)}
+            pointRadius={(d: DisplayPoint) => (d.pulsing ? d.size * 1.6 : d.size)}
+            pointResolution={8}
+            pointLabel={(d: DisplayPoint) =>
+              `<div style="font:12px ui-monospace,monospace;background:#0a0a0bee;color:#f5f5f4;border:1px solid #26262b;border-radius:8px;padding:6px 10px;min-width:200px"><div style="font-weight:600;font-size:13px;color:${d.color}">${d.name}</div><div style="opacity:0.7;margin-top:2px">${d.city} · ${d.country}</div><div style="margin-top:4px;font-weight:600">${formatBtc(d.btc)}</div><div style="opacity:0.55;margin-top:2px;text-transform:uppercase;letter-spacing:0.05em;font-size:10px">${CATEGORY_LABEL[d.category]}</div></div>`
             }
-            // ₿ label on top of each point. helvetiker (default font) supports
-            // basic latin; we use the Bitcoin sign ₿ (U+20BF) — three-globe's
-            // bundled helvetiker_regular font includes it. If it ever falls
-            // back to a glyph stub the user still sees the colored point.
-            labelsData={markers}
-            labelLat={(d: PointMarker) => d.lat}
-            labelLng={(d: PointMarker) => d.lng}
-            labelText={() => '₿'}
-            labelColor={(d: PointMarker) => d.color}
-            labelSize={(d: PointMarker) => (d.pulsing ? 1.4 : 1.0)}
-            labelDotRadius={0}
-            labelAltitude={(d: PointMarker) => (d.pulsing ? 0.06 : 0.04)}
-            labelResolution={3}
-            // Subtle directional flow line
-            arcsData={reduced ? [] : arcs}
-            arcColor={(d: Arc) => d.color}
-            arcStroke={0.35}
-            arcDashLength={0.4}
-            arcDashGap={2}
-            arcDashAnimateTime={ARC_DURATION_MS}
-            arcAltitudeAutoScale={0.4}
-            arcLabel={(d: Arc) =>
-              `<div style="font:12px ui-monospace,monospace;background:#0a0a0bcc;color:#f5f5f4;border:1px solid #26262b;border-radius:6px;padding:4px 8px">${d.label}</div>`
-            }
-            // Expanding "ping" effect on each buy
+            // Live ≥ 1 BTC rings
             ringsData={reduced ? [] : rings}
+            ringLat={(d: Ring) => d.lat}
+            ringLng={(d: Ring) => d.lng}
             ringColor={(d: Ring) => d.color}
-            ringMaxRadius={4}
-            ringPropagationSpeed={2.2}
+            ringMaxRadius={6}
+            ringPropagationSpeed={2.4}
             ringRepeatPeriod={0}
-            ringAltitude={0.005}
+            ringAltitude={0.01}
             enablePointerInteraction
           />
         ) : (
@@ -220,27 +227,43 @@ export default function LiveGlobe() {
         )}
       </div>
 
-      <div className="mt-3 flex items-center gap-2 text-xs font-mono text-ink-dim">
-        <span
-          className={`inline-block w-2 h-2 rounded-full ${connectedCount > 0 ? 'bg-btc animate-pulse-slow' : 'bg-ink-dim'}`}
-          aria-hidden="true"
-        />
-        <span>
-          {connectedCount}/{totalExchanges} exchanges en vivo
-        </span>
-        {lastTrade && (
-          <>
-            <span aria-hidden="true">·</span>
-            <span>
-              última: {lastTrade.exchangeName} {lastTrade.amountBtc.toFixed(3)} BTC
+      {/* Last big buy banner */}
+      <div className="mt-4 w-full max-w-md min-h-[42px] px-4 py-2 rounded-xl border border-line bg-bg-card/60 backdrop-blur flex items-center justify-center text-center">
+        {lastBigBuy ? (
+          <div className="text-xs font-mono flex flex-wrap items-center gap-x-2 gap-y-0.5 justify-center">
+            <span className="text-btc font-semibold">● COMPRA EN VIVO</span>
+            <span className="text-ink-muted">{lastBigBuy.exchangeName}</span>
+            <span className="text-ink-dim">·</span>
+            <span className="text-ink font-semibold">{lastBigBuy.amountBtc.toFixed(3)} ₿</span>
+            <span className="text-ink-dim">·</span>
+            <span className="text-ink-muted">${Math.round(lastBigBuy.priceUsd * lastBigBuy.amountBtc).toLocaleString('en-US')}</span>
+          </div>
+        ) : (
+          <div className="text-xs font-mono text-ink-dim">
+            esperando compras ≥ 1 ₿…{' '}
+            <span className="opacity-60">
+              ({connectedCount}/{totalExchanges} exchanges en vivo)
             </span>
-          </>
+          </div>
         )}
       </div>
 
-      <p className="mt-1 max-w-xs text-center text-[10px] leading-relaxed text-ink-dim">
-        Cada ₿ marca un exchange donde se acaban de registrar compras de BTC.
-        Ubicación aproximada por sede del exchange — Bitcoin es un protocolo global, sin geolocalización inherente.
+      {/* Legend */}
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-mono text-ink-dim">
+        {(Object.entries(CATEGORY_COLOR) as Array<[keyof typeof CATEGORY_COLOR, string]>).map(([key, color]) => (
+          <span key={key} className="inline-flex items-center gap-1.5">
+            <span className="inline-block w-2 h-2 rounded-full" style={{ background: color }} aria-hidden="true" />
+            <span>{CATEGORY_LABEL[key]}</span>
+          </span>
+        ))}
+        <span className="text-ink-dim/70">tamaño ∝ BTC acumulado</span>
+      </div>
+
+      <p className="mt-2 max-w-md text-center text-[10px] leading-relaxed text-ink-dim">
+        {ACCUMULATION.length} ubicaciones · {formatBtc(TOTAL_TRACKED_BTC)} acumulados.
+        Datos de DOJ, BitcoinTreasuries y análisis on-chain (~Q2 2026). El globo
+        gira automáticamente y enfoca cada compra ≥ 1 ₿ que llega vía WebSocket
+        a Binance, Coinbase, Kraken, Bitstamp y Bitso.
       </p>
     </div>
   );
