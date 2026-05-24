@@ -45,6 +45,21 @@ function formatNumber(n: number, decimals = 2): string {
   });
 }
 
+// Reactively report whether the viewport is narrow so the counter
+// can switch to shorter number formats that fit on a phone.
+function useIsNarrow(threshold = 480): boolean {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia(`(max-width: ${threshold}px)`);
+    const onChange = () => setNarrow(mq.matches);
+    onChange();
+    mq.addEventListener?.('change', onChange);
+    return () => mq.removeEventListener?.('change', onChange);
+  }, [threshold]);
+  return narrow;
+}
+
 // Smoothly tween between numeric values for the "counter rolling up" feel.
 function useTweenedNumber(target: number, ms = 1400): number {
   const [val, setVal] = useState(target);
@@ -138,6 +153,8 @@ export default function MiningCounter() {
   const minedDisp = useTweenedNumber(projectedMined, 1200);
   const remainingDisp = useTweenedNumber(projectedRemaining, 1200);
   const percent = (projectedMined / MAX_SUPPLY) * 100;
+  const narrow = useIsNarrow(480);
+  const decimals = narrow ? 0 : 3;
 
   // 12 servers, each with their own blink seed
   const servers = useMemo(
@@ -166,13 +183,15 @@ export default function MiningCounter() {
         <div className="bsr-mining-stat">
           <div className="bsr-mining-label">Minados</div>
           <div className="bsr-mining-value mined">
-            {formatNumber(minedDisp, 3)} <span>₿</span>
+            {formatNumber(minedDisp, decimals)}
+            <span>₿</span>
           </div>
         </div>
         <div className="bsr-mining-stat">
           <div className="bsr-mining-label">Restan por minar</div>
           <div className="bsr-mining-value remaining">
-            {formatNumber(remainingDisp, 3)} <span>₿</span>
+            {formatNumber(remainingDisp, decimals)}
+            <span>₿</span>
           </div>
         </div>
       </div>
