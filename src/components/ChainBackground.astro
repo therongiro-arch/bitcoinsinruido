@@ -1,0 +1,133 @@
+---
+// Animated blockchain strip rendered with perspective at the bottom of the
+// homepage. Visual port of the Claude design "chain-bg".
+const BLOCKS = 40;
+const BLOCK_W = 64;
+const BLOCK_H = 80;
+const GAP = 68;
+const STRIDE = BLOCK_W + GAP; // 132 — matches the design loop math
+const TOTAL_W = BLOCKS * STRIDE;
+const TIP_INDEX = 8; // which block is highlighted as the "current tip"
+const START_HEIGHT = 920000;
+
+// Reasonably "random-looking" but deterministic hash sample
+function fakeHash(seed: number): string {
+  let h = (seed * 2654435761) >>> 0;
+  let out = '';
+  for (let i = 0; i < 8; i++) {
+    h = (h * 1664525 + 1013904223) >>> 0;
+    out += (h & 0xf).toString(16);
+  }
+  return out;
+}
+function fakeFee(seed: number): string {
+  const v = ((seed * 9301 + 49297) % 233280) / 233280;
+  return (1.2 + v * 14).toFixed(1);
+}
+
+const blocks = Array.from({ length: BLOCKS }, (_, i) => ({
+  index: i,
+  tip: i === TIP_INDEX,
+  height: START_HEIGHT + i,
+  hash: fakeHash(i + 1),
+  feeSatVb: fakeFee(i + 17),
+  filled: 0.45 + ((i * 0.137) % 0.55),
+}));
+---
+
+<div class="chain-bg" aria-hidden="true">
+  <div class="chain-strip">
+    <svg viewBox={`0 0 ${TOTAL_W} ${BLOCK_H + 30}`} preserveAspectRatio="xMidYMid meet">
+      <g class="chain-anim">
+        {blocks.map((b) => {
+          const cx = b.index * STRIDE + BLOCK_W / 2;
+          const cy = (BLOCK_H + 30) / 2;
+          const x = cx - BLOCK_W / 2;
+          const y = cy - BLOCK_H / 2;
+          const tipClass = b.tip ? ' tip' : '';
+          // top-face perspective
+          const offX = 10;
+          const offY = -10;
+          return (
+            <g transform={`translate(${cx}, ${cy})`}>
+              {/* link to next block */}
+              {b.index < BLOCKS - 1 && (
+                <line
+                  x1={BLOCK_W / 2}
+                  y1={0}
+                  x2={BLOCK_W / 2 + GAP}
+                  y2={0}
+                  class={`chain-link${tipClass}`}
+                />
+              )}
+              {/* right side */}
+              <polygon
+                points={`${BLOCK_W / 2},${-BLOCK_H / 2} ${BLOCK_W / 2 + offX},${-BLOCK_H / 2 + offY} ${BLOCK_W / 2 + offX},${BLOCK_H / 2 + offY} ${BLOCK_W / 2},${BLOCK_H / 2}`}
+                class={`chain-face-right${tipClass}`}
+              />
+              {/* top face */}
+              <polygon
+                points={`${-BLOCK_W / 2},${-BLOCK_H / 2} ${BLOCK_W / 2},${-BLOCK_H / 2} ${BLOCK_W / 2 + offX},${-BLOCK_H / 2 + offY} ${-BLOCK_W / 2 + offX},${-BLOCK_H / 2 + offY}`}
+                class={`chain-face-top${tipClass}`}
+              />
+              {/* front face */}
+              <rect
+                x={-BLOCK_W / 2}
+                y={-BLOCK_H / 2}
+                width={BLOCK_W}
+                height={BLOCK_H}
+                class={`chain-face-front${tipClass}`}
+              />
+              {/* fill progress bar inside */}
+              <rect
+                x={-BLOCK_W / 2 + 8}
+                y={BLOCK_H / 2 - 14}
+                width={BLOCK_W - 16}
+                height={4}
+                rx={1}
+                class="chain-bar-bg"
+              />
+              <rect
+                x={-BLOCK_W / 2 + 8}
+                y={BLOCK_H / 2 - 14}
+                width={(BLOCK_W - 16) * b.filled}
+                height={4}
+                rx={1}
+                class={`chain-bar-fill${tipClass}`}
+              />
+              {/* height number on front */}
+              <text x={0} y={-BLOCK_H / 2 + 18} class={`chain-meta${tipClass}`} text-anchor="middle">
+                #{b.height}
+              </text>
+              {/* hash on front (short) */}
+              <text x={0} y={-BLOCK_H / 2 + 36} class={`chain-hash${tipClass}`} text-anchor="middle">
+                {b.hash}
+              </text>
+              {/* fee meta */}
+              <text x={0} y={-BLOCK_H / 2 + 56} class={`chain-meta${tipClass}`} text-anchor="middle">
+                {b.feeSatVb} s/vB
+              </text>
+              {/* tip pulse */}
+              {b.tip && (
+                <rect
+                  x={-BLOCK_W / 2}
+                  y={-BLOCK_H / 2}
+                  width={BLOCK_W}
+                  height={BLOCK_H}
+                  class="chain-tip-pulse"
+                />
+              )}
+            </g>
+          );
+        })}
+      </g>
+    </svg>
+  </div>
+</div>
+
+<script is:inline>
+  // Activate the chain background after first paint so the fade-in animates.
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.chain-bg').forEach((el) => el.classList.add('visible'));
+  });
+</script>

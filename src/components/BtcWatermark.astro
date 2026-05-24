@@ -1,0 +1,47 @@
+---
+// Bitcoin symbol background for secondary pages — a giant ₿ floating in the
+// middle that slowly oscillates, with a few smaller ones drifting around.
+// Visual port of the Claude design "btc-bg".
+
+interface FloatSymbol {
+  top: string;
+  left: string;
+  fontSize: string;
+  color: 'fg' | 'bitcoin';
+  floatDur: string;
+  spinDur: string;
+  floatDelay: string;
+  spinDelay: string;
+  opacity: number;
+  floatDist: string;
+}
+
+const drifts: FloatSymbol[] = [
+  { top: '12%', left: '8%', fontSize: '180px', color: 'fg', floatDur: '14s', spinDur: '70s', floatDelay: '0s', spinDelay: '-12s', opacity: 0.05, floatDist: '24px' },
+  { top: '70%', left: '78%', fontSize: '220px', color: 'bitcoin', floatDur: '17s', spinDur: '90s', floatDelay: '-4s', spinDelay: '-30s', opacity: 0.06, floatDist: '18px' },
+  { top: '22%', left: '76%', fontSize: '120px', color: 'fg', floatDur: '11s', spinDur: '52s', floatDelay: '-2s', spinDelay: '-6s', opacity: 0.04, floatDist: '14px' },
+  { top: '72%', left: '14%', fontSize: '150px', color: 'fg', floatDur: '13s', spinDur: '60s', floatDelay: '-7s', spinDelay: '-22s', opacity: 0.045, floatDist: '20px' },
+];
+---
+
+<div class="btc-bg" aria-hidden="true">
+  <div class="btc-bg-inner">
+    {/* Anchor: the big ₿ at the centre */}
+    <span class="btc-hero">₿</span>
+    {/* A handful of smaller, slower symbols drifting around */}
+    {drifts.map((s) => (
+      <span
+        class:list={['btc-symbol', s.color === 'bitcoin' && 'bitcoin']}
+        style={`top:${s.top};left:${s.left};font-size:${s.fontSize};opacity:${s.opacity};--float-dur:${s.floatDur};--spin-dur:${s.spinDur};--float-delay:${s.floatDelay};--spin-delay:${s.spinDelay};--float-dist:${s.floatDist}`}
+      >
+        ₿
+      </span>
+    ))}
+  </div>
+</div>
+
+<script is:inline>
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.btc-bg').forEach((el) => el.classList.add('visible'));
+  });
+</script>
