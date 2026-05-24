@@ -1,0 +1,31 @@
+---
+export interface Props {
+  publishedAt: Date;
+  updatedAt?: Date;
+  author?: string;
+  readingTime?: number;
+}
+
+const { publishedAt, updatedAt, author = 'Bitcoin Sin Ruido', readingTime } = Astro.props;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted font-mono">
+  <span>{author}</span>
+  <span aria-hidden="true">·</span>
+  <time datetime={publishedAt.toISOString()}>{fmt(publishedAt)}</time>
+  {updatedAt && (
+    <>
+      <span aria-hidden="true">·</span>
+      <span>Actualizado {fmt(updatedAt)}</span>
+    </>
+  )}
+  {readingTime && (
+    <>
+      <span aria-hidden="true">·</span>
+      <span>{readingTime} min lectura</span>
+    </>
+  )}
+</div>

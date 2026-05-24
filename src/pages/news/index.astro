@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NewsFeed from '../../components/react/NewsFeed.tsx';
+import { fetchNews } from '../../lib/news';
+
+// Try to fetch the feed at build time so the first paint already contains news.
+// If the Worker is down or not yet deployed, fall back to client-side fetch.
+let initialFeed = null;
+try {
+  initialFeed = await fetchNews();
+} catch {
+  initialFeed = null;
+}
+---
+
+<BaseLayout
+  title="BitcoinNews · Bitcoin Sin Ruido"
+  description="Noticias sobre Bitcoin de fuentes técnicas y editoriales, agregadas y filtradas para quitar el ruido. Actualizado a diario."
+>
+  <section class="container-wide py-12 sm:py-16">
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">EN VIVO · ACTUALIZACIÓN DIARIA</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance">BitcoinNews</h1>
+      <p class="mt-3 max-w-2xl text-lg text-ink-muted text-pretty">
+        Agregamos titulares de medios técnicos y editoriales. Filtramos predicciones de precio,
+        clickbait y spam. Lo que queda es la señal.
+      </p>
+    </header>
+
+    <NewsFeed client:load initialFeed={initialFeed} />
+
+    <p class="mt-12 text-xs text-ink-dim max-w-2xl">
+      Mostramos solo título, extracto corto y enlace al medio original. Cada autor mantiene los
+      derechos sobre su contenido. Si encuentras un titular que crees que es ruido, abre un issue
+      en el repositorio para ajustar el filtro.
+    </p>
+  </section>
+</BaseLayout>

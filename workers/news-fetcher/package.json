@@ -1,0 +1,21 @@
+{
+  "name": "bsr-news-fetcher",
+  "version": "1.0.0",
+  "description": "Daily aggregator of Bitcoin news with anti-noise filter. Cloudflare Worker with Cron Trigger.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "trigger": "wrangler dev --test-scheduled"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250101.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.95.0"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.1"
+  }
+}

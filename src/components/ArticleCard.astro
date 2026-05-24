@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  entry: CollectionEntry<'articulos'>;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<a
+  href={`/articulos/${entry.slug}`}
+  class="group block p-5 sm:p-6 rounded-xl border border-line bg-bg-card hover:border-btc/50 hover:bg-bg-soft transition relative overflow-hidden"
+>
+  <div class="flex items-center justify-between gap-3 mb-3">
+    <span class="chip-btc">{data.capa}</span>
+    <time datetime={data.publishedAt.toISOString()} class="text-xs text-ink-dim font-mono">
+      {fmt(data.publishedAt)}
+    </time>
+  </div>
+  <h3 class="text-lg sm:text-xl font-semibold text-ink group-hover:text-btc transition leading-snug text-balance">
+    {data.title}
+  </h3>
+  <p class="mt-2 text-sm text-ink-muted text-pretty leading-relaxed line-clamp-3">
+    {data.description}
+  </p>
+  {data.tags.length > 0 && (
+    <div class="mt-4 flex flex-wrap gap-1.5">
+      {data.tags.slice(0, 4).map((tag: string) => (
+        <span class="text-[10px] uppercase tracking-wider text-ink-dim font-mono">#{tag}</span>
+      ))}
+    </div>
+  )}
+</a>

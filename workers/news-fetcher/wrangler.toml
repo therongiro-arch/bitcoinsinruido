@@ -1,0 +1,31 @@
+name = "bsr-news-fetcher"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Daily run at 06:00 UTC (03:00 Argentina, 00:00 CDMX)
+[triggers]
+crons = ["0 6 * * *"]
+
+# Public endpoint: news.bitcoinsinruidos.com
+# Configure the route in the Cloudflare dashboard once the Worker is deployed,
+# or uncomment the block below if your zone is in the same account managed by wrangler.
+#
+# [[routes]]
+# pattern = "news.bitcoinsinruidos.com/*"
+# zone_name = "bitcoinsinruidos.com"
+# custom_domain = true
+
+# KV namespace bound as NEWS_KV — replace `id` with the value from
+#   wrangler kv:namespace create NEWS_KV
+[[kv_namespaces]]
+binding = "NEWS_KV"
+id = "REPLACE_WITH_KV_ID"
+
+[vars]
+MAX_ITEMS = "60"
+FEED_KEY = "news:latest"
+REJECTED_KEY = "news:rejected"
+
+[observability]
+enabled = true

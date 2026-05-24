@@ -1,0 +1,41 @@
+---
+const pathname = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? pathname === '/' : pathname.startsWith(href);
+
+const links = [
+  { href: '/', label: 'Inicio' },
+  { href: '/articulos', label: 'Artículos' },
+  { href: '/news', label: 'BitcoinNews' },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-line/60 bg-bg/85 backdrop-blur-md">
+  <nav class="container-wide flex items-center justify-between h-14">
+    <a href="/" class="flex items-center gap-2 group" aria-label="Bitcoin Sin Ruido — Inicio">
+      <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-btc text-bg font-bold text-sm leading-none">₿</span>
+      <span class="font-semibold tracking-tight text-ink group-hover:text-btc transition">
+        Bitcoin <span class="text-ink-muted font-normal">Sin Ruido</span>
+      </span>
+    </a>
+
+    <ul class="flex items-center gap-1 sm:gap-3 text-sm">
+      {links.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            class:list={[
+              'px-2 sm:px-3 py-1.5 rounded-md transition',
+              isActive(href)
+                ? 'text-btc'
+                : 'text-ink-muted hover:text-ink',
+            ]}
+            aria-current={isActive(href) ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>

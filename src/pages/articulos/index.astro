@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+const all = (await getCollection('articulos', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+
+// Group by capa for the index page
+const capas: Array<{ key: string; title: string }> = [
+  { key: 'protocolo', title: 'Protocolo base' },
+  { key: 'L2', title: 'Capas y escalabilidad' },
+  { key: 'privacidad', title: 'Privacidad y criptografía' },
+  { key: 'futuro', title: 'Futuro' },
+  { key: 'glosario', title: 'Glosario' },
+];
+
+const grouped = capas
+  .map(({ key, title }) => ({
+    key,
+    title,
+    items: all.filter((a) => a.data.capa === key),
+  }))
+  .filter((g) => g.items.length > 0);
+---
+
+<BaseLayout
+  title="Artículos · Bitcoin Sin Ruido"
+  description="Todos los artículos de Bitcoin Sin Ruido, organizados por capa: protocolo, L2, privacidad, futuro y glosario."
+>
+  <section class="container-wide py-12 sm:py-16">
+    <header class="mb-10">
+      <p class="chip font-mono mb-3">CONTENIDO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance">Artículos</h1>
+      <p class="mt-3 max-w-2xl text-lg text-ink-muted text-pretty">
+        {all.length} artículos sobre el protocolo de Bitcoin. Organizados por capa.
+      </p>
+    </header>
+
+    {grouped.map((group) => (
+      <section class="mb-16">
+        <h2 class="text-h2 font-semibold tracking-tight mb-6 text-ink">
+          {group.title}
+        </h2>
+        <div class="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {group.items.map((entry) => <ArticleCard entry={entry} />)}
+        </div>
+      </section>
+    ))}
+  </section>
+</BaseLayout>

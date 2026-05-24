@@ -1,0 +1,33 @@
+---
+title: "Lightning Network — Pagos instantáneos sin tocar la base"
+description: "Capa 2 sobre Bitcoin para pagos casi gratuitos vía canales de pago. Cash App reportó un crecimiento de 7x en uso de Lightning durante 2024."
+publishedAt: 2026-05-11
+capa: L2
+tags: [lightning, pagos, escalabilidad]
+order: 6
+---
+
+**Lightning Network** es la capa 2 de Bitcoin para pagos instantáneos y casi gratuitos. Permite mover BTC entre dos partes sin escribir cada movimiento en la blockchain.
+
+## Cómo funciona, en una imagen
+
+Dos personas abren un **canal de pago**: una transacción on-chain que reserva fondos entre ambas. A partir de ese momento pueden intercambiar pagos entre sí **infinitas veces** sin tocar la cadena principal. Solo el saldo final se asienta on-chain cuando cierran el canal.
+
+Y como los canales se enlazan en red, puedes pagar a alguien con quien **no tienes canal directo** — el pago se enruta a través de canales intermedios. Es Bitcoin convertido en una red de pagos.
+
+## El dato de adopción
+
+**Cash App** —la app de Block (ex-Square) con decenas de millones de usuarios en EE.UU.— reportó un crecimiento de **7x** en uso de Lightning durante 2024. Esto es relevante porque salió del nicho técnico y entró al consumo masivo.
+
+## Channel splicing — Lo nuevo importante
+
+El **channel splicing** ya está implementado en los tres clientes principales: **LDK** (Spiral), **Eclair** (ACINQ) y **c-lightning** (Blockstream).
+
+Splicing permite **agregar o retirar fondos de un canal sin cerrarlo y reabrirlo**. Antes, cambiar la capacidad de un canal era una operación pesada. Ahora es elástica. Es uno de los cambios que hace Lightning realmente usable a escala.
+
+## Lo que aún no se resuelve
+
+- **Liquidez entrante**: si nadie tiene un canal abierto hacia ti, no puedes recibir. Esto se está resolviendo con proveedores de liquidez como **LSPs**.
+- **Custodia vs. autocustodia**: la mayoría de los usuarios usa wallets custodiales sobre Lightning. Hay esfuerzos por hacer autocustodial accesible (Phoenix, Mutiny, Breez).
+
+> Lightning convirtió a Bitcoin en algo que puede competir con tarjetas de crédito sin renunciar a su capa base.

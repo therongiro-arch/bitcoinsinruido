@@ -1,0 +1,50 @@
+---
+const year = new Date().getFullYear();
+const sources = [
+  { name: 'Bitcoin Optech', url: 'https://bitcoinops.org' },
+  { name: 'Bitcoin Magazine', url: 'https://bitcoinmagazine.com' },
+  { name: 'Bitcoin-dev mailing list', url: 'https://groups.google.com/g/bitcoindev' },
+  { name: 'Hiro Blog', url: 'https://www.hiro.so/blog' },
+  { name: 'Chaincode Research', url: 'https://chaincode.com' },
+];
+---
+
+<footer class="border-t border-line mt-24 py-12 text-sm text-ink-muted">
+  <div class="container-wide grid gap-10 md:grid-cols-3">
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-btc text-bg font-bold text-xs">₿</span>
+        <span class="font-semibold text-ink">Bitcoin Sin Ruido</span>
+      </div>
+      <p class="text-pretty leading-relaxed">
+        Bitcoin desde el protocolo, no desde el precio. Investigación técnica, escrita desde LATAM.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-ink font-semibold mb-3 text-xs uppercase tracking-wider">Secciones</h3>
+      <ul class="space-y-1.5">
+        <li><a href="/" class="hover:text-btc">Inicio</a></li>
+        <li><a href="/articulos">Artículos</a></li>
+        <li><a href="/news">BitcoinNews</a></li>
+        <li><a href="/rss.xml">RSS</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-ink font-semibold mb-3 text-xs uppercase tracking-wider">Fuentes de referencia</h3>
+      <ul class="space-y-1.5">
+        {sources.map((s) => (
+          <li>
+            <a href={s.url} target="_blank" rel="noopener noreferrer">{s.name} ↗</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-wide mt-10 pt-6 border-t border-line/60 flex flex-col sm:flex-row justify-between gap-2 text-xs">
+    <p>© {year} Bitcoin Sin Ruido. Contenido bajo CC BY-NC-SA 4.0.</p>
+    <p class="font-mono text-ink-dim">Sin precio. Sin hype. Solo protocolo.</p>
+  </div>
+</footer>

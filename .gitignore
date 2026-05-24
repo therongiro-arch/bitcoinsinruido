@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+.cache/
+.env
+.env.local
+.env.*.local
+.DS_Store
+.vscode/
+.idea/
+*.log
+.wrangler/
+workers/*/node_modules/
+workers/*/dist/

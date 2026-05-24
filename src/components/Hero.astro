@@ -1,0 +1,30 @@
+---
+import LiveGlobe from './react/LiveGlobe.tsx';
+import PriceTicker from './react/PriceTicker.tsx';
+---
+
+<section class="relative overflow-hidden border-b border-line">
+  <div class="container-wide pt-14 pb-10 sm:pt-20 sm:pb-16 grid lg:grid-cols-2 gap-10 items-center">
+    <div>
+      <p class="chip-btc mb-5 font-mono">PROTOCOLO · NO PRECIO · LATAM</p>
+      <h1 class="text-display font-semibold tracking-tight text-balance">
+        Bitcoin sin <span class="text-btc">ruido</span>.
+      </h1>
+      <p class="mt-6 max-w-xl text-lg sm:text-xl text-ink-muted text-pretty leading-relaxed">
+        Explicado desde el protocolo: UTXOs, nodos, capas, criptografía. Sin predicciones, sin hype, sin clickbait. Solo la señal.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/articulos" class="btn-primary">Leer artículos</a>
+        <a href="/news" class="btn">BitcoinNews →</a>
+      </div>
+
+      <div class="mt-10">
+        <PriceTicker client:idle />
+      </div>
+    </div>
+
+    <div class="relative min-h-[340px] sm:min-h-[420px] lg:min-h-[520px]">
+      <LiveGlobe client:visible />
+    </div>
+  </div>
+</section>

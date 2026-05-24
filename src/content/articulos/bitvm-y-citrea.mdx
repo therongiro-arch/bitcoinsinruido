@@ -1,0 +1,42 @@
+---
+title: "BitVM y Citrea — Contratos inteligentes sin soft fork"
+description: "BitVM permite ejecutar computación arbitraria verificable sobre Bitcoin sin modificar las reglas de consenso. Citrea, el primer ZK-rollup de Bitcoin, lanzó mainnet en enero de 2026."
+publishedAt: 2026-05-13
+capa: futuro
+tags: [bitvm, citrea, rollup, zk]
+order: 7
+---
+
+**BitVM** es probablemente lo más importante que pasó en Bitcoin en años. Permite ejecutar **computación arbitraria verificable sobre Bitcoin sin modificar las reglas de consenso**.
+
+## El problema que resuelve
+
+Durante años, la pregunta fue: ¿cómo agregar contratos inteligentes a Bitcoin sin tener que activar un soft fork cada vez que alguien quiere una funcionalidad nueva?
+
+Las respuestas previas pasaban por proponer opcodes nuevos (OP_CAT, OP_CTV…), lo que requiere coordinación de toda la red. BitVM cambió el enfoque: usa **solo lo que Bitcoin ya tiene** (scripts simples + multisig + canales) y construye encima una máquina virtual verificable.
+
+## Cómo funciona en una línea
+
+Las partes acuerdan off-chain el resultado de un programa. Si alguien hace trampa, **cualquiera puede demostrarlo on-chain** con una secuencia de transacciones que solo el tramposo no podría firmar. La amenaza de la prueba mantiene a todos honestos.
+
+Es contratos inteligentes por la vía del **fraud proof**, no por la vía de "Bitcoin ejecuta el código".
+
+## Citrea — La primera implementación seria
+
+**Citrea**, el primer **ZK-rollup sobre Bitcoin**, lanzó su mainnet el **27 de enero de 2026**.
+
+Un ZK-rollup agrupa miles de transacciones, las ejecuta off-chain, y publica en Bitcoin **una sola prueba criptográfica** de que todas son válidas. Bitcoin no ejecuta el rollup — solo verifica la prueba.
+
+Implicaciones:
+
+- Contratos inteligentes complejos (DeFi, juegos, identidad) sobre Bitcoin sin un soft fork.
+- Throughput de miles de transacciones por segundo asentadas en Bitcoin.
+- Sin nuevas suposiciones de confianza más allá de las que ya tiene Bitcoin.
+
+## Lo que no es
+
+BitVM **no convierte a Bitcoin en Ethereum**. La capa base sigue siendo simple, conservadora, predecible. Toda la lógica vive afuera, y Bitcoin solo arbitra.
+
+Esa separación es la propuesta: **base monetaria estable, programabilidad encima**.
+
+> 2026 es el año en que Bitcoin demostró que se podía programar sin modificarse.

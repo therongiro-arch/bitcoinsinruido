@@ -1,0 +1,34 @@
+---
+title: "UTXOs — Monedas, no saldos"
+description: "Bitcoin no es una base de datos de saldos. Es una base de datos de monedas digitales específicas que solo el receptor puede gastar."
+publishedAt: 2026-05-01
+capa: protocolo
+tags: [utxo, fundamentos]
+order: 1
+---
+
+Bitcoin **no** es una base de datos de saldos. Es una base de datos de **UTXOs** (Unspent Transaction Outputs): monedas digitales específicas que solo el receptor puede gastar.
+
+## La analogía que sí funciona
+
+Cuando recibes Bitcoin, **no te "acreditan" nada**. Recibes una moneda que solo tú puedes mover. Cuando envías BTC, **gastas una moneda concreta y recibes el cambio**, igual que cuando pagas con un billete físico y te devuelven la diferencia.
+
+Esto cambia varias cosas:
+
+- Tu "saldo" en realidad es la suma de todos los UTXOs que controlas.
+- Un mismo UTXO no se puede gastar dos veces — el protocolo lo evita por construcción.
+- Cada moneda tiene historia: se puede rastrear hasta el coinbase del bloque donde nació.
+
+## Por qué importa el diseño
+
+Este modelo hace al sistema:
+
+- **Más privado**: cada UTXO es independiente, no hay una cuenta unificada.
+- **Más verificable**: cualquier nodo puede comprobar que un UTXO no fue gastado sin consultar a nadie.
+- **Más paralelizable**: validar transacciones que no comparten UTXOs es trivialmente concurrente.
+
+## El error mental común
+
+Pensar en Bitcoin como una "cuenta bancaria" es la principal fuente de confusión para quien viene del mundo fiat. No hay cuenta. Hay monedas. Y esas monedas son tuyas porque tu clave privada es la única que puede gastarlas.
+
+> Bitcoin no migra dinero entre cuentas. Crea y destruye monedas digitales con cada transacción.

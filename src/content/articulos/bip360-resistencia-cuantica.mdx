@@ -1,0 +1,43 @@
+---
+title: "BIP-360 — Bitcoin frente a las computadoras cuánticas"
+description: "6.51 millones de BTC viven en direcciones vulnerables a un eventual ataque cuántico. BIP-360 prepara la migración, integrado al repo oficial en febrero 2026."
+publishedAt: 2026-05-19
+capa: futuro
+tags: [bip-360, criptografia, cuantica]
+order: 10
+---
+
+**BIP-360** es la propuesta de Bitcoin para resistir ataques de computadoras cuánticas suficientemente potentes. Fue **integrado al repositorio oficial en febrero de 2026**.
+
+## El problema, sin alarmismo
+
+Las firmas que protegen un Bitcoin se basan en criptografía de curva elíptica (ECDSA / Schnorr). Una computadora cuántica con suficientes qubits podría, en teoría, **derivar la clave privada a partir de la clave pública**.
+
+El detalle: en Bitcoin, la clave pública **solo se expone cuando se gasta el UTXO**. Eso significa:
+
+- UTXOs no gastados desde su creación → relativamente protegidos (solo se conoce el hash).
+- UTXOs que ya fueron gastados al menos una vez (direcciones reutilizadas, o pubkey expuesta) → expuestos al ataque cuántico futuro.
+
+## La magnitud
+
+Aproximadamente **6.51 millones de BTC** —cerca del **32.7% del suministro total**— están en direcciones vulnerables. Esto incluye los bitcoins de la era temprana, donde se usaban formatos que exponen la clave pública directamente.
+
+## Qué propone BIP-360
+
+Un esquema híbrido que combina firmas clásicas con firmas **post-cuánticas** (resistentes a ataques cuánticos). La transición no obliga a nadie de inmediato: los usuarios migran cuando lo deseen, pero quedan opcionalmente protegidos antes de que el ataque sea viable.
+
+## Cuánto tiempo lleva la transición
+
+Estimación realista: **entre 5 y 10 años** para una transición completa. Bitcoin no se actualiza por decreto — depende de millones de usuarios moviendo sus fondos a direcciones nuevas.
+
+## Estado a mayo 2026
+
+- BIP-360 **integrado al repositorio oficial**.
+- **Testnet activo** ejecutando el esquema.
+- Sin activación en mainnet todavía. Las wallets están empezando a soportarlo.
+
+## Lo que no es
+
+No es una respuesta a una amenaza inmediata. Las computadoras cuánticas relevantes para esto todavía no existen comercialmente. Es **preparación a tiempo** — el tipo de planificación a 10 años que Bitcoin necesita para sobrevivir.
+
+> Bitcoin se diseña pensando en décadas. BIP-360 es exactamente eso: un seguro para una amenaza que probablemente no llegará en años, pero que cuando llegue, tendría que encontrar a la red ya protegida.

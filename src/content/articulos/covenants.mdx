@@ -1,0 +1,49 @@
+---
+title: "Covenants — Poner condiciones a cómo se gasta el BTC"
+description: "OP_CAT, CTV y otras propuestas permitirían restringir cómo se pueden gastar bitcoins en el futuro. Es uno de los debates más activos de 2026."
+publishedAt: 2026-05-15
+capa: futuro
+tags: [covenants, op_cat, ctv, soft-fork]
+order: 8
+---
+
+Un **covenant** —del inglés "pacto" o "estipulación"— es una restricción que se inscribe en una transacción para limitar **cómo** se pueden gastar los bitcoins que recibe.
+
+## La idea, en concreto
+
+Hoy, cuando alguien recibe BTC, solo necesita una firma válida para gastarlo. Con un covenant, el script podría exigir cosas como:
+
+- "Solo se puede enviar a esta dirección concreta."
+- "Solo después de X bloques."
+- "Solo si se respeta una cierta estructura de salidas."
+
+Esto habilita vault-style wallets (donde el robo se puede revertir si se detecta a tiempo), congresos multi-firma sofisticados, custodia compartida más segura, y bloques de construcción para layer 2.
+
+## Las propuestas en debate
+
+Dos protagonistas:
+
+- **OP_CAT.** Una operación retirada en los primeros días de Bitcoin por miedo a vulnerabilidades. Reintroducirla habilitaría una cantidad enorme de casos de uso. Es la propuesta que más tracción tiene.
+- **OP_CTV (CheckTemplateVerify).** Más conservadora y específica: permite predefinir el "template" de la transacción de salida.
+
+Ambas requieren un **soft fork**.
+
+## El debate, sin azúcar
+
+Los argumentos a favor:
+
+- Habilita mejores L2.
+- Hace posibles vaults reales que limitan el daño de un robo.
+- Es una mejora ortogonal: quien no la use, no la nota.
+
+Los argumentos en contra:
+
+- Aumenta la complejidad del lenguaje de scripts.
+- Puede habilitar usos indeseados (NFTs metidos a martillazos en la cadena, contratos especulativos cargados de problemas).
+- "Si funciona, no lo toques" — la conservadora de toda mejora a Bitcoin.
+
+## Estado a mayo 2026
+
+Sin consenso suficiente para activar todavía. Las pruebas en testnet llevan más de un año. Posible activación en algún punto de 2026 si convergen los desarrolladores y los operadores de nodos. **No es inminente, pero está en la mesa.**
+
+> Bitcoin avanza despacio porque cada cambio tiene que valerlo. Covenants es exactamente el tipo de mejora que la red prefiere debatir cinco años antes que arriesgarse.

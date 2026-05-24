@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('articulos', ({ data }) => !data.draft);
+  return all.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, remarkPluginFrontmatter } = await entry.render();
+
+// Rough reading time: 220 wpm on the rendered body.
+const wordCount = entry.body.split(/\s+/).filter(Boolean).length;
+const readingTime = Math.max(1, Math.round(wordCount / 220));
+
+const _ = remarkPluginFrontmatter; // silence unused warning
+---
+
+<ArticleLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  publishedAt={entry.data.publishedAt}
+  updatedAt={entry.data.updatedAt}
+  tags={entry.data.tags}
+  capa={entry.data.capa}
+  cover={entry.data.cover}
+  author={entry.data.author}
+  readingTime={readingTime}
+>
+  <Content />
+</ArticleLayout>
