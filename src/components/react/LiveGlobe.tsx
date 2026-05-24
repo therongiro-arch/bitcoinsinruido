@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useExchangeStream, EXCHANGES } from './useExchangeStream';
 import type { Trade, ExchangeId } from '../../lib/exchanges';
 
-// Lazy import so three.js + globe.gl bundle isn't pulled in until this island mounts.
 const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
 
 interface Arc {
@@ -22,7 +21,7 @@ interface Ring {
   ts: number;
 }
 
-interface Marker {
+interface PointMarker {
   id: ExchangeId;
   name: string;
   city: string;
@@ -38,8 +37,6 @@ const PULSE_MS = 1400;
 const MAX_ARCS = 18;
 const MAX_RINGS = 30;
 
-// Center of mass for the destination of each arc — Atlantic point as a neutral
-// "global" target so arcs always travel outward and visualise flow.
 const TARGET_LAT = 0;
 const TARGET_LON = -20;
 
@@ -54,13 +51,11 @@ export default function LiveGlobe() {
   const [size, setSize] = useState({ w: 480, h: 480 });
   const [arcs, setArcs] = useState<Arc[]>([]);
   const [rings, setRings] = useState<Ring[]>([]);
-  // pulsing: exchangeId -> timestamp of last trade
   const [pulsing, setPulsing] = useState<Record<string, number>>({});
   const { trades, connected } = useExchangeStream();
   const lastSeenTsRef = useRef<number>(0);
   const reduced = useMemo(reducedMotion, []);
 
-  // Load the globe component on first mount.
   useEffect(() => {
     let alive = true;
     void loadGlobe().then((Cmp) => {
@@ -71,7 +66,6 @@ export default function LiveGlobe() {
     };
   }, []);
 
-  // Responsive size based on container.
   useEffect(() => {
     if (!containerRef.current) return;
     const el = containerRef.current;
@@ -85,16 +79,14 @@ export default function LiveGlobe() {
     return () => ro.disconnect();
   }, []);
 
-  // Convert new trades into arc + ring + pulse. Only "compras" (side === 'buy')
-  // since the user wants to see WHERE BTC is being bought right now.
   useEffect(() => {
     if (!trades.length) return;
     const newest = trades[trades.length - 1];
     if (newest.ts <= lastSeenTsRef.current) return;
     lastSeenTsRef.current = newest.ts;
 
-    // Only count buys. If the exchange did not report a side, fall back to
-    // showing the event anyway so the globe stays alive when streams omit side.
+    // Most exchanges expose side; if missing, treat the event as a buy so the
+    // globe always reacts to real flow rather than going silent.
     if (newest.side && newest.side !== 'buy') return;
 
     const now = Date.now();
@@ -124,7 +116,6 @@ export default function LiveGlobe() {
     });
   }, [trades]);
 
-  // Single periodic GC for arcs / rings / pulse state.
   useEffect(() => {
     const id = setInterval(() => {
       const now = Date.now();
@@ -149,9 +140,7 @@ export default function LiveGlobe() {
     return () => clearInterval(id);
   }, []);
 
-  // BTC markers: one HTML element per exchange HQ. The `pulsing` flag is part
-  // of the data object so react-globe.gl re-renders when it flips.
-  const markers = useMemo<Marker[]>(
+  const markers = useMemo<PointMarker[]>(
     () =>
       Object.values(EXCHANGES).map((e) => ({
         id: e.id,
@@ -181,10 +170,35 @@ export default function LiveGlobe() {
             bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
             atmosphereColor="#f7931a"
             atmosphereAltitude={0.18}
-            // Arcs — subtle flow line from each buy origin
+            // Glow points underneath labels so the marker is visible even
+            // before three.js TextGeometry finishes loading the font.
+            pointsData={markers}
+            pointLat={(d: PointMarker) => d.lat}
+            pointLng={(d: PointMarker) => d.lng}
+            pointColor={(d: PointMarker) => d.color}
+            pointAltitude={(d: PointMarker) => (d.pulsing ? 0.04 : 0.015)}
+            pointRadius={(d: PointMarker) => (d.pulsing ? 0.9 : 0.55)}
+            pointResolution={6}
+            pointLabel={(d: PointMarker) =>
+              `<div style="font:12px ui-monospace,monospace;background:#0a0a0bcc;color:#f5f5f4;border:1px solid #26262b;border-radius:6px;padding:4px 8px">${d.name} · ${d.city}</div>`
+            }
+            // ₿ label on top of each point. helvetiker (default font) supports
+            // basic latin; we use the Bitcoin sign ₿ (U+20BF) — three-globe's
+            // bundled helvetiker_regular font includes it. If it ever falls
+            // back to a glyph stub the user still sees the colored point.
+            labelsData={markers}
+            labelLat={(d: PointMarker) => d.lat}
+            labelLng={(d: PointMarker) => d.lng}
+            labelText={() => '₿'}
+            labelColor={(d: PointMarker) => d.color}
+            labelSize={(d: PointMarker) => (d.pulsing ? 1.4 : 1.0)}
+            labelDotRadius={0}
+            labelAltitude={(d: PointMarker) => (d.pulsing ? 0.06 : 0.04)}
+            labelResolution={3}
+            // Subtle directional flow line
             arcsData={reduced ? [] : arcs}
             arcColor={(d: Arc) => d.color}
-            arcStroke={0.3}
+            arcStroke={0.35}
             arcDashLength={0.4}
             arcDashGap={2}
             arcDashAnimateTime={ARC_DURATION_MS}
@@ -192,40 +206,13 @@ export default function LiveGlobe() {
             arcLabel={(d: Arc) =>
               `<div style="font:12px ui-monospace,monospace;background:#0a0a0bcc;color:#f5f5f4;border:1px solid #26262b;border-radius:6px;padding:4px 8px">${d.label}</div>`
             }
-            // Rings — expanding "ping" effect at the buy origin
+            // Expanding "ping" effect on each buy
             ringsData={reduced ? [] : rings}
-            ringColor={(d: Ring) => () => d.color}
+            ringColor={(d: Ring) => d.color}
             ringMaxRadius={4}
             ringPropagationSpeed={2.2}
             ringRepeatPeriod={0}
             ringAltitude={0.005}
-            // ₿ markers — one per exchange HQ, pulses when a trade fires
-            htmlElementsData={markers}
-            htmlAltitude={0.02}
-            htmlElement={(d: Marker) => {
-              const el = document.createElement('div');
-              const big = d.pulsing ? 34 : 22;
-              const glow = d.pulsing ? 28 : 10;
-              const opacity = d.pulsing ? 1 : 0.92;
-              el.style.cssText = [
-                `color:${d.color}`,
-                `font-size:${big}px`,
-                'font-weight:900',
-                'line-height:1',
-                'font-family:ui-sans-serif,system-ui,Segoe UI,sans-serif',
-                `text-shadow:0 0 ${glow}px ${d.color}, 0 0 6px ${d.color}`,
-                'transform:translate(-50%,-50%)',
-                'transition:font-size 0.22s ease-out, text-shadow 0.22s ease-out',
-                'pointer-events:auto',
-                'cursor:pointer',
-                'user-select:none',
-                `opacity:${opacity}`,
-              ].join(';');
-              el.textContent = '₿'; // ₿
-              el.title = `${d.name} · ${d.city}`;
-              el.setAttribute('aria-label', `${d.name} ${d.city}`);
-              return el;
-            }}
             enablePointerInteraction
           />
         ) : (
@@ -245,7 +232,7 @@ export default function LiveGlobe() {
           <>
             <span aria-hidden="true">·</span>
             <span>
-              última compra: {lastTrade.exchangeName} {lastTrade.amountBtc.toFixed(3)} BTC
+              última: {lastTrade.exchangeName} {lastTrade.amountBtc.toFixed(3)} BTC
             </span>
           </>
         )}
