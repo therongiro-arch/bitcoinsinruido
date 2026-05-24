@@ -917,6 +917,16 @@
   .bsr-ripple-ink { animation: none; opacity: 0; }
 }
 
+/* Newsletter CTA — fixed dark text on orange in both themes, immune to
+   the global a:hover orange rule. */
+.bsr-cta-newsletter,
+.bsr-cta-newsletter:hover,
+.bsr-cta-newsletter:focus,
+.bsr-cta-newsletter:active {
+  color: #0a0a0b !important;
+}
+.bsr-cta-newsletter:hover { opacity: 0.92; }
+
 /* Enhanced nav glass effect */
 .nav-glass {
   backdrop-filter: saturate(180%) blur(20px);
