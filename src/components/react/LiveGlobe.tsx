@@ -355,32 +355,6 @@ export default function LiveGlobe() {
       coinRef.current = c;
       scene.add(c.pivot);
 
-      // Inner glass shell — fills the "black cavity" where the sphere used
-      // to be, with a faint orange-tinted glow.
-      const innerGeo = new THREE.SphereGeometry(98, 48, 48);
-      const innerMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color('#f7931a'),
-        transparent: true,
-        opacity: 0.045,
-        side: THREE.BackSide,
-        depthWrite: false,
-      });
-      const innerShell = new THREE.Mesh(innerGeo, innerMat);
-      scene.add(innerShell);
-
-      // Subtle radial halo behind the coin (a slightly larger sphere of the
-      // same warm tone, even fainter, creates volumetric depth).
-      const haloGeo = new THREE.SphereGeometry(75, 48, 48);
-      const haloMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color('#fde68a'),
-        transparent: true,
-        opacity: 0.08,
-        side: THREE.BackSide,
-        depthWrite: false,
-      });
-      const halo = new THREE.Mesh(haloGeo, haloMat);
-      scene.add(halo);
-
       // Strong key light from upper-front (shows engraving + specular)
       const key = new THREE.DirectionalLight('#fff5e0', 1.8);
       key.position.set(140, 220, 280);
@@ -395,8 +369,6 @@ export default function LiveGlobe() {
       const hemi = new THREE.HemisphereLight('#ffb347', '#2a1500', 0.6);
       scene.add(hemi);
 
-      (c.pivot.userData as any).innerShell = innerShell;
-      (c.pivot.userData as any).halo = halo;
       (c.pivot.userData as any).key = key;
       (c.pivot.userData as any).rim = rim;
       (c.pivot.userData as any).hemi = hemi;
@@ -418,7 +390,7 @@ export default function LiveGlobe() {
         if (sceneNow) {
           const ud = coinRef.current.pivot.userData as any;
           sceneNow.remove(coinRef.current.pivot);
-          for (const k of ['innerShell', 'halo', 'key', 'rim', 'hemi']) {
+          for (const k of ['key', 'rim', 'hemi']) {
             const obj = ud[k] as THREE.Object3D | undefined;
             if (obj) sceneNow.remove(obj);
           }
