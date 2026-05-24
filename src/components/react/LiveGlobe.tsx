@@ -159,6 +159,92 @@ function makeCoinBumpTexture(mirror = false): THREE.Texture {
   return tex;
 }
 
+// Rasterise a GeoJSON FeatureCollection into a black/white equirectangular
+// canvas. Land = white (opaque), oceans = black (transparent when used as
+// alphaMap). 2048×1024 keeps coastlines crisp at the size we render.
+function buildEarthAlphaTexture(features: any[]): THREE.Texture {
+  const W = 2048;
+  const H = 1024;
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.Texture();
+
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#fff';
+
+  const project = (lng: number, lat: number): [number, number] => {
+    const x = ((lng + 180) / 360) * W;
+    const y = ((90 - lat) / 180) * H;
+    return [x, y];
+  };
+
+  const drawRing = (ring: number[][]) => {
+    if (!ring.length) return;
+    ctx.beginPath();
+    for (let i = 0; i < ring.length; i++) {
+      const [lng, lat] = ring[i];
+      const [x, y] = project(lng, lat);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill('evenodd');
+  };
+
+  for (const f of features) {
+    const geom = f?.geometry;
+    if (!geom) continue;
+    if (geom.type === 'Polygon') {
+      for (const ring of geom.coordinates) drawRing(ring);
+    } else if (geom.type === 'MultiPolygon') {
+      for (const poly of geom.coordinates) {
+        for (const ring of poly) drawRing(ring);
+      }
+    }
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.NoColorSpace;
+  tex.anisotropy = 8;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function buildEarth(features: any[]): {
+  mesh: THREE.Mesh;
+  dispose: () => void;
+} {
+  // Same radius as react-globe.gl's default (100) so accumulation points,
+  // arcs and rings still snap to the surface correctly.
+  const geo = new THREE.SphereGeometry(100, 96, 96);
+  const alphaTex = buildEarthAlphaTexture(features);
+
+  const mat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color('#f7931a'),
+    alphaMap: alphaTex,
+    transparent: true,
+    side: THREE.DoubleSide,
+    alphaTest: 0.4,
+    metalness: 0.1,
+    roughness: 0.85,
+    emissive: new THREE.Color('#a85a05'),
+    emissiveIntensity: 0.18,
+  });
+
+  const mesh = new THREE.Mesh(geo, mat);
+  return {
+    mesh,
+    dispose: () => {
+      geo.dispose();
+      mat.dispose();
+      alphaTex.dispose();
+    },
+  };
+}
+
 function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => void } {
   // Smaller, more realistic gold coin floating in the globe core.
   const radius = 36;
@@ -244,6 +330,7 @@ export default function LiveGlobe() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const globeRef = useRef<any>(null);
   const coinRef = useRef<{ pivot: THREE.Group; coin: THREE.Mesh; dispose: () => void } | null>(null);
+  const earthRef = useRef<{ mesh: THREE.Mesh; dispose: () => void } | null>(null);
   const rafRef = useRef<number | null>(null);
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
   const [size, setSize] = useState({ w: 480, h: 480 });
@@ -284,6 +371,28 @@ export default function LiveGlobe() {
       alive = false;
     };
   }, []);
+
+  // Build the alpha-masked Earth sphere as soon as countries are ready and
+  // the globe instance is mounted.
+  useEffect(() => {
+    if (!GlobeCmp || !globeRef.current || !countries.length) return;
+    const scene: THREE.Scene | undefined = globeRef.current.scene?.();
+    if (!scene) return;
+    if (earthRef.current) return; // already built
+
+    const earth = buildEarth(countries);
+    scene.add(earth.mesh);
+    earthRef.current = earth;
+
+    return () => {
+      const sceneNow: THREE.Scene | undefined = globeRef.current?.scene?.();
+      if (earthRef.current) {
+        if (sceneNow) sceneNow.remove(earthRef.current.mesh);
+        earthRef.current.dispose();
+        earthRef.current = null;
+      }
+    };
+  }, [GlobeCmp, countries]);
 
   // Responsive sizing
   useEffect(() => {
@@ -486,21 +595,6 @@ export default function LiveGlobe() {
     [pulsing],
   );
 
-  // DoubleSide unlit material for country polygons — keeps both the
-  // front-facing and back-facing continent caps in full orange so the
-  // far hemisphere doesn't appear as a dark crescent through the oceans.
-  const polygonMat = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: new THREE.Color('#f7931a'),
-        transparent: true,
-        opacity: 0.92,
-        side: THREE.DoubleSide,
-        depthWrite: true,
-      }),
-    [],
-  );
-
   const connectedCount = Object.values(connected).filter(Boolean).length;
   const totalExchanges = 5;
 
@@ -513,20 +607,13 @@ export default function LiveGlobe() {
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
-            // Globe sphere hidden — only land polygons + atmosphere render.
+            // Globe sphere hidden — our own alpha-mapped Earth sphere is
+            // injected into the scene, which gives transparent oceans and
+            // opaque continents in a single mesh (no back-face issues).
             showGlobe={false}
             atmosphereColor="#f7931a"
             atmosphereAltitude={0.22}
             showAtmosphere
-            // Country polygons floating at globe radius — DoubleSide
-            // material so the back-facing continents on the far side of
-            // the globe don't appear as a dark silhouette through the
-            // transparent oceans.
-            polygonsData={countries}
-            polygonAltitude={0.008}
-            polygonCapMaterial={polygonMat}
-            polygonSideColor={() => 'rgba(247, 147, 26, 0.35)'}
-            polygonStrokeColor={() => 'rgba(255, 210, 140, 0.85)'}
             // Accumulation points
             pointsData={displayPoints}
             pointLat={(d: DisplayPoint) => d.lat}
