@@ -13,7 +13,10 @@ import {
 
 const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
 
-const COUNTRIES_URL = 'https://unpkg.com/three-globe/example/datasets/ne_110m_admin_0_countries.geojson';
+const COUNTRIES_URL =
+  'https://raw.githubusercontent.com/vasturiano/three-globe/master/example/datasets/ne_110m_admin_0_countries.geojson';
+const COUNTRIES_URL_FALLBACK =
+  'https://cdn.jsdelivr.net/gh/vasturiano/three-globe@master/example/datasets/ne_110m_admin_0_countries.geojson';
 
 const MIN_BTC = 1;
 const RING_DURATION_MS = 3000;
@@ -168,17 +171,23 @@ export default function LiveGlobe() {
     };
   }, []);
 
-  // Load countries GeoJSON (one-off)
+  // Load countries GeoJSON (with CDN fallback)
   useEffect(() => {
     let alive = true;
-    fetch(COUNTRIES_URL)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (alive && data?.features) setCountries(data.features);
-      })
-      .catch(() => {
-        /* fallback: no countries — globe still shows points + coin */
-      });
+    const tryFetch = async (url: string) => {
+      try {
+        const r = await fetch(url);
+        if (!r.ok) return null;
+        return (await r.json()) as { features?: any[] } | null;
+      } catch {
+        return null;
+      }
+    };
+    (async () => {
+      let data = await tryFetch(COUNTRIES_URL);
+      if (!data?.features) data = await tryFetch(COUNTRIES_URL_FALLBACK);
+      if (alive && data?.features) setCountries(data.features);
+    })();
     return () => {
       alive = false;
     };
@@ -198,23 +207,11 @@ export default function LiveGlobe() {
     return () => ro.disconnect();
   }, []);
 
-  // Custom transparent globe material (sea = glass) + inject the spinning coin
+  // Configure controls + inject the spinning coin. The earth sphere itself
+  // is hidden via `showGlobe={false}` in JSX so the coin reads clearly.
   useEffect(() => {
     if (!GlobeCmp || !globeRef.current) return;
 
-    // Make the sphere itself nearly invisible — just a glass tint for the orb.
-    const glassMat = new THREE.MeshPhongMaterial({
-      color: new THREE.Color('#0b1a2e'),
-      transparent: true,
-      opacity: 0.18,
-      shininess: 60,
-      specular: new THREE.Color('#f7931a'),
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    });
-    globeRef.current.globeMaterial?.(glassMat);
-
-    // Controls: gentle auto-rotation
     const controls = globeRef.current.controls?.();
     if (controls) {
       controls.autoRotate = !reduced;
@@ -224,19 +221,23 @@ export default function LiveGlobe() {
     }
     globeRef.current.pointOfView?.({ lat: 15, lng: -30, altitude: 2.4 }, 0);
 
-    // Inject the BTC 21M coin into the scene at the globe's center.
     const scene: THREE.Scene | undefined = globeRef.current.scene?.();
     if (scene && !coinRef.current) {
       const c = buildCoin();
       coinRef.current = c;
       scene.add(c.pivot);
-      // A warm rim light helps the metallic coin pop through the glass shell.
-      const rim = new THREE.PointLight('#f7931a', 1.2, 800);
-      rim.position.set(0, 0, 200);
-      scene.add(rim);
-      (c.pivot.userData as any).rim = rim;
 
-      // Animation loop: spin the coin around the world Y axis (classic coin spin).
+      // Warm rim light to make the coin glint through the empty oceans.
+      const rim = new THREE.PointLight('#f7931a', 2.4, 1200);
+      rim.position.set(140, 80, 220);
+      scene.add(rim);
+      // Soft fill from the opposite side
+      const fill = new THREE.PointLight('#fde68a', 0.8, 800);
+      fill.position.set(-180, -60, -200);
+      scene.add(fill);
+      (c.pivot.userData as any).rim = rim;
+      (c.pivot.userData as any).fill = fill;
+
       const spin = () => {
         if (coinRef.current) {
           coinRef.current.pivot.rotation.y += reduced ? 0 : 0.012;
@@ -254,13 +255,13 @@ export default function LiveGlobe() {
         if (sceneNow) {
           sceneNow.remove(coinRef.current.pivot);
           const rim = (coinRef.current.pivot.userData as any).rim as THREE.PointLight | undefined;
+          const fill = (coinRef.current.pivot.userData as any).fill as THREE.PointLight | undefined;
           if (rim) sceneNow.remove(rim);
+          if (fill) sceneNow.remove(fill);
         }
         coinRef.current.dispose();
         coinRef.current = null;
       }
-      // Dispose the glass material on unmount
-      glassMat.dispose();
     };
   }, [GlobeCmp, reduced]);
 
@@ -356,15 +357,18 @@ export default function LiveGlobe() {
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
+            // Sphere hidden — only land polygons + atmosphere render. The
+            // coin in the center stays visible through the empty oceans.
+            showGlobe={false}
             atmosphereColor="#f7931a"
             atmosphereAltitude={0.22}
             showAtmosphere
-            // Country polygons (the only "earth" visual now — oceans stay clear)
+            // Country polygons floating at globe radius
             polygonsData={countries}
-            polygonAltitude={0.006}
-            polygonCapColor={() => 'rgba(247, 147, 26, 0.65)'}
-            polygonSideColor={() => 'rgba(247, 147, 26, 0.2)'}
-            polygonStrokeColor={() => 'rgba(255, 200, 120, 0.55)'}
+            polygonAltitude={0.008}
+            polygonCapColor={() => 'rgba(247, 147, 26, 0.92)'}
+            polygonSideColor={() => 'rgba(247, 147, 26, 0.35)'}
+            polygonStrokeColor={() => 'rgba(255, 210, 140, 0.85)'}
             // Accumulation points
             pointsData={displayPoints}
             pointLat={(d: DisplayPoint) => d.lat}
