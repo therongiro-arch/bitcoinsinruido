@@ -130,6 +130,7 @@ export default function NewsFeed({ limit, compact = false, initialFeed = null }:
             href={it.url}
             target="_blank"
             rel="noopener noreferrer"
+            data-bsr-tilt
             className="group block p-4 sm:p-5 rounded-xl border border-line bg-bg-card hover:border-btc/50 hover:bg-bg-soft transition"
           >
             <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-ink-dim mb-2">

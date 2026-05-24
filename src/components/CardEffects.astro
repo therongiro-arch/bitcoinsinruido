@@ -1,0 +1,104 @@
+---
+// Global card effects: 3D tilt on hover + ripple on click + glass shine.
+// Targets every element with class `bsr-card` (Astro-rendered article
+// cards) or the data attribute `data-bsr-tilt` (any other clickable
+// surface, including React-rendered news items).
+//
+// A MutationObserver re-arms cards added later by client-side hydration
+// (e.g. NewsFeed) so the same handlers apply everywhere with no React
+// coupling.
+---
+
+<script is:inline>
+  (() => {
+    const SELECTOR = '.bsr-card, [data-bsr-tilt]';
+    const TILT_MAX = 7; // degrees
+    const SCALE = 1.012;
+
+    const enhance = (card) => {
+      if (card.__bsrEnhanced) return;
+      card.__bsrEnhanced = true;
+      card.classList.add('bsr-tilt');
+
+      let rect = null;
+      let raf = 0;
+      let nextTx = '';
+
+      const updateRect = () => {
+        rect = card.getBoundingClientRect();
+      };
+
+      const onMove = (ev) => {
+        if (!rect) updateRect();
+        const x = (ev.clientX - rect.left) / rect.width;
+        const y = (ev.clientY - rect.top) / rect.height;
+        // ignore tiny coords drift outside the card
+        if (x < 0 || x > 1 || y < 0 || y > 1) return;
+        const rotateY = (x - 0.5) * 2 * TILT_MAX;
+        const rotateX = (0.5 - y) * 2 * TILT_MAX;
+        nextTx = `perspective(900px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(${SCALE})`;
+        // CSS variables for the shine layer to follow the cursor
+        card.style.setProperty('--cursor-x', `${(x * 100).toFixed(1)}%`);
+        card.style.setProperty('--cursor-y', `${(y * 100).toFixed(1)}%`);
+        if (!raf) {
+          raf = requestAnimationFrame(() => {
+            card.style.transform = nextTx;
+            raf = 0;
+          });
+        }
+      };
+
+      const reset = () => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = 0;
+        card.style.transform = '';
+        rect = null;
+      };
+
+      const onClick = (ev) => {
+        // Ripple
+        const r = card.getBoundingClientRect();
+        const ink = document.createElement('span');
+        ink.className = 'bsr-ripple-ink';
+        const size = Math.max(r.width, r.height);
+        ink.style.width = ink.style.height = `${size}px`;
+        ink.style.left = `${ev.clientX - r.left}px`;
+        ink.style.top = `${ev.clientY - r.top}px`;
+        card.appendChild(ink);
+        setTimeout(() => ink.remove(), 700);
+      };
+
+      card.addEventListener('mouseenter', updateRect);
+      card.addEventListener('mousemove', onMove, { passive: true });
+      card.addEventListener('mouseleave', reset);
+      card.addEventListener('click', onClick);
+      // Disable on coarse pointers (touch) — tilt feels weird
+      if (window.matchMedia('(hover: none)').matches) {
+        card.removeEventListener('mousemove', onMove);
+      }
+    };
+
+    const enhanceAll = (root = document) => {
+      root.querySelectorAll(SELECTOR).forEach(enhance);
+    };
+
+    // First pass on DOM ready.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => enhanceAll());
+    } else {
+      enhanceAll();
+    }
+
+    // Watch for nodes added later (React islands, etc.).
+    const mo = new MutationObserver((entries) => {
+      for (const e of entries) {
+        e.addedNodes.forEach((n) => {
+          if (!(n instanceof Element)) return;
+          if (n.matches?.(SELECTOR)) enhance(n);
+          enhanceAll(n);
+        });
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  })();
+</script>
