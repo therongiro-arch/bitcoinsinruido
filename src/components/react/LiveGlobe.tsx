@@ -308,12 +308,21 @@ function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => voi
   });
 
   const coin = new THREE.Mesh(geo, [sideMat, frontMat, backMat]);
-  coin.rotation.x = Math.PI / 2;
-  // Slight tilt so the coin reads as 3D even when not spinning.
-  coin.rotation.z = 0.08;
+  // Rotate around the cylinder's own axis (Y) so the ₿ symbol painted on
+  // the cap reads upright once we tilt the cylinder to face the camera.
+  // Doing this on the mesh itself (before the tilt is applied via parents)
+  // keeps the alignment stable as the outer pivot spins.
+  coin.rotation.y = -Math.PI / 2;
 
+  // tiltHolder lays the coin flat to the camera (caps facing forward).
+  const tiltHolder = new THREE.Group();
+  tiltHolder.rotation.x = Math.PI / 2;
+  tiltHolder.rotation.z = 0.08; // subtle 3D feel
+  tiltHolder.add(coin);
+
+  // pivot is what the animation spins around the world Y axis.
   const pivot = new THREE.Group();
-  pivot.add(coin);
+  pivot.add(tiltHolder);
 
   return {
     pivot,
