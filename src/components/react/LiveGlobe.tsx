@@ -93,12 +93,18 @@ function makeCoinColorTexture(mirror = false): THREE.Texture {
 
   // Engraved text (dark amber so the bump map carries the depth illusion)
   ctx.save();
+  // Pre-rotate the canvas 180° on BOTH faces. With the current coin
+  // alignment (cylinder rotated y=-π/2 then tilted x=π/2), both caps end
+  // up showing the texture upside-down without this compensation. The
+  // back face additionally needs a horizontal mirror because cylinder
+  // bottom caps render in reverse U direction.
+  ctx.translate(SIZE, SIZE);
+  ctx.scale(-1, -1);
   if (mirror) {
-    // Rotate the back-face content 180° so when the cylinder bottom cap
-    // is shown (after the y-rotation that aligns the front cap) the text
-    // reads upright instead of upside-down.
-    ctx.translate(SIZE, SIZE);
-    ctx.scale(-1, -1);
+    // Add a horizontal flip on top so the back face is mirrored only
+    // along U (after the 180° rotation that's a vertical flip).
+    ctx.translate(SIZE, 0);
+    ctx.scale(-1, 1);
   }
   ctx.fillStyle = '#3a1d00';
   ctx.font = 'bold 560px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
@@ -143,12 +149,18 @@ function makeCoinBumpTexture(mirror = false): THREE.Texture {
 
   // Engraved text — pure black so bump pushes it down clearly
   ctx.save();
+  // Pre-rotate the canvas 180° on BOTH faces. With the current coin
+  // alignment (cylinder rotated y=-π/2 then tilted x=π/2), both caps end
+  // up showing the texture upside-down without this compensation. The
+  // back face additionally needs a horizontal mirror because cylinder
+  // bottom caps render in reverse U direction.
+  ctx.translate(SIZE, SIZE);
+  ctx.scale(-1, -1);
   if (mirror) {
-    // Rotate the back-face content 180° so when the cylinder bottom cap
-    // is shown (after the y-rotation that aligns the front cap) the text
-    // reads upright instead of upside-down.
-    ctx.translate(SIZE, SIZE);
-    ctx.scale(-1, -1);
+    // Add a horizontal flip on top so the back face is mirrored only
+    // along U (after the 180° rotation that's a vertical flip).
+    ctx.translate(SIZE, 0);
+    ctx.scale(-1, 1);
   }
   ctx.fillStyle = '#000000';
   ctx.font = 'bold 560px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
