@@ -171,11 +171,13 @@ function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => voi
   const backBump = makeCoinBumpTexture(true);
 
   const sharedMatOpts = {
-    metalness: 0.92,
-    roughness: 0.22,
+    metalness: 0.95,
+    roughness: 0.18,
     emissive: new THREE.Color('#2a1500'),
-    emissiveIntensity: 0.05,
-    bumpScale: 0.6,
+    emissiveIntensity: 0.06,
+    // Deep enough to read as real engraving when the spotlight hits the
+    // coin at grazing angles.
+    bumpScale: 2.5,
   } as const;
 
   const frontMat = new THREE.MeshStandardMaterial({
@@ -313,28 +315,91 @@ export default function LiveGlobe() {
 
     // Force real transparency — three-globe sometimes leaves a black clear
     // color on the renderer even when the canvas itself is transparent.
-    const renderer = globeRef.current.renderer?.();
+    const renderer: THREE.WebGLRenderer | undefined = globeRef.current.renderer?.();
     if (renderer) {
       renderer.setClearColor(0x000000, 0);
       renderer.setClearAlpha?.(0);
     }
     const scene: THREE.Scene | undefined = globeRef.current.scene?.();
     if (scene) scene.background = null;
+
+    // Environment map: a tiny procedural cube renders the scene as it is and
+    // then PMREMGenerator turns it into the reflection map for the gold coin.
+    // This is what gives the metal its "polished" look without needing an HDR.
+    let envMap: THREE.Texture | null = null;
+    if (renderer && scene) {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      pmrem.compileEquirectangularShader();
+      // Plain warm gradient as the world background reflected on the coin
+      const envCanvas = document.createElement('canvas');
+      envCanvas.width = 256;
+      envCanvas.height = 128;
+      const ec = envCanvas.getContext('2d');
+      if (ec) {
+        const grad = ec.createLinearGradient(0, 0, 0, 128);
+        grad.addColorStop(0, '#3a1a00');
+        grad.addColorStop(0.5, '#f7931a');
+        grad.addColorStop(1, '#1a0e00');
+        ec.fillStyle = grad;
+        ec.fillRect(0, 0, 256, 128);
+      }
+      const envTex = new THREE.CanvasTexture(envCanvas);
+      envTex.mapping = THREE.EquirectangularReflectionMapping;
+      envMap = pmrem.fromEquirectangular(envTex).texture;
+      envTex.dispose();
+      pmrem.dispose();
+      scene.environment = envMap;
+    }
     if (scene && !coinRef.current) {
       const c = buildCoin();
       coinRef.current = c;
       scene.add(c.pivot);
 
-      // Warm rim light to make the coin glint through the empty oceans.
-      const rim = new THREE.PointLight('#f7931a', 2.4, 1200);
-      rim.position.set(140, 80, 220);
+      // Inner glass shell — fills the "black cavity" where the sphere used
+      // to be, with a faint orange-tinted glow.
+      const innerGeo = new THREE.SphereGeometry(98, 48, 48);
+      const innerMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color('#f7931a'),
+        transparent: true,
+        opacity: 0.045,
+        side: THREE.BackSide,
+        depthWrite: false,
+      });
+      const innerShell = new THREE.Mesh(innerGeo, innerMat);
+      scene.add(innerShell);
+
+      // Subtle radial halo behind the coin (a slightly larger sphere of the
+      // same warm tone, even fainter, creates volumetric depth).
+      const haloGeo = new THREE.SphereGeometry(75, 48, 48);
+      const haloMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color('#fde68a'),
+        transparent: true,
+        opacity: 0.08,
+        side: THREE.BackSide,
+        depthWrite: false,
+      });
+      const halo = new THREE.Mesh(haloGeo, haloMat);
+      scene.add(halo);
+
+      // Strong key light from upper-front (shows engraving + specular)
+      const key = new THREE.DirectionalLight('#fff5e0', 1.8);
+      key.position.set(140, 220, 280);
+      scene.add(key);
+
+      // Warm rim from below-back for metal contour highlight
+      const rim = new THREE.PointLight('#f7931a', 3.2, 1400);
+      rim.position.set(-120, -80, -260);
       scene.add(rim);
-      // Soft fill from the opposite side
-      const fill = new THREE.PointLight('#fde68a', 0.8, 800);
-      fill.position.set(-180, -60, -200);
-      scene.add(fill);
+
+      // Hemisphere fill — warm sky, cool ground — keeps shadows readable
+      const hemi = new THREE.HemisphereLight('#ffb347', '#2a1500', 0.6);
+      scene.add(hemi);
+
+      (c.pivot.userData as any).innerShell = innerShell;
+      (c.pivot.userData as any).halo = halo;
+      (c.pivot.userData as any).key = key;
       (c.pivot.userData as any).rim = rim;
-      (c.pivot.userData as any).fill = fill;
+      (c.pivot.userData as any).hemi = hemi;
 
       const spin = () => {
         if (coinRef.current) {
@@ -351,15 +416,17 @@ export default function LiveGlobe() {
       const sceneNow: THREE.Scene | undefined = globeRef.current?.scene?.();
       if (coinRef.current) {
         if (sceneNow) {
+          const ud = coinRef.current.pivot.userData as any;
           sceneNow.remove(coinRef.current.pivot);
-          const rim = (coinRef.current.pivot.userData as any).rim as THREE.PointLight | undefined;
-          const fill = (coinRef.current.pivot.userData as any).fill as THREE.PointLight | undefined;
-          if (rim) sceneNow.remove(rim);
-          if (fill) sceneNow.remove(fill);
+          for (const k of ['innerShell', 'halo', 'key', 'rim', 'hemi']) {
+            const obj = ud[k] as THREE.Object3D | undefined;
+            if (obj) sceneNow.remove(obj);
+          }
         }
         coinRef.current.dispose();
         coinRef.current = null;
       }
+      if (envMap) envMap.dispose();
     };
   }, [GlobeCmp, reduced]);
 
