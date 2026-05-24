@@ -500,6 +500,189 @@
   .bsr-viz-glow { animation: none !important; }
 }
 
+/* ============================================================
+   Mining counter card
+   ============================================================ */
+.bsr-mining-card {
+  position: relative;
+  padding: 22px;
+  border-radius: 18px;
+  background: rgb(var(--bg-card) / 0.6);
+  border: 1px solid rgb(var(--line));
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  overflow: hidden;
+  transition: border-color 220ms ease;
+}
+.bsr-mining-card:hover {
+  border-color: rgba(247, 147, 26, 0.4);
+}
+.bsr-mining-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 18px;
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(247, 147, 26, 0.18),
+    transparent 50%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.bsr-mining-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.bsr-mining-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-bottom: 18px;
+}
+.bsr-mining-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--ink-muted));
+}
+.bsr-mining-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(247, 147, 26);
+  box-shadow: 0 0 10px rgba(247, 147, 26, 0.7);
+  animation: bsr-mining-blink 1.4s ease-in-out infinite;
+}
+@keyframes bsr-mining-blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.85); }
+}
+.bsr-mining-reward {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  color: rgb(var(--ink-dim));
+  letter-spacing: 0.04em;
+}
+
+.bsr-mining-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+@media (max-width: 480px) {
+  .bsr-mining-grid { grid-template-columns: 1fr; gap: 12px; }
+}
+
+.bsr-mining-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bsr-mining-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--ink-muted));
+}
+.bsr-mining-value {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: clamp(22px, 2.8vw, 30px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: rgb(var(--ink));
+  font-variant-numeric: tabular-nums;
+}
+.bsr-mining-value.mined { color: rgb(247, 147, 26); }
+.bsr-mining-value span {
+  font-size: 0.55em;
+  color: rgb(var(--ink-muted));
+  margin-left: 4px;
+  vertical-align: 0.05em;
+}
+
+.bsr-mining-progress {
+  position: relative;
+  height: 4px;
+  background: rgb(var(--line));
+  border-radius: 999px;
+  overflow: visible;
+  margin: 6px 0 18px;
+}
+.bsr-mining-progress-bar {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: linear-gradient(90deg, #f7931a, #fde68a);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(247, 147, 26, 0.45);
+  transition: width 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.bsr-mining-percent {
+  position: absolute;
+  top: -22px;
+  right: 0;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  color: rgb(var(--ink-muted));
+  letter-spacing: 0.05em;
+}
+
+/* Server rack illustration */
+.bsr-mining-rack {
+  margin-top: 4px;
+  width: 100%;
+  height: auto;
+}
+.bsr-mining-rack svg { display: block; width: 100%; height: auto; }
+.bsr-rack-bg {
+  fill: rgb(var(--bg-soft));
+  fill-opacity: 0.4;
+  stroke: rgb(var(--line));
+  stroke-width: 1;
+}
+.bsr-rack-server {
+  fill: rgb(var(--bg-soft));
+  stroke: rgb(var(--line-strong, var(--line)));
+  stroke-width: 0.5;
+  stroke-opacity: 0.7;
+}
+.bsr-rack-line { stroke: rgb(var(--ink-dim)); stroke-width: 0.6; opacity: 0.4; }
+.bsr-rack-readout { fill: rgb(var(--bg)); opacity: 0.7; }
+.bsr-rack-readout-fill {
+  fill: rgb(247, 147, 26);
+  animation: bsr-rack-readout 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+}
+@keyframes bsr-rack-readout {
+  0% { width: 0; opacity: 0.4; }
+  50% { width: 20px; opacity: 1; }
+  100% { width: 0; opacity: 0.4; }
+}
+.bsr-rack-led {
+  fill: rgb(247, 147, 26);
+  animation: bsr-rack-led 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes bsr-rack-led {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 1; filter: drop-shadow(0 0 4px rgba(247, 147, 26, 0.9)); }
+}
+.bsr-rack-base {
+  fill: rgb(var(--ink));
+  opacity: 0.08;
+}
+
 /* Enhanced nav glass effect */
 .nav-glass {
   backdrop-filter: saturate(180%) blur(20px);
