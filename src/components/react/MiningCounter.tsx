@@ -197,10 +197,12 @@ export default function MiningCounter() {
       </div>
 
       <div className="bsr-mining-progress">
-        <div
-          className="bsr-mining-progress-bar"
-          style={{ width: `${percent.toFixed(3)}%` }}
-        />
+        <div className="bsr-mining-progress-track">
+          <div
+            className="bsr-mining-progress-bar"
+            style={{ width: `${percent.toFixed(3)}%` }}
+          />
+        </div>
         <span className="bsr-mining-percent">
           {percent.toFixed(3)}% del límite de 21M
         </span>

@@ -758,11 +758,14 @@
 
 .bsr-mining-progress {
   position: relative;
+  margin: 6px 0 14px;
+}
+.bsr-mining-progress-track {
+  position: relative;
   height: 4px;
   background: rgb(var(--line));
   border-radius: 999px;
-  overflow: visible;
-  margin: 6px 0 18px;
+  overflow: hidden;
 }
 .bsr-mining-progress-bar {
   position: absolute;
@@ -774,13 +777,13 @@
   transition: width 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .bsr-mining-percent {
-  position: absolute;
-  top: -22px;
-  right: 0;
+  display: block;
+  margin-top: 6px;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 10.5px;
   color: rgb(var(--ink-muted));
   letter-spacing: 0.05em;
+  text-align: right;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
