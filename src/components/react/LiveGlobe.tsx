@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import * as THREE from 'three';
 import { useExchangeStream } from './useExchangeStream';
 import type { Trade } from '../../lib/exchanges';
 import {
@@ -12,10 +13,12 @@ import {
 
 const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
 
-const MIN_BTC = 1; // Only purchases of >= 1 BTC trigger the live overlay
+const COUNTRIES_URL = 'https://unpkg.com/three-globe/example/datasets/ne_110m_admin_0_countries.geojson';
+
+const MIN_BTC = 1;
 const RING_DURATION_MS = 3000;
 const PULSE_MS = 3500;
-const FOCUS_HOLD_MS = 3800; // pause auto-rotation while a big purchase is highlighted
+const FOCUS_HOLD_MS = 3800;
 const MAX_RINGS = 12;
 const AUTO_ROTATE_SPEED = 0.35;
 const POV_TRANSITION_MS = 1100;
@@ -45,11 +48,107 @@ function formatBtc(btc: number): string {
   return `${btc.toLocaleString('es-ES')} ₿`;
 }
 
+// Build the Bitcoin coin texture: gold radial gradient with ₿ symbol and 21M.
+function makeCoinTexture(): THREE.Texture {
+  const SIZE = 1024;
+  const canvas = document.createElement('canvas');
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.Texture();
+  const c = SIZE / 2;
+
+  // Radial gold gradient
+  const g = ctx.createRadialGradient(c, c - 60, 80, c, c, c - 30);
+  g.addColorStop(0, '#fde68a');
+  g.addColorStop(0.45, '#f7931a');
+  g.addColorStop(1, '#7a4500');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 10, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Outer ring
+  ctx.strokeStyle = 'rgba(253, 230, 138, 0.95)';
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 30, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Inner subtle ring
+  ctx.strokeStyle = 'rgba(120, 60, 0, 0.5)';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 75, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // ₿ symbol — large
+  ctx.fillStyle = '#1a0e00';
+  ctx.font = 'bold 580px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('₿', c, c - 70);
+
+  // 21M label below
+  ctx.fillStyle = '#1a0e00';
+  ctx.font = 'bold 170px ui-monospace, "JetBrains Mono", "Menlo", monospace';
+  ctx.fillText('21M', c, c + 290);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.anisotropy = 8;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function buildCoin(): { pivot: THREE.Group; coin: THREE.Mesh; dispose: () => void } {
+  // Globe radius in three-globe units is 100. Coin clearly smaller and centered.
+  const radius = 58;
+  const thickness = 8;
+  const geo = new THREE.CylinderGeometry(radius, radius, thickness, 96, 1);
+
+  const faceTex = makeCoinTexture();
+  const faceMat = new THREE.MeshStandardMaterial({
+    map: faceTex,
+    metalness: 0.6,
+    roughness: 0.28,
+    emissive: new THREE.Color('#f7931a'),
+    emissiveIntensity: 0.18,
+  });
+  const sideMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color('#b06800'),
+    metalness: 0.85,
+    roughness: 0.35,
+    emissive: new THREE.Color('#3a1f00'),
+    emissiveIntensity: 0.15,
+  });
+  // CylinderGeometry has 3 material slots: [side, top, bottom]
+  const coin = new THREE.Mesh(geo, [sideMat, faceMat, faceMat]);
+  // Lay the coin so its faces look at the camera (flipping like a real coin).
+  coin.rotation.x = Math.PI / 2;
+
+  const pivot = new THREE.Group();
+  pivot.add(coin);
+
+  return {
+    pivot,
+    coin,
+    dispose: () => {
+      geo.dispose();
+      faceMat.dispose();
+      sideMat.dispose();
+      faceTex.dispose();
+    },
+  };
+}
+
 export default function LiveGlobe() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const globeRef = useRef<any>(null);
+  const coinRef = useRef<{ pivot: THREE.Group; coin: THREE.Mesh; dispose: () => void } | null>(null);
+  const rafRef = useRef<number | null>(null);
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
   const [size, setSize] = useState({ w: 480, h: 480 });
+  const [countries, setCountries] = useState<any[]>([]);
   const [rings, setRings] = useState<Ring[]>([]);
   const [pulsing, setPulsing] = useState<Record<string, number>>({});
   const [lastBigBuy, setLastBigBuy] = useState<Trade | null>(null);
@@ -58,7 +157,7 @@ export default function LiveGlobe() {
   const { trades, connected } = useExchangeStream();
   const reduced = useMemo(reducedMotion, []);
 
-  // Load the globe component on first mount.
+  // Load globe component
   useEffect(() => {
     let alive = true;
     void loadGlobe().then((Cmp) => {
@@ -69,7 +168,23 @@ export default function LiveGlobe() {
     };
   }, []);
 
-  // Responsive sizing.
+  // Load countries GeoJSON (one-off)
+  useEffect(() => {
+    let alive = true;
+    fetch(COUNTRIES_URL)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (alive && data?.features) setCountries(data.features);
+      })
+      .catch(() => {
+        /* fallback: no countries — globe still shows points + coin */
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Responsive sizing
   useEffect(() => {
     if (!containerRef.current) return;
     const el = containerRef.current;
@@ -83,21 +198,73 @@ export default function LiveGlobe() {
     return () => ro.disconnect();
   }, []);
 
-  // Enable auto-rotation once the globe is mounted.
+  // Custom transparent globe material (sea = glass) + inject the spinning coin
   useEffect(() => {
     if (!GlobeCmp || !globeRef.current) return;
+
+    // Make the sphere itself nearly invisible — just a glass tint for the orb.
+    const glassMat = new THREE.MeshPhongMaterial({
+      color: new THREE.Color('#0b1a2e'),
+      transparent: true,
+      opacity: 0.18,
+      shininess: 60,
+      specular: new THREE.Color('#f7931a'),
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    globeRef.current.globeMaterial?.(glassMat);
+
+    // Controls: gentle auto-rotation
     const controls = globeRef.current.controls?.();
-    if (!controls) return;
-    controls.autoRotate = !reduced;
-    controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    // Slight initial tilt for a more "planet" feel
-    globeRef.current.pointOfView?.({ lat: 15, lng: -30, altitude: 2.2 }, 0);
+    if (controls) {
+      controls.autoRotate = !reduced;
+      controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
+      controls.enableZoom = false;
+      controls.enablePan = false;
+    }
+    globeRef.current.pointOfView?.({ lat: 15, lng: -30, altitude: 2.4 }, 0);
+
+    // Inject the BTC 21M coin into the scene at the globe's center.
+    const scene: THREE.Scene | undefined = globeRef.current.scene?.();
+    if (scene && !coinRef.current) {
+      const c = buildCoin();
+      coinRef.current = c;
+      scene.add(c.pivot);
+      // A warm rim light helps the metallic coin pop through the glass shell.
+      const rim = new THREE.PointLight('#f7931a', 1.2, 800);
+      rim.position.set(0, 0, 200);
+      scene.add(rim);
+      (c.pivot.userData as any).rim = rim;
+
+      // Animation loop: spin the coin around the world Y axis (classic coin spin).
+      const spin = () => {
+        if (coinRef.current) {
+          coinRef.current.pivot.rotation.y += reduced ? 0 : 0.012;
+        }
+        rafRef.current = requestAnimationFrame(spin);
+      };
+      rafRef.current = requestAnimationFrame(spin);
+    }
+
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      const sceneNow: THREE.Scene | undefined = globeRef.current?.scene?.();
+      if (coinRef.current) {
+        if (sceneNow) {
+          sceneNow.remove(coinRef.current.pivot);
+          const rim = (coinRef.current.pivot.userData as any).rim as THREE.PointLight | undefined;
+          if (rim) sceneNow.remove(rim);
+        }
+        coinRef.current.dispose();
+        coinRef.current = null;
+      }
+      // Dispose the glass material on unmount
+      glassMat.dispose();
+    };
   }, [GlobeCmp, reduced]);
 
-  // React to live trades: only ≥ MIN_BTC, side=buy. Pan the camera, push a
-  // ring, mark the matching accumulation point as pulsing, then resume rotate.
+  // React to live trades
   useEffect(() => {
     if (!trades.length) return;
     const newest = trades[trades.length - 1];
@@ -107,7 +274,6 @@ export default function LiveGlobe() {
     lastSeenTsRef.current = newest.ts;
 
     const now = Date.now();
-
     setLastBigBuy(newest);
 
     setRings((prev) => {
@@ -124,21 +290,18 @@ export default function LiveGlobe() {
       return next.length > MAX_RINGS ? next.slice(-MAX_RINGS) : next;
     });
 
-    // Pulse the matching accumulation point (if any)
     const match = ACCUMULATION.find((p) => p.matchExchange === newest.exchange);
     if (match) {
       setPulsing((prev) => ({ ...prev, [match.id]: now }));
     }
 
-    // Camera focus
     if (globeRef.current && !reduced) {
       const controls = globeRef.current.controls?.();
       if (controls) controls.autoRotate = false;
       globeRef.current.pointOfView?.(
-        { lat: newest.lat, lng: newest.lon, altitude: 2 },
+        { lat: newest.lat, lng: newest.lon, altitude: 2.2 },
         POV_TRANSITION_MS,
       );
-
       if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
       focusTimerRef.current = setTimeout(() => {
         if (globeRef.current) {
@@ -149,7 +312,7 @@ export default function LiveGlobe() {
     }
   }, [trades, reduced]);
 
-  // Periodic GC.
+  // Periodic GC
   useEffect(() => {
     const id = setInterval(() => {
       const now = Date.now();
@@ -170,8 +333,6 @@ export default function LiveGlobe() {
     return () => clearInterval(id);
   }, []);
 
-  // Static accumulation layer with reactivity baked into the data so the
-  // globe knows when to re-render the changed ones.
   const displayPoints = useMemo<DisplayPoint[]>(
     () =>
       ACCUMULATION.map((p) => ({
@@ -195,17 +356,21 @@ export default function LiveGlobe() {
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
-            globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-            bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
             atmosphereColor="#f7931a"
-            atmosphereAltitude={0.18}
+            atmosphereAltitude={0.22}
             showAtmosphere
-            // Accumulation points (always visible)
+            // Country polygons (the only "earth" visual now — oceans stay clear)
+            polygonsData={countries}
+            polygonAltitude={0.006}
+            polygonCapColor={() => 'rgba(247, 147, 26, 0.65)'}
+            polygonSideColor={() => 'rgba(247, 147, 26, 0.2)'}
+            polygonStrokeColor={() => 'rgba(255, 200, 120, 0.55)'}
+            // Accumulation points
             pointsData={displayPoints}
             pointLat={(d: DisplayPoint) => d.lat}
             pointLng={(d: DisplayPoint) => d.lng}
             pointColor={(d: DisplayPoint) => d.color}
-            pointAltitude={(d: DisplayPoint) => (d.pulsing ? 0.05 : 0.01)}
+            pointAltitude={(d: DisplayPoint) => (d.pulsing ? 0.07 : 0.02)}
             pointRadius={(d: DisplayPoint) => (d.pulsing ? d.size * 1.6 : d.size)}
             pointResolution={8}
             pointLabel={(d: DisplayPoint) =>
@@ -227,7 +392,6 @@ export default function LiveGlobe() {
         )}
       </div>
 
-      {/* Last big buy banner */}
       <div className="mt-4 w-full max-w-md min-h-[42px] px-4 py-2 rounded-xl border border-line bg-bg-card/60 backdrop-blur flex items-center justify-center text-center">
         {lastBigBuy ? (
           <div className="text-xs font-mono flex flex-wrap items-center gap-x-2 gap-y-0.5 justify-center">
@@ -248,7 +412,6 @@ export default function LiveGlobe() {
         )}
       </div>
 
-      {/* Legend */}
       <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-mono text-ink-dim">
         {(Object.entries(CATEGORY_COLOR) as Array<[keyof typeof CATEGORY_COLOR, string]>).map(([key, color]) => (
           <span key={key} className="inline-flex items-center gap-1.5">
@@ -262,8 +425,8 @@ export default function LiveGlobe() {
       <p className="mt-2 max-w-md text-center text-[10px] leading-relaxed text-ink-dim">
         {ACCUMULATION.length} ubicaciones · {formatBtc(TOTAL_TRACKED_BTC)} acumulados.
         Datos de DOJ, BitcoinTreasuries y análisis on-chain (~Q2 2026). El globo
-        gira automáticamente y enfoca cada compra ≥ 1 ₿ que llega vía WebSocket
-        a Binance, Coinbase, Kraken, Bitstamp y Bitso.
+        gira y enfoca cada compra ≥ 1 ₿ que llega vía WebSocket a Binance, Coinbase,
+        Kraken, Bitstamp y Bitso. En el núcleo, el límite inmutable: 21 millones.
       </p>
     </div>
   );
