@@ -323,16 +323,9 @@ export default function LiveGlobe() {
     const scene: THREE.Scene | undefined = globeRef.current.scene?.();
     if (scene) scene.background = null;
 
-    // Replace the globe sphere material with one that's truly invisible —
-    // `showGlobe={false}` alone leaves a backside-visible sphere in some
-    // builds, which reads as a "dark disc" behind the continents.
-    const invisibleGlobe = new THREE.MeshBasicMaterial({
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    });
-    globeRef.current.globeMaterial?.(invisibleGlobe);
+    // The globe sphere is hidden by showGlobe={false} in JSX. We don't
+    // touch globeMaterial here because in this version of react-globe.gl
+    // it's only available as a JSX prop, not as a runtime setter.
 
     // Environment map: a tiny procedural cube renders the scene as it is and
     // then PMREMGenerator turns it into the reflection map for the gold coin.
@@ -520,9 +513,8 @@ export default function LiveGlobe() {
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
-            // Globe sphere stays but its material is replaced with an
-            // invisible one inside the effect hook above.
-            showGlobe
+            // Globe sphere hidden — only land polygons + atmosphere render.
+            showGlobe={false}
             atmosphereColor="#f7931a"
             atmosphereAltitude={0.22}
             showAtmosphere
