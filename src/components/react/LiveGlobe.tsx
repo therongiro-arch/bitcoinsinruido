@@ -235,12 +235,12 @@ function buildEarth(features: any[]): {
   });
 
   const mesh = new THREE.Mesh(geo, mat);
-  // three-globe's accumulation points are placed using a longitude convention
-  // that maps (lat=0, lng=0) to the world -X axis. The default three.js
-  // SphereGeometry UV mapping puts texture u=0 at world -X, so our equirect
-  // canvas (Greenwich in the middle) ends up offset by 180° unless we rotate
-  // the sphere itself. This rotation lines continents up with the points.
-  mesh.rotation.y = Math.PI;
+  // three-globe uses theta = (90 - lng) * π/180 to place markers, which puts
+  // Greenwich at world +Z. The default three.js SphereGeometry UV mapping puts
+  // the centre of an equirectangular texture (Greenwich) at world +X. So
+  // markers and continents are 90° apart around Y unless we rotate the mesh
+  // by −π/2. Verified mathematically against three-globe v2.41 source.
+  mesh.rotation.y = -Math.PI / 2;
   return {
     mesh,
     dispose: () => {
