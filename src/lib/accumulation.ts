@@ -48,7 +48,11 @@ export const ACCUMULATION: AccumulationPoint[] = [
   { id: 'binance', name: 'Binance', city: 'BVI / Global', country: 'Internacional', lat: 18.4208, lng: -64.6403, btc: 580_000, category: 'exchange', matchExchange: 'binance' },
   { id: 'bitfinex', name: 'Bitfinex', city: 'Hong Kong', country: 'HK', lat: 22.3193, lng: 114.1694, btc: 380_000, category: 'exchange' },
   { id: 'kraken', name: 'Kraken', city: 'San Francisco', country: 'EE.UU.', lat: 37.78, lng: -122.50, btc: 220_000, category: 'exchange', matchExchange: 'kraken' },
-  { id: 'okx', name: 'OKX', city: 'Seychelles', country: 'Seychelles', lat: -4.6796, lng: 55.4920, btc: 200_000, category: 'exchange' },
+  // OKX está registrada en Seychelles pero la sede operativa principal es
+  // Hong Kong (licencia oficial 2023). Las Seychelles son demasiado pequeñas
+  // para verse en el mapa 110m, por eso usamos Hong Kong con un ligero
+  // offset respecto a Bitfinex.
+  { id: 'okx', name: 'OKX', city: 'Hong Kong', country: 'HK', lat: 22.4, lng: 114.0, btc: 200_000, category: 'exchange' },
   { id: 'gemini', name: 'Gemini', city: 'Nueva York', country: 'EE.UU.', lat: 40.7128, lng: -74.0060, btc: 90_000, category: 'exchange' },
   { id: 'bitstamp', name: 'Bitstamp', city: 'Luxemburgo', country: 'UE', lat: 49.6116, lng: 6.1319, btc: 30_000, category: 'exchange', matchExchange: 'bitstamp' },
   { id: 'bitso', name: 'Bitso', city: 'CDMX', country: 'México', lat: 19.4326, lng: -99.1332, btc: 3_500, category: 'exchange', matchExchange: 'bitso' },
