@@ -4,26 +4,26 @@ import MiningCounter from './react/MiningCounter.tsx';
 ---
 
 <section class="relative overflow-hidden border-b border-line">
-  <div class="container-wide pt-14 pb-10 sm:pt-20 sm:pb-16 grid lg:grid-cols-2 gap-10 items-center">
-    <div>
-      <p class="chip-btc mb-5 font-mono">PROTOCOLO · NO PRECIO · LATAM</p>
+  <div class="container-wide pt-10 pb-8 sm:pt-16 sm:pb-12 lg:pt-20 lg:pb-16 grid lg:grid-cols-2 gap-8 sm:gap-10 items-center">
+    <div class="order-1">
+      <p class="chip-btc mb-4 sm:mb-5 font-mono">PROTOCOLO · NO PRECIO · LATAM</p>
       <h1 class="text-display font-semibold tracking-tight text-balance">
         Bitcoin sin <span class="text-btc">ruido</span>.
       </h1>
-      <p class="mt-6 max-w-xl text-lg sm:text-xl text-ink-muted text-pretty leading-relaxed">
+      <p class="mt-4 sm:mt-6 max-w-xl text-base sm:text-lg lg:text-xl text-ink-muted text-pretty leading-relaxed">
         Explicado desde el protocolo: UTXOs, nodos, capas, criptografía. Sin predicciones, sin hype, sin clickbait. Solo la señal.
       </p>
-      <div class="mt-8 flex flex-wrap gap-3">
+      <div class="mt-6 sm:mt-8 flex flex-wrap gap-2.5 sm:gap-3">
         <a href="/articulos" class="btn-primary">Leer artículos</a>
         <a href="/news" class="btn">BitcoinNews →</a>
       </div>
 
-      <div class="mt-10">
+      <div class="mt-8 sm:mt-10">
         <MiningCounter client:idle />
       </div>
     </div>
 
-    <div class="relative min-h-[340px] sm:min-h-[420px] lg:min-h-[520px]">
+    <div class="relative w-full max-w-md mx-auto lg:max-w-none order-2 min-h-[280px] sm:min-h-[380px] lg:min-h-[520px]">
       <LiveGlobe client:visible />
     </div>
   </div>

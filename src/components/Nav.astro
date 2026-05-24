@@ -13,33 +13,33 @@ const links = [
 ---
 
 <header class="sticky top-0 z-40 border-b border-line/60 nav-glass">
-  <nav class="container-wide flex items-center justify-between h-14">
-    <a href="/" class="flex items-center gap-2 group" aria-label="Bitcoin Sin Ruido — Inicio">
+  <nav class="container-wide flex items-center justify-between gap-2 h-14">
+    <a href="/" class="flex items-center gap-2 group shrink-0" aria-label="Bitcoin Sin Ruido — Inicio">
       <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-btc text-bg font-bold text-sm leading-none">₿</span>
-      <span class="font-semibold tracking-tight text-ink group-hover:text-btc transition">
-        Bitcoin <span class="text-ink-muted font-normal">Sin Ruido</span>
+      <span class="font-semibold tracking-tight text-ink group-hover:text-btc transition leading-none">
+        <span class="hidden xs:inline">Bitcoin <span class="text-ink-muted font-normal">Sin Ruido</span></span>
+        <span class="xs:hidden">BSR</span>
       </span>
     </a>
 
-    <div class="flex items-center gap-1 sm:gap-2">
-      <ul class="hidden md:flex items-center gap-1 sm:gap-3 text-sm">
-        {links.map(({ href, label }) => (
-          <li>
-            <a
-              href={href}
-              class:list={[
-                'px-2 sm:px-3 py-1.5 rounded-md transition',
-                isActive(href)
-                  ? 'text-btc'
-                  : 'text-ink-muted hover:text-ink',
-              ]}
-              aria-current={isActive(href) ? 'page' : undefined}
-            >
-              {label}
-            </a>
-          </li>
-        ))}
-      </ul>
+    <ul class="hidden lg:flex items-center gap-1 text-sm">
+      {links.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            class:list={[
+              'px-3 py-1.5 rounded-md transition',
+              isActive(href) ? 'text-btc' : 'text-ink-muted hover:text-ink',
+            ]}
+            aria-current={isActive(href) ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="flex items-center gap-1.5 shrink-0">
       <ThemeToggle />
       <a
         href="https://x.com/BitcoinSinRuido"
@@ -57,15 +57,69 @@ const links = [
         href="https://paragraph.com/@bitcoinsinruido"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-1.5 h-9 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold bg-btc text-bg hover:opacity-90 transition whitespace-nowrap"
+        aria-label="Newsletter gratis en Paragraph"
+        title="Newsletter gratis"
+        class="inline-flex items-center justify-center gap-1.5 h-9 w-9 sm:w-auto sm:px-4 rounded-full text-sm font-semibold bg-btc text-bg hover:opacity-90 transition whitespace-nowrap"
       >
-        <span class="hidden sm:inline">Newsletter</span>
-        <span class="sm:hidden">News</span>
-        <span class="text-bg/70 hidden sm:inline">gratis</span>
-        <svg viewBox="0 0 16 16" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3 8h10M9 4l4 4-4 4" />
+        <svg viewBox="0 0 24 24" class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6h16v12H4z" />
+          <path d="M4 6l8 7 8-7" />
         </svg>
+        <span class="hidden sm:inline">Newsletter</span>
+        <span class="hidden md:inline text-bg/70 font-normal">gratis</span>
       </a>
+      <button
+        type="button"
+        id="mobile-nav-toggle"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        class="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-line text-ink-muted hover:text-btc hover:border-btc/60 transition"
+      >
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="7" x2="21" y2="7" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="17" x2="21" y2="17" />
+        </svg>
+      </button>
     </div>
   </nav>
+
+  <div id="mobile-nav" class="lg:hidden hidden border-t border-line/60 nav-glass">
+    <ul class="container-wide flex flex-col py-3">
+      {links.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            class:list={[
+              'block px-2 py-2.5 text-base rounded-md transition',
+              isActive(href) ? 'text-btc' : 'text-ink hover:text-btc',
+            ]}
+            aria-current={isActive(href) ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const btn = document.getElementById('mobile-nav-toggle');
+      const menu = document.getElementById('mobile-nav');
+      if (!btn || !menu) return;
+      btn.addEventListener('click', () => {
+        const open = menu.classList.toggle('hidden') === false;
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      // Close on link click for SPA-feel
+      menu.querySelectorAll('a').forEach((a) =>
+        a.addEventListener('click', () => {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded', 'false');
+        }),
+      );
+    })();
+  </script>
 </header>

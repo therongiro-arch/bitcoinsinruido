@@ -635,14 +635,17 @@
    ============================================================ */
 .bsr-mining-card {
   position: relative;
-  padding: 22px;
-  border-radius: 18px;
+  padding: 16px;
+  border-radius: 16px;
   background: rgb(var(--bg-card) / 0.6);
   border: 1px solid rgb(var(--line));
   backdrop-filter: saturate(180%) blur(14px);
   -webkit-backdrop-filter: saturate(180%) blur(14px);
   overflow: hidden;
   transition: border-color 220ms ease;
+}
+@media (min-width: 640px) {
+  .bsr-mining-card { padding: 22px; border-radius: 18px; }
 }
 .bsr-mining-card:hover {
   border-color: rgba(247, 147, 26, 0.4);
@@ -705,11 +708,11 @@
 .bsr-mining-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 14px;
 }
-@media (max-width: 480px) {
-  .bsr-mining-grid { grid-template-columns: 1fr; gap: 12px; }
+@media (max-width: 420px) {
+  .bsr-mining-grid { grid-template-columns: 1fr; gap: 10px; }
 }
 
 .bsr-mining-stat {
@@ -726,12 +729,13 @@
 }
 .bsr-mining-value {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: clamp(22px, 2.8vw, 30px);
+  font-size: clamp(18px, 5vw, 26px);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.01em;
   color: rgb(var(--ink));
   font-variant-numeric: tabular-nums;
+  word-break: break-word;
 }
 .bsr-mining-value.mined { color: rgb(247, 147, 26); }
 .bsr-mining-value span {
