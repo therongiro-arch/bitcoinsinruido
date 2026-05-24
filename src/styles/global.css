@@ -277,6 +277,136 @@
 }
 
 /* ============================================================
+   Home background — mining network illustration + data flow.
+   Treated with the same visual language as the LiveGlobe: warm orange
+   atmospheric glow, soft mask, low saturation so it reads as backdrop.
+   ============================================================ */
+.home-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Scroll-driven intensity multiplier set by inline script */
+  --bg-opacity: 0.18;
+  /* Soft radial mask matches the globe's atmospheric vignette */
+  -webkit-mask-image: radial-gradient(
+    ellipse 75% 68% at 50% 48%,
+    #000 18%,
+    rgba(0,0,0,0.55) 60%,
+    transparent 96%
+  );
+          mask-image: radial-gradient(
+    ellipse 75% 68% at 50% 48%,
+    #000 18%,
+    rgba(0,0,0,0.55) 60%,
+    transparent 96%
+  );
+}
+.home-bg.active { opacity: 1; }
+
+/* Bitcoin atmosphere glow underneath the image, matching the orange
+   ring around the globe. */
+.home-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 50% 50%,
+      rgba(247, 147, 26, 0.18) 0%,
+      rgba(247, 147, 26, 0.06) 45%,
+      transparent 80%
+    );
+  pointer-events: none;
+}
+:root:not(.dark) .home-bg::before {
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 50% 50%,
+      rgba(247, 147, 26, 0.10) 0%,
+      rgba(247, 147, 26, 0.03) 45%,
+      transparent 80%
+    );
+}
+
+.home-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: var(--bg-opacity, 0.3);
+  transition: opacity 240ms ease-out, filter 240ms ease-out;
+  /* "Tenue": low saturation, light blur, slight warm tint to fold the
+     image into the same orange palette as the globe atmosphere. */
+  filter: saturate(0.55) brightness(0.85) contrast(1.05) blur(0.5px);
+  transform: scale(1.04);
+}
+:root:not(.dark) .home-bg-img {
+  filter: saturate(0.4) brightness(1.05) contrast(0.92) blur(0.5px);
+  mix-blend-mode: multiply;
+}
+
+/* Subtle dark→transparent overlay so the centre of the image yields
+   to the foreground content without going fully invisible. */
+.home-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 50% 45% at 50% 50%,
+    rgba(0, 0, 0, 0.55) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+:root:not(.dark) .home-bg::after {
+  background: radial-gradient(
+    ellipse 50% 45% at 50% 50%,
+    rgba(255, 255, 255, 0.55) 0%,
+    transparent 70%
+  );
+}
+
+.home-bg-flow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: calc(0.55 + var(--bg-opacity, 0.3) * 0.5);
+  transition: opacity 240ms ease-out;
+}
+:root:not(.dark) .home-bg-flow {
+  mix-blend-mode: multiply;
+  opacity: calc(0.35 + var(--bg-opacity, 0.3) * 0.4);
+}
+
+.bsr-flow-dot {
+  filter: drop-shadow(0 0 8px rgba(247, 147, 26, 0.75));
+}
+.bsr-flow-trail {
+  fill: none;
+  stroke: rgba(247, 147, 26, 0.18);
+  stroke-width: 1;
+  stroke-dasharray: 3 6;
+  animation: bsr-flow-trail 24s linear infinite;
+}
+@keyframes bsr-flow-trail { to { stroke-dashoffset: -180; } }
+
+@media (max-height: 640px) {
+  .home-bg { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bsr-flow-dot animateMotion { animation: none; }
+  .bsr-flow-trail { animation: none; }
+}
+
+/* ============================================================
    Chain background — animated blockchain at homepage bottom
    ============================================================ */
 .chain-bg {

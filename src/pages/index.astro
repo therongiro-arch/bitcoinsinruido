@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import ArticleCard from '../components/ArticleCard.astro';
-import ChainBackground from '../components/ChainBackground.astro';
+import HomeBackground from '../components/HomeBackground.astro';
 import NewsFeed from '../components/react/NewsFeed.tsx';
 
 const articulos = (await getCollection('articulos', ({ data }) => !data.draft))
@@ -12,7 +12,7 @@ const articulos = (await getCollection('articulos', ({ data }) => !data.draft))
 ---
 
 <BaseLayout>
-  <ChainBackground />
+  <HomeBackground />
   <Hero />
 
   <!-- Últimos artículos -->

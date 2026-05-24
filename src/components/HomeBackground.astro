@@ -1,0 +1,107 @@
+---
+// Home background: full-bleed mining network illustration with an SVG
+// overlay of animated "data packets" travelling along arc paths to
+// simulate live communication between nodes and the world. The whole
+// stack fades in progressively as the user scrolls down the page.
+---
+
+<div class="home-bg" aria-hidden="true">
+  <img
+    class="home-bg-img"
+    src="/data/mining-network.png"
+    alt=""
+    loading="eager"
+    decoding="async"
+  />
+
+  {/* Animated data-flow overlay (SVG). Subtle orange dots travelling
+      along arcs that loosely match the illustration's circuit lines. */}
+  <svg
+    class="home-bg-flow"
+    viewBox="0 0 1200 900"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    <defs>
+      {/* Six arc paths — three going up to the world map, three down
+          between the mining rigs and the central coin. */}
+      <path id="bsr-flow-1" d="M120 760 Q 420 540 600 540" />
+      <path id="bsr-flow-2" d="M1080 760 Q 780 540 600 540" />
+      <path id="bsr-flow-3" d="M300 820 Q 470 700 600 600" />
+      <path id="bsr-flow-4" d="M900 820 Q 730 700 600 600" />
+      <path id="bsr-flow-5" d="M600 540 Q 460 360 280 240" />
+      <path id="bsr-flow-6" d="M600 540 Q 740 360 920 240" />
+      <path id="bsr-flow-7" d="M600 540 Q 600 320 600 180" />
+      <path id="bsr-flow-8" d="M300 240 Q 600 380 900 240" />
+
+      <radialGradient id="bsr-flow-glow">
+        <stop offset="0%" stop-color="#fde68a" stop-opacity="1" />
+        <stop offset="50%" stop-color="#f7931a" stop-opacity="0.8" />
+        <stop offset="100%" stop-color="#f7931a" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    {/* Each <use> places a glowing dot that walks the path forever. */}
+    {[
+      { p: '#bsr-flow-1', dur: '7s', delay: '0s' },
+      { p: '#bsr-flow-2', dur: '8s', delay: '-2s' },
+      { p: '#bsr-flow-3', dur: '6.5s', delay: '-1s' },
+      { p: '#bsr-flow-4', dur: '6s', delay: '-3s' },
+      { p: '#bsr-flow-5', dur: '9s', delay: '-1.5s' },
+      { p: '#bsr-flow-6', dur: '8.5s', delay: '-4s' },
+      { p: '#bsr-flow-7', dur: '7.5s', delay: '-0.5s' },
+      { p: '#bsr-flow-8', dur: '11s', delay: '-3.2s' },
+      { p: '#bsr-flow-1', dur: '7s', delay: '-3.5s' },
+      { p: '#bsr-flow-2', dur: '8s', delay: '-6s' },
+      { p: '#bsr-flow-5', dur: '9s', delay: '-5.5s' },
+      { p: '#bsr-flow-8', dur: '11s', delay: '-7s' },
+    ].map((f, i) => (
+      <circle r="3.4" fill="url(#bsr-flow-glow)" class="bsr-flow-dot">
+        <animateMotion
+          dur={f.dur}
+          begin={f.delay}
+          repeatCount="indefinite"
+          rotate="auto"
+        >
+          <mpath href={f.p} />
+        </animateMotion>
+      </circle>
+    ))}
+
+    {/* Faint trails of the same paths so the flow lines feel "drawn" */}
+    {['#bsr-flow-1','#bsr-flow-2','#bsr-flow-3','#bsr-flow-4','#bsr-flow-5','#bsr-flow-6','#bsr-flow-7','#bsr-flow-8'].map((p) => (
+      <use href={p} class="bsr-flow-trail" />
+    ))}
+  </svg>
+</div>
+
+<script is:inline>
+  (() => {
+    const bg = document.querySelector('.home-bg');
+    if (!bg) return;
+
+    // Trigger initial fade-in
+    requestAnimationFrame(() => bg.classList.add('active'));
+
+    // Progressive intensity as the user scrolls down the page.
+    // 0% scroll  → opacity 0.18 (subtle)
+    // 100% scroll → opacity 0.62 (more present)
+    const baseOpacity = 0.18;
+    const peakOpacity = 0.62;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const p = Math.min(1, Math.max(0, window.scrollY / max));
+        const opacity = baseOpacity + (peakOpacity - baseOpacity) * p;
+        bg.style.setProperty('--bg-opacity', opacity.toFixed(3));
+        ticking = false;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
