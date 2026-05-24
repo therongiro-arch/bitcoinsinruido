@@ -31,7 +31,7 @@ export interface AccumulationPoint {
 }
 
 export const CATEGORY_COLOR: Record<AccumulationCategory, string> = {
-  exchange: '#f7931a',   // Bitcoin orange
+  exchange: '#ef4444',   // red — pops against the orange continents
   government: '#3b82f6', // blue
   company: '#10b981',    // green
 };
