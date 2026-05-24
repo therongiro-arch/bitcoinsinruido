@@ -323,6 +323,17 @@ export default function LiveGlobe() {
     const scene: THREE.Scene | undefined = globeRef.current.scene?.();
     if (scene) scene.background = null;
 
+    // Replace the globe sphere material with one that's truly invisible —
+    // `showGlobe={false}` alone leaves a backside-visible sphere in some
+    // builds, which reads as a "dark disc" behind the continents.
+    const invisibleGlobe = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    globeRef.current.globeMaterial?.(invisibleGlobe);
+
     // Environment map: a tiny procedural cube renders the scene as it is and
     // then PMREMGenerator turns it into the reflection map for the gold coin.
     // This is what gives the metal its "polished" look without needing an HDR.
@@ -482,6 +493,21 @@ export default function LiveGlobe() {
     [pulsing],
   );
 
+  // DoubleSide unlit material for country polygons — keeps both the
+  // front-facing and back-facing continent caps in full orange so the
+  // far hemisphere doesn't appear as a dark crescent through the oceans.
+  const polygonMat = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: new THREE.Color('#f7931a'),
+        transparent: true,
+        opacity: 0.92,
+        side: THREE.DoubleSide,
+        depthWrite: true,
+      }),
+    [],
+  );
+
   const connectedCount = Object.values(connected).filter(Boolean).length;
   const totalExchanges = 5;
 
@@ -494,16 +520,19 @@ export default function LiveGlobe() {
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
-            // Sphere hidden — only land polygons + atmosphere render. The
-            // coin in the center stays visible through the empty oceans.
-            showGlobe={false}
+            // Globe sphere stays but its material is replaced with an
+            // invisible one inside the effect hook above.
+            showGlobe
             atmosphereColor="#f7931a"
             atmosphereAltitude={0.22}
             showAtmosphere
-            // Country polygons floating at globe radius
+            // Country polygons floating at globe radius — DoubleSide
+            // material so the back-facing continents on the far side of
+            // the globe don't appear as a dark silhouette through the
+            // transparent oceans.
             polygonsData={countries}
             polygonAltitude={0.008}
-            polygonCapColor={() => 'rgba(247, 147, 26, 0.92)'}
+            polygonCapMaterial={polygonMat}
             polygonSideColor={() => 'rgba(247, 147, 26, 0.35)'}
             polygonStrokeColor={() => 'rgba(255, 210, 140, 0.85)'}
             // Accumulation points
