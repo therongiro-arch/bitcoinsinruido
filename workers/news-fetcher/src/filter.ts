@@ -11,9 +11,12 @@ const PRICE_PATTERNS = [
   /\b(dump|pump)\b/i,
   /\bwhale alert\b/i,
   /\bskyrocket(ed|s|ing)?\b/i,
+  /\b(soar|surge|plunge|tank|rally)(ed|s|ing)?\b/i,
+  /\bstuck\s+in\s+(downtrend|uptrend|range)\b/i,
   /\bbreakout\b/i,
   /\bmillionaire\b/i,
   /\b(target|forecast)\s+\$\d/i,
+  /\b\d{1,3}%\s+(gain|loss|drop|rise|jump|surge)/i,
 ];
 
 const CLICKBAIT_PATTERNS = [

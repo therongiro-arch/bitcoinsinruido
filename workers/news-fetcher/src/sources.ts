@@ -19,6 +19,7 @@ export const SOURCES: SourceConfig[] = [
     name: 'Bitcoinist',
     url: 'https://bitcoinist.com/feed/',
     lang: 'en',
+    topicalFilter: true,
   },
   {
     name: 'Bitcoin Optech',
