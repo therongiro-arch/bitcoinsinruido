@@ -244,12 +244,17 @@ function buildEarth(features: any[]): {
     color: new THREE.Color('#f7931a'),
     alphaMap: alphaTex,
     transparent: true,
-    side: THREE.DoubleSide,
+    // FrontSide so back continents don't ghost through and create the
+    // illusion of a solid sphere behind the visible land masses.
+    side: THREE.FrontSide,
     alphaTest: 0.4,
     metalness: 0.1,
     roughness: 0.85,
     emissive: new THREE.Color('#a85a05'),
     emissiveIntensity: 0.18,
+    // Ignore the scene environment map (used to light the coin) so the
+    // earth doesn't pick up a warm orange wash that reads as a halo.
+    envMapIntensity: 0,
   });
 
   const mesh = new THREE.Mesh(geo, mat);
@@ -690,9 +695,10 @@ export default function LiveGlobe() {
             // injected into the scene, which gives transparent oceans and
             // opaque continents in a single mesh (no back-face issues).
             showGlobe={false}
-            atmosphereColor="#f7931a"
-            atmosphereAltitude={0.22}
-            showAtmosphere
+            // Atmosphere off: in light mode the orange halo desaturates into
+            // a pale disc behind the continents that breaks the "floating
+            // continents" illusion. Without it the oceans are fully see-through.
+            showAtmosphere={false}
             // Accumulation points
             pointsData={displayPoints}
             pointLat={(d: DisplayPoint) => d.lat}
