@@ -175,25 +175,36 @@ def get_next_tweet(queue):
     return TWEETS[idx], idx
 
 
+def generate_only(text, tweet_idx):
+    """Genera imagen y guarda texto sin publicar. Para usar con GitHub Actions."""
+    img_path = generate_card(tweet_idx, output_path="tweet_card.png")
+    with open("tweet_content.txt", "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Contenido generado:")
+    print("─" * 40)
+    print(text)
+    print("─" * 40)
+    print(f"Caracteres: {len(text)}/280")
+    print(f"Imagen: {img_path}")
+    print(f"Texto: tweet_content.txt")
+
+
 def publish(text, tweet_idx, preview=False):
     if preview:
-        print(f"\n{'─'*40}")
+        print("\n" + "─" * 40)
         print("PREVIEW (no publicado):")
-        print(f"{'─'*40}")
+        print("─" * 40)
         print(text)
-        print(f"{'─'*40}")
+        print("─" * 40)
         print(f"Caracteres: {len(text)}/280")
-        # Generar preview de imagen
         img_path = generate_card(tweet_idx, output_path="preview_card.png")
         print(f"Imagen generada: {img_path}")
         return
 
-    # Generar imagen de marca
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
         img_path = tmp.name
     generate_card(tweet_idx, output_path=img_path)
 
-    # Subir imagen con OAuth 1.0a (media upload requiere v1.1)
     auth = tweepy.OAuth1UserHandler(
         CONSUMER_KEY, CONSUMER_SECRET,
         ACCESS_TOKEN, ACCESS_TOKEN_SECRET
@@ -202,7 +213,6 @@ def publish(text, tweet_idx, preview=False):
     media = api_v1.media_upload(filename=img_path)
     os.unlink(img_path)
 
-    # Publicar tweet con imagen
     client = tweepy.Client(
         consumer_key=CONSUMER_KEY,
         consumer_secret=CONSUMER_SECRET,
@@ -211,20 +221,24 @@ def publish(text, tweet_idx, preview=False):
     )
     response = client.create_tweet(text=text, media_ids=[media.media_id])
     tweet_id = response.data["id"]
-    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] ✓ Tweet publicado: https://x.com/BitcoinSinRuido/status/{tweet_id}")
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Tweet publicado: https://x.com/BitcoinSinRuido/status/{tweet_id}")
     return tweet_id
 
 
 def main():
-    preview = "--preview" in sys.argv
+    preview  = "--preview" in sys.argv
+    gen_only = "--generate-only" in sys.argv
 
     queue = load_queue()
     text, idx = get_next_tweet(queue)
 
-    publish(text, idx, preview=preview)
-
-    if not preview:
+    if gen_only:
+        generate_only(text, idx)
         save_queue(queue)
+    else:
+        publish(text, idx, preview=preview)
+        if not preview:
+            save_queue(queue)
 
 
 if __name__ == "__main__":
