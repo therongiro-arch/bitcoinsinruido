@@ -1,13 +1,27 @@
-name: Generar contenido Bitcoin Sin Ruido
+name: Bitcoin Sin Ruido - Contenido automatico
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # Cada dia a las 10:00 UTC (12:00 Espana / 05:00 CDMX)
-  workflow_dispatch:       # Lanzar manualmente desde GitHub
+    - cron: '0 10 * * *'      # Diario 10:00 UTC - tweet individual
+    - cron: '0 9 * * 1'       # Lunes 09:00 UTC - hilo semanal
+  workflow_dispatch:
+    inputs:
+      tipo:
+        description: 'Tipo de contenido'
+        required: true
+        default: 'tweet'
+        type: choice
+        options:
+          - tweet
+          - hilo
 
 jobs:
-  generate:
+  tweet-diario:
+    name: Tweet diario
     runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 10 * * *') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.tipo == 'tweet')
     steps:
       - uses: actions/checkout@v4
 
@@ -38,3 +52,32 @@ jobs:
           path: tweet_queue.json
           if-no-files-found: ignore
           retention-days: 30
+
+  hilo-semanal:
+    name: Hilo semanal (lunes)
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'schedule' && github.event.schedule == '0 9 * * 1') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.tipo == 'hilo')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install tweepy python-dotenv pillow
+
+      - name: Generate weekly thread
+        run: python generate_thread.py
+
+      - name: Upload thread content
+        uses: actions/upload-artifact@v4
+        with:
+          name: hilo-semanal-${{ github.run_number }}
+          path: |
+            thread_card.png
+            thread_content.txt
+          retention-days: 14
