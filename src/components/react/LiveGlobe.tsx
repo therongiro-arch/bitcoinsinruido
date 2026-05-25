@@ -365,6 +365,7 @@ export default function LiveGlobe() {
   const coinRef = useRef<{ pivot: THREE.Group; coin: THREE.Mesh; dispose: () => void } | null>(null);
   const earthRef = useRef<{ mesh: THREE.Mesh; dispose: () => void } | null>(null);
   const rafRef = useRef<number | null>(null);
+  const [contextEpoch, setContextEpoch] = useState(0);
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
   const [size, setSize] = useState({ w: 480, h: 480 });
   const [countries, setCountries] = useState<any[]>([]);
@@ -406,7 +407,8 @@ export default function LiveGlobe() {
   }, []);
 
   // Build the alpha-masked Earth sphere as soon as countries are ready and
-  // the globe instance is mounted.
+  // the globe instance is mounted. Rebuilt on contextEpoch bump so a lost +
+  // restored WebGL context gets a fresh mesh on the new scene.
   useEffect(() => {
     if (!GlobeCmp || !globeRef.current || !countries.length) return;
     const scene: THREE.Scene | undefined = globeRef.current.scene?.();
@@ -425,7 +427,7 @@ export default function LiveGlobe() {
         earthRef.current = null;
       }
     };
-  }, [GlobeCmp, countries]);
+  }, [GlobeCmp, countries, contextEpoch]);
 
   // Responsive sizing
   useEffect(() => {
@@ -440,6 +442,39 @@ export default function LiveGlobe() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // WebGL context loss handling. After long idle / GPU reset / device sleep,
+  // Chromium can lose the WebGL context, leaving a blank canvas (which the
+  // browser then paints as a broken-image placeholder). We must call
+  // preventDefault on `webglcontextlost` for the context to be eligible for
+  // restoration — without it, the canvas is dead forever.
+  useEffect(() => {
+    if (!GlobeCmp || !globeRef.current) return;
+    const renderer: THREE.WebGLRenderer | undefined = globeRef.current.renderer?.();
+    const canvas = renderer?.domElement;
+    if (!canvas) return;
+
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      // Drop refs so the next effect run rebuilds against the fresh context.
+      coinRef.current?.dispose();
+      coinRef.current = null;
+      earthRef.current?.dispose();
+      earthRef.current = null;
+    };
+    const onRestored = () => {
+      setContextEpoch((n) => n + 1);
+    };
+
+    canvas.addEventListener('webglcontextlost', onLost, false);
+    canvas.addEventListener('webglcontextrestored', onRestored, false);
+    return () => {
+      canvas.removeEventListener('webglcontextlost', onLost);
+      canvas.removeEventListener('webglcontextrestored', onRestored);
+    };
+  }, [GlobeCmp]);
 
   // Configure controls + inject the spinning coin. The earth sphere itself
   // is hidden via `showGlobe={false}` in JSX so the coin reads clearly.
@@ -520,7 +555,7 @@ export default function LiveGlobe() {
       (c.pivot.userData as any).hemi = hemi;
 
       const spin = () => {
-        if (coinRef.current) {
+        if (coinRef.current && document.visibilityState === 'visible') {
           coinRef.current.pivot.rotation.y += reduced ? 0 : 0.012;
         }
         rafRef.current = requestAnimationFrame(spin);
@@ -528,7 +563,18 @@ export default function LiveGlobe() {
       rafRef.current = requestAnimationFrame(spin);
     }
 
+    // When tab regains visibility, kick the controls so three-globe re-renders.
+    const onVis = () => {
+      if (document.visibilityState !== 'visible') return;
+      const r: THREE.WebGLRenderer | undefined = globeRef.current?.renderer?.();
+      const s: THREE.Scene | undefined = globeRef.current?.scene?.();
+      const cam = globeRef.current?.camera?.();
+      if (r && s && cam) r.render(s, cam);
+    };
+    document.addEventListener('visibilitychange', onVis);
+
     return () => {
+      document.removeEventListener('visibilitychange', onVis);
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
       const sceneNow: THREE.Scene | undefined = globeRef.current?.scene?.();
@@ -546,7 +592,7 @@ export default function LiveGlobe() {
       }
       if (envMap) envMap.dispose();
     };
-  }, [GlobeCmp, reduced]);
+  }, [GlobeCmp, reduced, contextEpoch]);
 
   // React to live trades
   useEffect(() => {
