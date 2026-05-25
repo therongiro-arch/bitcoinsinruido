@@ -39,16 +39,17 @@ const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
     <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
     <meta name="color-scheme" content="light dark" />
 
-    <!-- Theme bootstrap: applied before paint to avoid flash of wrong theme. -->
+    <!-- Theme bootstrap: applied before paint to avoid flash of wrong theme.
+         Default for new visitors is light; we ignore prefers-color-scheme so
+         the brand-orange light theme is what loads on the domain. If the user
+         explicitly toggled dark we respect that via localStorage. -->
     <script is:inline>
       (function () {
         try {
           var stored = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var theme = stored || (prefersDark ? 'dark' : 'light');
-          if (theme === 'dark') document.documentElement.classList.add('dark');
+          if (stored === 'dark') document.documentElement.classList.add('dark');
         } catch (_) {
-          /* fallback to default theme */
+          /* fallback to default (light) theme */
         }
       })();
     </script>
