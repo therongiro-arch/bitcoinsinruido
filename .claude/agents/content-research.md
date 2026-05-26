@@ -5,13 +5,13 @@ tools: WebSearch, WebFetch, Read, Write, Edit, Glob, Grep, Bash
 ---
 
 > **Nota de integración con este repo.** Los artículos se guardan en
-> `src/content/articulos/` y deben validar contra el schema de
-> `src/content/config.ts`. Antes de generar el MDX, lee ese archivo y usa
-> los nombres reales de los campos (`title`, `description`, `publishedAt`,
-> `updatedAt`, `tags`, `capa` ∈ {protocolo, L2, privacidad, futuro,
-> glosario}, `draft`, `cover`, `author`, `order`). El frontmatter del
-> "Fase 5" más abajo es la plantilla genérica del playbook — adáptalo a
-> ese schema o el `astro check` fallará.
+> `src/content/articulos/` y deben validar contra el schema definido en
+> `src/content/config.ts`. Antes de redactar, lee ese archivo y confirma
+> que el schema sigue siendo el documentado en la Fase 5 más abajo
+> (`publishedAt`, `capa`, `tags`, `draft`, etc.). Tras generar el MDX
+> ejecuta `npx astro check` y resuelve cualquier error antes de abrir el
+> PR. La convención de **nombre de archivo** del repo es `slug.mdx` sin
+> prefijo de fecha (ver `lightning-network.mdx`, `bitvm-y-citrea.mdx`).
 
 # Content Research Agent
 
@@ -131,58 +131,78 @@ El artículo debe construirse en torno a las respuestas de mayor impacto.
 
 ## Fase 4 — Redacción del artículo
 
-### 4.1 Estructura obligatoria
+### 4.1 Estructura sugerida
+
+Plantilla orientativa, **no obligatoria**: si el house style del repo
+contradice esta plantilla, gana el house style. Antes de redactar abre
+dos o tres artículos existentes en `src/content/articulos/` y calca el
+tono, longitud de párrafo y patrón de encabezados.
 
 ```
 # Título (claro, directo, sin clickbait)
 
-## Introducción  (~80 palabras)
-Hook que conecte con la realidad del lector. Plantear el problema o pregunta.
+## Hook + tesis  (~60-100 palabras)
+Conectar con la realidad del lector. Plantear el problema o pregunta
+y dejar caer la tesis en negrita.
 
-## ¿Qué dice la ciencia / los expertos?  (~200 palabras)
-Presentar los hallazgos más relevantes de las fuentes validadas.
-Citar con formato: (Apellido, Institución, año)
+## Lo que dicen los datos  (~150-220 palabras)
+Hallazgos más relevantes de las fuentes validadas, citados inline en
+prosa: (Fuente, año).
 
-## Lo que muchos no saben  (~150 palabras)
-Dato contraintuitivo o estudio reciente que rompe con la idea popular.
+## Lo contraintuitivo  (~120-180 palabras)
+Dato reciente que rompe con la idea popular.
 
-## Qué puedes hacer  (~150 palabras)
-Consejos o pasos accionables derivados directamente de las fuentes.
+## Qué puedes hacer / qué implica  (~100-180 palabras)
+Pasos accionables o consecuencias prácticas derivadas de las fuentes.
 
-## Conclusión  (~80 palabras)
-Síntesis del mensaje de mayor impacto. Sin alarmismo ni soluciones milagrosas.
+> Blockquote final como cierre — una sola frase memorable.
 
 ## Fuentes
-Lista numerada de todas las fuentes validadas con URL.
+Lista numerada con URLs. Solo si la naturaleza del artículo lo pide
+(piezas tesis / investigación); para explainers cortos del house
+style, las menciones inline son suficientes.
 ```
 
 ### 4.2 Reglas de redacción
 
-- Tono: **divulgativo**; lenguaje claro, sin jerga técnica sin explicar
-- Longitud total: entre **700 y 1.000 palabras**
-- Cada afirmación factual debe tener su fuente entre paréntesis
+- Tono: **divulgativo y punchy**; lenguaje claro, sin jerga técnica sin explicar
+- Longitud total: entre **500 y 1.000 palabras** (los explainers del repo rondan 400-700; las piezas-tesis pueden estirarse a 1.000)
+- Cada afirmación factual debe tener su fuente, idealmente inline en prosa con paréntesis
+- Negritas para resaltar datos concretos (números, fechas, nombres de proyectos)
 - Prohibido: clickbait, alarmismo, generalizaciones sin datos, opinión del agente
-- Usar segunda persona del plural ("podemos", "nos afecta") para cercanía
+- Usar segunda persona del plural ("podemos", "nos afecta") o tuteo según marque el house style
 
 ---
 
 ## Fase 5 — Generación del archivo para Astro
 
-Crear el archivo en formato `.mdx` con frontmatter completo:
+Crear el archivo en formato `.mdx` con frontmatter alineado al schema
+real de `src/content/config.ts`:
 
 ```markdown
 ---
-title: ""
-description: ""        # Max 160 caracteres, para SEO
-pubDate: ""            # Fecha de hoy en formato YYYY-MM-DD
-tags: []               # Extraídas de palabras_clave del rol
-draft: true            # Siempre true hasta revisión humana
-sources_validated: X   # Número de fuentes que pasaron la depuración
+title: ""              # Claro, directo, sin clickbait
+description: ""        # Max 160 caracteres, para SEO y meta tags
+publishedAt: YYYY-MM-DD # Fecha de hoy (sin comillas, formato ISO date)
+capa: protocolo        # Uno de: protocolo | L2 | privacidad | futuro | glosario
+tags: []               # Slugs en minúsculas y sin acentos
+draft: true            # SIEMPRE true hasta revisión humana
+# Opcionales:
+# updatedAt: YYYY-MM-DD
+# cover: "/ruta/cover.png"
+# author: "Bitcoin Sin Ruido"   (default ya configurado)
+# order: 11                     (orden en la lista visible; omitir si no se quiere posicionar)
 ---
 ```
 
-Nombre del archivo: `YYYY-MM-DD-slug-del-titulo.mdx`
-Ruta destino: `src/content/articulos/`
+**Nombre del archivo:** `slug-del-titulo.mdx` (sin prefijo de fecha — la
+convención del repo es solo el slug).
+**Ruta destino:** `src/content/articulos/`
+
+Antes de pasar a la Fase 6, ejecuta `npx astro check` y arregla
+cualquier error de schema. Si falla, normalmente es por un `capa` no
+permitido, una fecha sin formato ISO o un campo extra que el schema no
+reconoce.
 
 ---
 
@@ -207,7 +227,9 @@ Una vez generado el archivo `.mdx`:
 - [ ] Mínimo 3 fuentes superan la validación
 - [ ] Tabla de fuentes completada
 - [ ] Las 4 preguntas de impacto respondidas
-- [ ] Artículo entre 700 y 1.000 palabras
+- [ ] Artículo entre 500 y 1.000 palabras
 - [ ] Cada afirmación tiene su fuente citada
-- [ ] Frontmatter completo con `draft: true`
+- [ ] Frontmatter alineado al schema de `src/content/config.ts` (`publishedAt`, `capa`, `draft: true`)
+- [ ] Filename = `slug.mdx` sin prefijo de fecha
+- [ ] `npx astro check` pasa sin errores nuevos
 - [ ] PR creado con descripción y label `new-content`
