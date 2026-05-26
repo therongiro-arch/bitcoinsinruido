@@ -78,8 +78,8 @@ jobs:
           else
             git commit -m "archive(tweet): ${DATE} run #${RUN}"
             # Reintentar push una vez si la rama avanza mientras commitamos
-            git pull --rebase origin main || true
-            git push origin HEAD:main
+            git pull --rebase origin "${{ github.ref_name }}" || true
+            git push origin "HEAD:${{ github.ref_name }}"
           fi
 
   hilo-semanal:
@@ -132,6 +132,6 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "archive(hilo): ${DATE} run #${RUN}"
-            git pull --rebase origin main || true
-            git push origin HEAD:main
+            git pull --rebase origin "${{ github.ref_name }}" || true
+            git push origin "HEAD:${{ github.ref_name }}"
           fi
