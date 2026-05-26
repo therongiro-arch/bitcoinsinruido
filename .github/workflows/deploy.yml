@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths-ignore:
       - 'workers/**'
+      - 'posts/**'
+      - 'hilos/**'
       - 'README.md'
       - 'LICENSE'
       - '.gitignore'
@@ -12,6 +14,8 @@ on:
     branches: [main]
     paths-ignore:
       - 'workers/**'
+      - 'posts/**'
+      - 'hilos/**'
       - 'README.md'
       - 'LICENSE'
       - '.gitignore'
