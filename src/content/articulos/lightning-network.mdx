@@ -1,13 +1,45 @@
 ---
-title: "Lightning Network — Pagos instantáneos sin tocar la base"
-description: "Capa 2 sobre Bitcoin para pagos casi gratuitos vía canales de pago. Cash App reportó un crecimiento de 7x en uso de Lightning durante 2024."
+title: "Lightning Network: cómo escala Bitcoin con pagos instantáneos en 2026"
+description: "Qué es Lightning Network, cómo funcionan los canales de pago, splicing, liquidez y por qué Cash App reportó un crecimiento de 7x en 2024. Capa 2 de Bitcoin explicada."
 publishedAt: 2026-05-11
+updatedAt: 2026-05-26
 capa: L2
 tags: [lightning, pagos, escalabilidad]
 order: 6
+keywords:
+  - qué es Lightning Network
+  - cómo funciona Lightning
+  - canales de pago Bitcoin
+  - Lightning Network 2026
+  - splicing Lightning
+  - Lightning vs Visa
+  - LSP liquidez Lightning
+faqs:
+  - question: "¿Qué es Lightning Network en una frase?"
+    answer: "Es la capa 2 de Bitcoin que permite pagos instantáneos y casi gratuitos abriendo canales bidireccionales entre partes, sin escribir cada movimiento en la blockchain principal."
+  - question: "¿Lightning sustituye a Bitcoin?"
+    answer: "No. Lightning depende de Bitcoin. Cada canal se abre y se cierra con transacciones on-chain en la cadena principal. Lightning aporta velocidad y costo bajo; Bitcoin aporta el asentamiento final y la seguridad."
+  - question: "¿Cuánto cuesta un pago Lightning?"
+    answer: "Las comisiones típicas son fracciones de centavo, normalmente entre 1 y 10 satoshis (menos de 0,01 USD para pagos de hasta cientos de dólares). El costo depende del enrutado y de los nodos intermedios, no del valor enviado."
+  - question: "¿Necesito un nodo propio para usar Lightning?"
+    answer: "No. Wallets autocustodiales como Phoenix, Mutiny o Breez gestionan canales y liquidez por debajo. Tener un nodo propio aporta más privacidad y control, pero no es requisito para pagar o recibir."
+  - question: "¿Qué es el channel splicing y por qué importa?"
+    answer: "Splicing permite agregar o retirar fondos de un canal Lightning sin cerrarlo y reabrirlo. Está implementado en LDK, Eclair y c-lightning. Hace los canales elásticos y reduce drásticamente el costo de gestionar liquidez."
+related:
+  - taproot-assets
+  - bitvm-y-citrea
+  - bitcoin-como-tecnologia
+  - taproot
+  - covenants
 ---
 
-**Lightning Network** es la capa 2 de Bitcoin para pagos instantáneos y casi gratuitos. Permite mover BTC entre dos partes sin escribir cada movimiento en la blockchain.
+## Resumen rápido
+
+**Lightning Network es la capa 2 de Bitcoin para pagos instantáneos y casi gratuitos.** Funciona abriendo canales bidireccionales entre dos partes: una sola transacción on-chain reserva fondos y a partir de ahí pueden intercambiarse infinitos pagos fuera de la cadena. Solo el saldo final se asienta on-chain al cerrar el canal. En 2026 mueve más de 12 millones de transacciones al mes y la usan Cash App, Strike, Phoenix, Mutiny y Breez.
+
+## Qué es Lightning Network
+
+**Lightning Network** es la capa 2 de Bitcoin para pagos instantáneos y casi gratuitos. Permite mover BTC entre dos partes sin escribir cada movimiento en la blockchain. Se apoya en [Taproot](/articulos/taproot) para firmas más eficientes y permite emitir [activos como stablecoins con Taproot Assets](/articulos/taproot-assets).
 
 ## Cómo funciona, en una imagen
 
@@ -31,3 +63,24 @@ Splicing permite **agregar o retirar fondos de un canal sin cerrarlo y reabrirlo
 - **Custodia vs. autocustodia**: la mayoría de los usuarios usa wallets custodiales sobre Lightning. Hay esfuerzos por hacer autocustodial accesible (Phoenix, Mutiny, Breez).
 
 > Lightning convirtió a Bitcoin en algo que puede competir con tarjetas de crédito sin renunciar a su capa base.
+
+## Lightning vs. otras vías de pago
+
+| Sistema | Tiempo de confirmación | Coste típico por pago | Custodia | Censurable |
+|---|---|---|---|---|
+| **Lightning Network** | &lt;1 segundo | &lt;0,01 USD | Auto o custodial | No (auto) |
+| **Bitcoin on-chain** | 10-60 min | 0,5-10 USD | Auto | No |
+| **Visa / Mastercard** | Instantáneo aparente, asentamiento 1-3 días | 1,5-3 % comerciante | Custodial bancaria | Sí |
+| **Western Union (remesas)** | Minutos-horas | 5-10 % | Custodial | Sí |
+| **Stablecoin en Ethereum L1** | Segundos | 0,5-20 USD | Auto | Posible (issuer) |
+
+[Comparativa completa: Lightning vs Visa →](/comparativas/lightning-vs-visa)
+
+## Por qué importa
+
+- **Pagos sin pedir permiso** a un banco emisor o procesador.
+- **Coste casi cero** incluso para pagos pequeños — habilita micropagos reales.
+- **Sin clearing**: el receptor controla los fondos en segundos, no en T+1.
+- **Compatible con stablecoins** vía [Taproot Assets](/articulos/taproot-assets).
+
+Para entender por qué Bitcoin necesita una L2 desde el inicio, ver [Escalabilidad de Bitcoin](/escalabilidad-bitcoin). Para el contexto técnico completo del protocolo base, ver [Bitcoin explicado](/bitcoin-explicado).

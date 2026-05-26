@@ -1,0 +1,171 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Escalabilidad de Bitcoin: cómo escala sin tocar la capa base';
+const description = 'Lightning, BitVM, Citrea, ZK-rollups, Taproot Assets, splicing: cómo Bitcoin pasa de 7 tx/s on-chain a miles vía L2 sin romper la descentralización.';
+const url = 'https://bitcoinsinruidos.com/escalabilidad-bitcoin';
+
+const faqs = [
+  {
+    question: '¿Por qué Bitcoin no aumenta el tamaño del bloque?',
+    answer:
+      'Porque bloques más grandes encarecen correr un nodo. Si correr un nodo es caro, la red se centraliza en pocos operadores y se rompe la propiedad principal de Bitcoin: que cualquiera pueda verificar. La escalabilidad se construye en capas, no en la base.',
+  },
+  {
+    question: '¿Cuántas transacciones por segundo aguanta Bitcoin?',
+    answer:
+      'La capa base (L1) ronda 7 tx/s. Lightning Network suma capacidad teóricamente ilimitada por canal, con más de 12 millones de tx/mes en 2026. Citrea (ZK-rollup) aporta throughput adicional asentado en Bitcoin.',
+  },
+  {
+    question: '¿Lightning es seguro para grandes cantidades?',
+    answer:
+      'Lightning está optimizado para pagos pequeños y medianos. Para cantidades grandes la capa base sigue siendo el camino: las garantías de finalidad son distintas. La elección depende del tamaño, del receptor y de la urgencia.',
+  },
+  {
+    question: '¿Qué es un ZK-rollup en Bitcoin?',
+    answer:
+      'Un ZK-rollup agrupa miles de transacciones y publica una sola prueba criptográfica de su validez en Bitcoin. Citrea es el primer ZK-rollup nativo: Bitcoin verifica la prueba sin ejecutar la lógica del rollup.',
+  },
+  {
+    question: '¿BitVM compite con Lightning?',
+    answer:
+      'No. Lightning es para pagos; BitVM es para computación arbitraria verificable. Coexisten: muchas L2 sobre Bitcoin usan piezas de ambos modelos según el caso de uso.',
+  },
+];
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Escalabilidad Bitcoin', item: url },
+  ],
+};
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url,
+  inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished: '2026-05-26',
+  dateModified: '2026-05-26',
+  author: { '@type': 'Organization', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  keywords={["escalabilidad Bitcoin", "Lightning Network escala", "BitVM", "ZK-rollup Bitcoin", "Citrea", "tps Bitcoin", "L2 Bitcoin"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Escalabilidad Bitcoin' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        Bitcoin no escala aumentando el bloque. Escala en <strong>capas</strong>: la L1 hace lo
+        mínimo (asentamiento) y las L2 (<a href="/articulos/lightning-network">Lightning</a>,
+        <a href="/articulos/bitvm-y-citrea">Citrea</a>,
+        <a href="/articulos/taproot-assets">Taproot Assets</a>) hacen el resto. Esto mantiene
+        barata la validación y la red descentralizada.
+      </p>
+
+      <h2>El trilema, sin esoterismo</h2>
+      <p>Toda blockchain enfrenta tres demandas en tensión:</p>
+      <ul>
+        <li><strong>Seguridad</strong> — Resistencia a ataques y censura.</li>
+        <li><strong>Descentralización</strong> — Cuántos pueden verificar y participar.</li>
+        <li><strong>Escalabilidad</strong> — Cuántas tx/s soporta.</li>
+      </ul>
+      <p>
+        Bitcoin prioriza las dos primeras a nivel de capa base, y resuelve la tercera fuera.
+      </p>
+
+      <h2>Comparativa de capas en 2026</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Capa</th><th>Throughput</th><th>Tiempo</th><th>Coste típico</th><th>Autocustodia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>L1 Bitcoin</td><td>~7 tx/s</td><td>10-60 min</td><td>0,5-10 USD</td><td>Sí</td></tr>
+          <tr><td><a href="/articulos/lightning-network">Lightning</a></td><td>Miles tx/s teóricos</td><td>&lt;1 s</td><td>&lt;0,01 USD</td><td>Sí (Phoenix, Mutiny)</td></tr>
+          <tr><td>Taproot Assets / Lightning</td><td>Miles tx/s</td><td>&lt;1 s</td><td>&lt;0,01 USD</td><td>Sí</td></tr>
+          <tr><td>Citrea ZK-rollup</td><td>Miles tx/s</td><td>Segundos</td><td>Bajo</td><td>Posible</td></tr>
+          <tr><td>BitVM puentes</td><td>Variable</td><td>Minutos</td><td>Variable</td><td>Trust-minimized</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Lightning Network — La L2 que ya funciona</h2>
+      <p>
+        Más de <strong>12 millones de transacciones/mes</strong>, 18.000+ nodos activos y 5.400+
+        BTC en canales. Cash App reportó 7x crecimiento en 2024. <a href="/articulos/lightning-network">Más sobre Lightning →</a>
+      </p>
+
+      <h2>Splicing — Canales elásticos</h2>
+      <p>
+        Splicing permite agregar o retirar fondos de un canal Lightning sin cerrarlo. Implementado
+        en LDK, Eclair y c-lightning. Hace la gestión de liquidez orden de magnitud más barata.
+      </p>
+
+      <h2>Citrea — Primer ZK-rollup nativo</h2>
+      <p>
+        Lanzó mainnet el 27 de enero de 2026. Usa BitVM y el puente Clementine para anclar pruebas
+        zk al consenso de Bitcoin sin un solo soft fork. <a href="/articulos/bitvm-y-citrea">Más sobre Citrea →</a>
+      </p>
+
+      <h2>Por qué no aumentar el tamaño del bloque</h2>
+      <p>
+        Aumentar el bloque baja la barrera de validación si se hace bien — pero la sube si los
+        nodos no pueden seguir el ritmo de disco, banda y CPU. La historia de SegWit2x (2017)
+        mostró que la red prefiere capas a forks.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/bitcoin-explicado">Qué es Bitcoin</a></li>
+        <li><a href="/futuro-bitcoin">Futuro de Bitcoin</a></li>
+        <li><a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a></li>
+        <li><a href="/comparativas/bitvm-vs-smart-contracts">BitVM vs Smart Contracts</a></li>
+        <li><a href="/glosario">Glosario completo</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

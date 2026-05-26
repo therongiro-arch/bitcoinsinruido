@@ -1,10 +1,36 @@
 ---
-title: "BitVM y Citrea — Contratos inteligentes sin soft fork"
-description: "BitVM permite ejecutar computación arbitraria verificable sobre Bitcoin sin modificar las reglas de consenso. Citrea, el primer ZK-rollup de Bitcoin, lanzó mainnet en enero de 2026."
+title: "BitVM y Citrea: contratos inteligentes en Bitcoin sin soft fork"
+description: "Qué es BitVM, cómo funciona el primer ZK-rollup de Bitcoin (Citrea, mainnet enero 2026) y por qué Bitcoin ya es programable sin tocar el consenso."
 publishedAt: 2026-05-13
+updatedAt: 2026-05-26
 capa: futuro
 tags: [bitvm, citrea, rollup, zk]
 order: 7
+keywords:
+  - qué es BitVM
+  - cómo funciona BitVM
+  - Citrea mainnet
+  - ZK-rollup Bitcoin
+  - contratos inteligentes Bitcoin
+  - BitVM vs Ethereum
+  - Clementine bridge
+faqs:
+  - question: "¿Qué es BitVM en una frase?"
+    answer: "BitVM es una construcción que permite verificar computación arbitraria sobre Bitcoin usando solo scripts simples, multisig y canales: si alguien hace trampa off-chain, cualquiera puede probarlo on-chain con un fraud proof. No requiere modificar el consenso ni un soft fork."
+  - question: "¿BitVM requiere un soft fork de Bitcoin?"
+    answer: "No. BitVM usa únicamente los opcodes ya disponibles en Bitcoin (después de Taproot). No requiere nuevos opcodes ni cambios de consenso. Es por eso que Citrea pudo lanzar mainnet sin coordinar una activación con toda la red."
+  - question: "¿En qué se diferencia Citrea de Ethereum?"
+    answer: "Citrea es un ZK-rollup sobre Bitcoin: ejecuta contratos off-chain y publica una prueba criptográfica en Bitcoin. Ethereum ejecuta los contratos en todos sus nodos. Citrea hereda la seguridad de Bitcoin como capa de asentamiento; Ethereum es su propia capa de asentamiento."
+  - question: "¿Qué es Clementine?"
+    answer: "Clementine es el puente bilateral que conecta Citrea con Bitcoin. Permite mover BTC al rollup y de vuelta usando el modelo de seguridad de BitVM, sin un custodio centralizado en el camino crítico."
+  - question: "¿Bitcoin ahora compite con Ethereum?"
+    answer: "No directamente. La filosofía sigue siendo: Bitcoin como capa monetaria conservadora; programabilidad encima vía L2 y rollups. Comparar capa base con capa base es como comparar TCP/IP con una aplicación que corre sobre ella."
+related:
+  - lightning-network
+  - taproot
+  - covenants
+  - taproot-assets
+  - bitcoin-como-tecnologia
 ---
 
 **BitVM** es probablemente lo más importante que pasó en Bitcoin en años. Permite ejecutar **computación arbitraria verificable sobre Bitcoin sin modificar las reglas de consenso**.

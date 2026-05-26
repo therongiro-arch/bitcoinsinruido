@@ -5,13 +5,62 @@ import Hero from '../components/Hero.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import HomeBackground from '../components/HomeBackground.astro';
 import NewsFeed from '../components/react/NewsFeed.tsx';
+import JsonLd from '../components/JsonLd.astro';
 
 const articulos = (await getCollection('articulos', ({ data }) => !data.draft))
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
   .slice(0, 6);
+
+const homeFaqs = [
+  {
+    question: '¿Qué es Bitcoin Sin Ruido?',
+    answer:
+      'Una publicación técnica en español sobre el protocolo de Bitcoin: Lightning, Taproot, BitVM, covenants, escalabilidad y futuro. Sin predicciones de precio, sin hype.',
+  },
+  {
+    question: '¿Por dónde empezar a entender Bitcoin?',
+    answer:
+      'Leer la guía pillar "Qué es Bitcoin", luego UTXO, Proof of Work y nodos. Después saltar a Lightning Network y al glosario para los términos sueltos.',
+  },
+  {
+    question: '¿Cubren precio, predicciones o trading?',
+    answer:
+      'No. Bitcoin Sin Ruido cubre exclusivamente el protocolo y su evolución técnica. No se publican llamadas a comprar, vender ni predicciones.',
+  },
+];
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: homeFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+
+const itemListLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Últimos artículos de Bitcoin Sin Ruido',
+  itemListElement: articulos.map((a, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `https://bitcoinsinruidos.com/articulos/${a.slug}`,
+    name: a.data.title,
+  })),
+};
 ---
 
-<BaseLayout>
+<BaseLayout
+  title="Bitcoin Sin Ruido — Bitcoin desde el protocolo, sin ruido de precio"
+  description="Referencia técnica de Bitcoin en español: Lightning, Taproot, BitVM, covenants, escalabilidad y futuro. Sin predicciones de precio, sin hype."
+  keywords={["Bitcoin español", "qué es Bitcoin", "Bitcoin protocolo", "Lightning Network", "BitVM", "Taproot", "Bitcoin sin ruido"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={faqLd} />
+    <JsonLd data={itemListLd} />
+  </Fragment>
   <HomeBackground />
   <Hero />
 
@@ -51,5 +100,39 @@ const articulos = (await getCollection('articulos', ({ data }) => !data.draft))
     </header>
 
     <NewsFeed client:visible limit={6} compact={true} />
+  </section>
+
+  <!-- Empezar por aquí -->
+  <section class="container-wide py-16 sm:py-20 border-t border-line">
+    <header class="mb-10">
+      <p class="chip font-mono mb-3">EMPEZAR</p>
+      <h2 class="text-h2 font-semibold tracking-tight text-balance">Por dónde empezar</h2>
+      <p class="mt-2 text-ink-muted max-w-prose">
+        Cuatro páginas pillar que cubren el 90% de lo que hay que saber sobre Bitcoin sin tener que adivinar el orden de lectura.
+      </p>
+    </header>
+
+    <div class="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <a href="/bitcoin-explicado" class="block rounded-lg border border-line p-5 hover:border-btc/60 hover:bg-bg-elev/40 transition">
+        <p class="text-xs font-mono uppercase tracking-wider text-ink-dim mb-1">Pillar</p>
+        <h3 class="font-semibold text-ink leading-snug">Qué es Bitcoin</h3>
+        <p class="mt-1 text-sm text-ink-muted">Guía técnica completa en español.</p>
+      </a>
+      <a href="/escalabilidad-bitcoin" class="block rounded-lg border border-line p-5 hover:border-btc/60 hover:bg-bg-elev/40 transition">
+        <p class="text-xs font-mono uppercase tracking-wider text-ink-dim mb-1">Pillar</p>
+        <h3 class="font-semibold text-ink leading-snug">Escalabilidad de Bitcoin</h3>
+        <p class="mt-1 text-sm text-ink-muted">Lightning, BitVM, Citrea y más.</p>
+      </a>
+      <a href="/futuro-bitcoin" class="block rounded-lg border border-line p-5 hover:border-btc/60 hover:bg-bg-elev/40 transition">
+        <p class="text-xs font-mono uppercase tracking-wider text-ink-dim mb-1">Pillar</p>
+        <h3 class="font-semibold text-ink leading-snug">Futuro de Bitcoin</h3>
+        <p class="mt-1 text-sm text-ink-muted">Covenants, cuántico, rollups.</p>
+      </a>
+      <a href="/glosario" class="block rounded-lg border border-line p-5 hover:border-btc/60 hover:bg-bg-elev/40 transition">
+        <p class="text-xs font-mono uppercase tracking-wider text-ink-dim mb-1">Glosario</p>
+        <h3 class="font-semibold text-ink leading-snug">Diccionario técnico</h3>
+        <p class="mt-1 text-sm text-ink-muted">30+ términos esenciales.</p>
+      </a>
+    </div>
   </section>
 </BaseLayout>

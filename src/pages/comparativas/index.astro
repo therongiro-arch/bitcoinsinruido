@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+const items = [
+  {
+    href: '/comparativas/bitcoin-vs-ethereum',
+    title: 'Bitcoin vs Ethereum',
+    desc: 'Capa base monetaria vs. capa programable. Seguridad, descentralización, smart contracts y modelo de emisión.',
+  },
+  {
+    href: '/comparativas/lightning-vs-visa',
+    title: 'Lightning vs Visa',
+    desc: 'Coste, finalidad, custodia y resistencia a censura. Por qué Lightning compite en pagos sin renunciar a autocustodia.',
+  },
+  {
+    href: '/comparativas/bitvm-vs-smart-contracts',
+    title: 'BitVM vs Smart Contracts (Ethereum)',
+    desc: 'Fraud proofs sobre Bitcoin vs. EVM. Dos filosofías de programabilidad, dos modelos de confianza.',
+  },
+];
+---
+<BaseLayout
+  title="Comparativas técnicas | Bitcoin Sin Ruido"
+  description="Comparativas técnicas entre Bitcoin y otras tecnologías: Ethereum, Visa, smart contracts. Análisis frío, sin hype."
+  keywords={["Bitcoin vs Ethereum", "Lightning vs Visa", "BitVM vs smart contracts", "comparativa Bitcoin"]}
+>
+  <section class="container-wide py-12 sm:py-16">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas' }]} />
+    <header class="mb-10">
+      <p class="chip font-mono mb-3">COMPARATIVAS</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance">Comparativas técnicas</h1>
+      <p class="mt-3 max-w-2xl text-lg text-ink-muted text-pretty">
+        Bitcoin frente a otras tecnologías. Tablas, datos y conclusiones sin hype.
+      </p>
+    </header>
+
+    <div class="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((it) => (
+        <a href={it.href} class="block rounded-lg border border-line p-6 hover:border-btc/60 hover:bg-bg-elev/40 transition">
+          <h2 class="text-xl font-semibold text-ink mb-2">{it.title}</h2>
+          <p class="text-sm text-ink-muted">{it.desc}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

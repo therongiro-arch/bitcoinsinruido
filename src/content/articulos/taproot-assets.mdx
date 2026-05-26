@@ -1,10 +1,35 @@
 ---
-title: "Taproot Assets — Stablecoins y activos sobre Lightning"
-description: "Emitir USD, MXN o cualquier activo directamente sobre Lightning Network. Las stablecoins ya no necesitan blockchain propia."
+title: "Taproot Assets: stablecoins en Bitcoin vía Lightning Network"
+description: "Qué es Taproot Assets (antes Taro), cómo emitir USDT, MXN o cualquier activo sobre Bitcoin y moverlo por Lightning casi gratis. Estado en 2026."
 publishedAt: 2026-05-17
+updatedAt: 2026-05-26
 capa: L2
 tags: [taproot-assets, stablecoins, lightning]
 order: 9
+keywords:
+  - Taproot Assets
+  - stablecoins Bitcoin
+  - USDT Lightning
+  - Taro Bitcoin
+  - emitir activos Bitcoin
+  - stablecoin LATAM
+faqs:
+  - question: "¿Qué es Taproot Assets?"
+    answer: "Taproot Assets (antes 'Taro') es un protocolo de Lightning Labs que permite emitir activos arbitrarios —stablecoins, tokens, monedas locales tokenizadas— directamente sobre Bitcoin, moviéndolos por Lightning Network casi gratis y en segundos."
+  - question: "¿En qué se diferencia de USDT en Ethereum o Tron?"
+    answer: "Hereda la seguridad de Bitcoin como capa de asentamiento y la velocidad/costo de Lightning como capa de transporte. No requiere blockchain propia, no depende de gas tokens externos y reduce fricciones para LATAM (inflación, controles de capital)."
+  - question: "¿Requiere un soft fork?"
+    answer: "No. Taproot Assets se apoya en Taproot (activado en 2021): los activos se inscriben mediante commitments con árboles Merkle dentro de transacciones Taproot. No hace falta modificar el consenso de Bitcoin."
+  - question: "¿Hay wallets que ya lo soporten?"
+    answer: "Sí, con soporte creciente: Mutiny, Lightspark, Wallet of Satoshi y otras han anunciado compatibilidad. La integración aún es desigual, similar a como estaba Lightning en 2019-2020."
+  - question: "¿Es seguro mover stablecoins sobre Lightning?"
+    answer: "El modelo de seguridad es el de Lightning Network: canales con commitments verificables on-chain en Bitcoin. La autocustodia es posible, a diferencia de muchas stablecoins custodiales. El riesgo residual depende del emisor de la stablecoin, no de la capa de transporte."
+related:
+  - lightning-network
+  - taproot
+  - bitvm-y-citrea
+  - bitcoin-como-tecnologia
+  - covenants
 ---
 
 **Taproot Assets** (antes "Taro") es el protocolo que permite emitir **activos arbitrarios sobre Bitcoin y moverlos vía Lightning Network**. Desarrollado por Lightning Labs.

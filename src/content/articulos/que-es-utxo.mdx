@@ -1,10 +1,35 @@
 ---
-title: "UTXOs — Monedas, no saldos"
-description: "Bitcoin no es una base de datos de saldos. Es una base de datos de monedas digitales específicas que solo el receptor puede gastar."
+title: "Qué es un UTXO en Bitcoin: monedas, no saldos (explicado fácil)"
+description: "Bitcoin no es una base de datos de saldos sino de UTXOs: monedas digitales específicas que solo el receptor puede gastar. Cómo cambia eso la privacidad y la verificación."
 publishedAt: 2026-05-01
+updatedAt: 2026-05-26
 capa: protocolo
 tags: [utxo, fundamentos]
 order: 1
+keywords:
+  - qué es UTXO
+  - UTXO Bitcoin
+  - Unspent Transaction Output
+  - modelo de cuentas Bitcoin
+  - UTXO vs account
+  - cambio Bitcoin
+faqs:
+  - question: "¿Qué significa UTXO?"
+    answer: "UTXO son las siglas de Unspent Transaction Output: una salida de transacción que aún no ha sido gastada. Es la unidad mínima de saldo en Bitcoin. Tu 'balance' es la suma de todos los UTXOs que controlas con tu clave privada."
+  - question: "¿En qué se diferencia el modelo UTXO del modelo de cuentas?"
+    answer: "Ethereum usa cuentas: cada dirección tiene un saldo numérico que se incrementa o decrementa. Bitcoin usa UTXOs: monedas específicas que se gastan completas y se reemplazan por nuevas. UTXO ofrece mejor privacidad, paralelización y verificación; cuentas ofrecen más simplicidad para contratos complejos."
+  - question: "¿Qué pasa con el 'cambio' al enviar Bitcoin?"
+    answer: "Cuando gastas un UTXO de 1 BTC para enviar 0,3, la transacción crea dos outputs nuevos: 0,3 BTC al receptor y 0,7 BTC de vuelta a una dirección tuya (la 'change address'). El UTXO original deja de existir."
+  - question: "¿Puede gastarse dos veces el mismo UTXO?"
+    answer: "No. El protocolo impide el doble gasto por construcción: una vez que un UTXO se referencia como entrada en una transacción confirmada, queda marcado como gastado. Los nodos rechazan cualquier transacción que intente reutilizarlo."
+  - question: "¿Cómo afecta el modelo UTXO a la privacidad?"
+    answer: "Cada UTXO es independiente y puede vincularse a una dirección distinta. Esto permite mayor privacidad que un modelo de cuenta unificada, pero requiere herramientas (CoinJoin, Taproot) para evitar el rastreo por análisis de cadena."
+related:
+  - proof-of-work
+  - taproot
+  - nodos-los-guardianes
+  - lightning-network
+  - los-21-millones
 ---
 
 Bitcoin **no** es una base de datos de saldos. Es una base de datos de **UTXOs** (Unspent Transaction Outputs): monedas digitales específicas que solo el receptor puede gastar.

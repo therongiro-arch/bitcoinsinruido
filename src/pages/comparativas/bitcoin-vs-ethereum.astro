@@ -1,0 +1,178 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const title = 'Bitcoin vs Ethereum: diferencias técnicas reales (2026)';
+const description = 'Consenso, emisión, finalidad, descentralización y modelo de smart contracts. Una comparativa técnica entre Bitcoin y Ethereum sin tribalismo.';
+const url = 'https://bitcoinsinruidos.com/comparativas/bitcoin-vs-ethereum';
+
+const faqs = [
+  {
+    question: '¿Bitcoin es mejor que Ethereum?',
+    answer:
+      'No son comparables como reemplazos. Bitcoin prioriza descentralización, escasez y conservadurismo del protocolo. Ethereum prioriza programabilidad en la capa base. Resuelven problemas distintos.',
+  },
+  {
+    question: '¿Ethereum es más rápido que Bitcoin?',
+    answer:
+      'En la capa base, Ethereum confirma en ~12 segundos y Bitcoin en ~10 minutos. Pero Lightning sobre Bitcoin confirma en menos de 1 segundo. La comparación correcta es L2 vs L2, no L1 vs L1.',
+  },
+  {
+    question: '¿Cuál tiene mejor seguridad?',
+    answer:
+      'Bitcoin se ancla en energía (Proof of Work) y suma más de una década sin compromisos de consenso. Ethereum usa Proof of Stake desde 2022. Son modelos distintos de seguridad: PoW depende de costo físico, PoS de capital ya emitido.',
+  },
+  {
+    question: '¿Bitcoin tiene smart contracts?',
+    answer:
+      'Sí, vía L2 (Citrea, BitVM, Taproot Assets) sin modificar la capa base. La filosofía es distinta: Ethereum ejecuta contratos en todos los nodos; Bitcoin los ejecuta off-chain y solo verifica pruebas.',
+  },
+  {
+    question: '¿Cuál es más descentralizado?',
+    answer:
+      'Bitcoin tiene más nodos (24.000+ vs ~6.000-8.000 nodos completos en Ethereum), mineros distribuidos globalmente y un modelo de emisión inmutable. Ethereum tiene fuerte concentración de validadores en Lido y un par de exchanges grandes.',
+  },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url,
+  inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished: '2026-05-26',
+  dateModified: '2026-05-26',
+  author: { '@type': 'Organization', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Comparativas', item: 'https://bitcoinsinruidos.com/comparativas' },
+    { '@type': 'ListItem', position: 3, name: 'Bitcoin vs Ethereum', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  keywords={["Bitcoin vs Ethereum", "diferencias Bitcoin Ethereum", "PoW vs PoS", "smart contracts Bitcoin", "Citrea vs EVM"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas', href: '/comparativas' }, { name: 'Bitcoin vs Ethereum' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">COMPARATIVA</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Bitcoin y Ethereum no compiten por el mismo problema.</strong> Bitcoin optimiza
+        para reserva de valor descentralizada y resistencia a la modificación. Ethereum optimiza
+        para programabilidad en la capa base. En 2026, Bitcoin también es programable vía
+        <a href="/articulos/bitvm-y-citrea">BitVM y Citrea</a>, pero manteniendo la filosofía de
+        no tocar la L1.
+      </p>
+
+      <h2>Tabla comparativa</h2>
+      <table>
+        <thead>
+          <tr><th>Característica</th><th>Bitcoin</th><th>Ethereum</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Consenso</td><td>Proof of Work</td><td>Proof of Stake (desde 2022)</td></tr>
+          <tr><td>Tiempo de bloque</td><td>~10 min</td><td>~12 s</td></tr>
+          <tr><td>Finalidad práctica</td><td>~60 min (6 conf.)</td><td>~13 min (epoch)</td></tr>
+          <tr><td>Suministro máximo</td><td>21 millones BTC (fijo)</td><td>Sin límite duro; quema EIP-1559</td></tr>
+          <tr><td>Emisión</td><td>Halving cada 4 años</td><td>Variable según staking</td></tr>
+          <tr><td>Nodos completos</td><td>24.000+ reachable</td><td>~6.000-8.000</td></tr>
+          <tr><td>Smart contracts en L1</td><td>Scripts limitados</td><td>EVM completo</td></tr>
+          <tr><td>Smart contracts en L2</td><td>Citrea, BitVM</td><td>Optimism, Arbitrum, zkSync</td></tr>
+          <tr><td>Modelo de saldo</td><td><a href="/articulos/que-es-utxo">UTXO</a></td><td>Accounts</td></tr>
+          <tr><td>Cambios al protocolo</td><td>Soft fork, conservador</td><td>Hard fork periódico</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Modelo de seguridad</h2>
+      <p>
+        <strong>Bitcoin (PoW)</strong>: el costo de atacar es energía + hardware. Para reorganizar
+        la cadena hace falta más hashrate que toda la red honesta durante un período sostenido.
+      </p>
+      <p>
+        <strong>Ethereum (PoS)</strong>: el costo de atacar es capital staked. Para reorganizar
+        hace falta controlar &gt;⅔ del ETH en staking. Si se intenta y falla, el atacante pierde
+        el stake por slashing.
+      </p>
+      <p>Cada modelo tiene supuestos distintos: PoW depende de energía externa al sistema; PoS se ancla en el propio token emitido.</p>
+
+      <h2>Emisión y política monetaria</h2>
+      <p>
+        Bitcoin: emisión predecible, decreciente vía halvings, tope final en 21M. Ningún cambio
+        posible sin convencer simultáneamente a desarrolladores, nodos y mineros.
+      </p>
+      <p>
+        Ethereum: emisión variable según la cantidad en staking. EIP-1559 quema parte del fee, lo
+        que en períodos de alta demanda hace al ETH neto deflacionario; en otros, ligeramente
+        inflacionario.
+      </p>
+
+      <h2>Programabilidad</h2>
+      <p>
+        Ethereum ejecuta cualquier contrato en su EVM, en todos los nodos, todo el tiempo. Eso da
+        flexibilidad enorme y, como contrapartida, una superficie de ataque amplia (bugs, exploits, MEV).
+      </p>
+      <p>
+        Bitcoin separa: la L1 hace poco, las L2 hacen todo lo demás. Citrea ejecuta contratos
+        complejos off-chain y solo publica una prueba zk en Bitcoin. La capa base sigue siendo
+        simple y predecible.
+      </p>
+      <p>Ver: <a href="/comparativas/bitvm-vs-smart-contracts">BitVM vs Smart Contracts →</a></p>
+
+      <h2>Cuándo elegir cada uno</h2>
+      <ul>
+        <li><strong>Bitcoin si</strong>: prioritas reserva de valor a 10+ años, autocustodia, resistencia a censura y descentralización máxima.</li>
+        <li><strong>Ethereum si</strong>: necesitas contratos complejos en L1, ecosistema DeFi maduro, NFTs y experimentación rápida.</li>
+        <li><strong>Ambos</strong>: cubren capas distintas del stack. No son sustitutos perfectos.</li>
+      </ul>
+
+      <h2>Lectura complementaria</h2>
+      <ul>
+        <li><a href="/bitcoin-explicado">Qué es Bitcoin</a></li>
+        <li><a href="/articulos/proof-of-work">Proof of Work explicado</a></li>
+        <li><a href="/articulos/bitvm-y-citrea">BitVM y Citrea</a></li>
+        <li><a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/comparativas" class="btn">← Todas las comparativas</a>
+    </footer>
+  </article>
+</BaseLayout>

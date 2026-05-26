@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Futuro de Bitcoin: BitVM, covenants, ZK-rollups y resistencia cuántica';
+const description = 'Hacia dónde va Bitcoin: contratos sin soft fork, OP_CAT y CTV, ZK-rollups (Citrea), Taproot Assets, BIP-360 y los próximos halvings. Una hoja de ruta sin hype.';
+const url = 'https://bitcoinsinruidos.com/futuro-bitcoin';
+
+const faqs = [
+  {
+    question: '¿Qué cambios técnicos esperar en Bitcoin para 2027-2030?',
+    answer:
+      'Tres líneas activas: (1) covenants vía OP_CAT o CTV si converge el consenso de desarrolladores; (2) maduración de L2 como Citrea, BitVM y Taproot Assets; (3) avance progresivo de BIP-360 hacia mainnet para resistencia cuántica.',
+  },
+  {
+    question: '¿Bitcoin podría volverse programable como Ethereum?',
+    answer:
+      'Programable sí, pero no en la capa base. La filosofía sigue siendo: capa base conservadora y programabilidad encima vía L2 y rollups. BitVM y Citrea demuestran que se puede sin un soft fork.',
+  },
+  {
+    question: '¿Qué pasa con el halving de 2028?',
+    answer:
+      'La recompensa por bloque pasará de 3,125 BTC a 1,5625 BTC (aprox.). El cambio reduce la inflación de la oferta y aumenta el peso relativo de las comisiones para sostener la minería a largo plazo.',
+  },
+  {
+    question: '¿Cuándo se mina el último Bitcoin?',
+    answer:
+      'Aproximadamente en el año 2140. A partir de entonces los mineros solo se financian con comisiones de transacción. Para 2032 ya estará emitido más del 99% del suministro.',
+  },
+  {
+    question: '¿Bitcoin sobrevive a la computación cuántica?',
+    answer:
+      'Sí, si la migración a BIP-360 se completa antes de que existan computadoras cuánticas con miles de qubits estables. La preparación va con años de antelación y el repositorio oficial ya integró BIP-360 en testnet en febrero de 2026.',
+  },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url,
+  inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished: '2026-05-26',
+  dateModified: '2026-05-26',
+  author: { '@type': 'Organization', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Futuro de Bitcoin', item: url },
+  ],
+};
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  keywords={["futuro Bitcoin", "Bitcoin 2030", "BitVM", "covenants", "OP_CAT", "BIP-360", "Citrea", "halving 2028"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Futuro de Bitcoin' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        El futuro de Bitcoin no es "ser Ethereum". Es <strong>mantener la capa base sin cambios
+        radicales y construir todo lo demás encima</strong>. Las cuatro líneas activas: covenants
+        (<a href="/articulos/covenants">OP_CAT / CTV</a>), L2 con
+        <a href="/articulos/bitvm-y-citrea">BitVM y Citrea</a>, stablecoins con
+        <a href="/articulos/taproot-assets">Taproot Assets</a> y resistencia cuántica
+        (<a href="/articulos/bip360-resistencia-cuantica">BIP-360</a>).
+      </p>
+
+      <h2>Calendario realista hasta 2030</h2>
+      <table>
+        <thead>
+          <tr><th>Año</th><th>Evento esperado</th><th>Estado</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2026</td><td>Citrea mainnet, BIP-360 en testnet</td><td>Confirmado (Q1 2026)</td></tr>
+          <tr><td>2026-2027</td><td>Posible activación de covenants si converge el debate</td><td>En discusión</td></tr>
+          <tr><td>2028</td><td>Halving 5: recompensa pasa a ~1,5625 BTC</td><td>Determinista (~abril 2028)</td></tr>
+          <tr><td>2028-2030</td><td>Madurez de L2: BitVM, Citrea, Taproot Assets</td><td>En despliegue</td></tr>
+          <tr><td>2030+</td><td>Posible activación de BIP-360 en mainnet</td><td>Depende de coordinación</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Las apuestas técnicas</h2>
+      <ul>
+        <li><a href="/articulos/covenants"><strong>Covenants (OP_CAT, CTV)</strong></a> — Restricciones en cómo se gastan BTC. Habilita vaults, mejores L2 y custodia avanzada.</li>
+        <li><a href="/articulos/bitvm-y-citrea"><strong>BitVM y ZK-rollups</strong></a> — Contratos inteligentes sin soft fork. Citrea ya lanzó mainnet en enero de 2026.</li>
+        <li><a href="/articulos/taproot-assets"><strong>Taproot Assets</strong></a> — Stablecoins y tokens sobre Lightning. Mainnet desde 2025.</li>
+        <li><a href="/articulos/bip360-resistencia-cuantica"><strong>BIP-360</strong></a> — Migración a firmas postcuánticas. Integrado al repo oficial en febrero de 2026.</li>
+        <li><a href="/articulos/lightning-network"><strong>Lightning + splicing</strong></a> — Canales elásticos, liquidez gestionada con LSPs, USDT nativo.</li>
+      </ul>
+
+      <h2>Lo que probablemente no cambiará</h2>
+      <ul>
+        <li>21 millones de BTC como límite (es matemática, no política).</li>
+        <li>Proof of Work como mecanismo de consenso de la capa base.</li>
+        <li>Bloques cada ~10 minutos con ajuste de dificultad cada 2.016 bloques.</li>
+        <li>Filosofía conservadora: cualquier soft fork requiere años de discusión.</li>
+      </ul>
+
+      <h2>Riesgos del decenio</h2>
+      <ul>
+        <li><strong>Regulación</strong> — Prohibiciones de autocustodia (Sudáfrica abril 2026 es el caso de estudio).</li>
+        <li><strong>Concentración de minería</strong> — Vigilar la distribución geográfica del hashrate.</li>
+        <li><strong>Captura técnica</strong> — Riesgo de que las L2 se centralicen y diluyan el modelo Bitcoin.</li>
+        <li><strong>Cuántico</strong> — Mitigado a tiempo si BIP-360 se activa antes del Q-day.</li>
+      </ul>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/bitcoin-explicado">Qué es Bitcoin</a></li>
+        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/glosario">Glosario completo</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

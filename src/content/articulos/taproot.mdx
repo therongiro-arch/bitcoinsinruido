@@ -1,10 +1,36 @@
 ---
-title: "Taproot — La mejora más importante (y la menos comprendida)"
-description: "Activada en 2021, Taproot introduce firmas Schnorr: transacciones más pequeñas, más privadas y más baratas. Casi nadie la explica bien."
+title: "Taproot en Bitcoin: firmas Schnorr, privacidad y soft fork explicado"
+description: "Qué cambió con Taproot (activado en 2021), cómo funcionan las firmas Schnorr, MuSig2 y por qué es la base de Lightning, BitVM y Taproot Assets."
 publishedAt: 2026-05-09
+updatedAt: 2026-05-26
 capa: privacidad
 tags: [taproot, schnorr, soft-fork]
 order: 5
+keywords:
+  - qué es Taproot
+  - firmas Schnorr
+  - Taproot Bitcoin
+  - MuSig2
+  - BIP-341
+  - privacidad Bitcoin
+  - soft fork Taproot
+faqs:
+  - question: "¿Qué es Taproot en Bitcoin?"
+    answer: "Taproot es el soft fork activado en noviembre de 2021 (BIPs 340, 341 y 342) que introdujo firmas Schnorr y un nuevo tipo de output (P2TR). Hace las transacciones más pequeñas, más privadas y más baratas, y es la base de Lightning eficiente, MuSig2, BitVM y Taproot Assets."
+  - question: "¿Qué son las firmas Schnorr?"
+    answer: "Schnorr es un esquema de firma digital con dos propiedades clave para Bitcoin: linealidad (varias firmas pueden combinarse en una sola, MuSig2) y eficiencia. Sustituyen opcionalmente a ECDSA, lo que reduce tamaño y costo de transacciones multi-firma."
+  - question: "¿Taproot mejora la privacidad de Bitcoin?"
+    answer: "Sí, pero estructuralmente, no por anonimato. Un pago simple, una multi-firma y un contrato complejo pueden quedar indistinguibles en la cadena. El observador externo no puede saber qué tipo de transacción está mirando."
+  - question: "¿Hay que actualizar la wallet para usar Taproot?"
+    answer: "Sí. Para gastar a/desde direcciones bech32m (bc1p…) la wallet debe soportar P2TR. Wallets modernas como Sparrow, BlueWallet, Phoenix, Mutiny y Bitcoin Core lo soportan desde hace años."
+  - question: "¿En qué se diferencia Taproot de SegWit?"
+    answer: "SegWit (2017) separó la firma del cuerpo de la transacción y habilitó Lightning. Taproot (2021) cambió el esquema de firma y la estructura de scripts. Son soft forks complementarios: ambos activados sin partir la red."
+related:
+  - lightning-network
+  - taproot-assets
+  - bitvm-y-citrea
+  - covenants
+  - que-es-utxo
 ---
 
 **Taproot** es la mejora de protocolo activada en **noviembre de 2021**. Está considerada la actualización más importante de Bitcoin de los últimos años — y la menos comprendida por el público general.

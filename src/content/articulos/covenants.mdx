@@ -1,10 +1,36 @@
 ---
-title: "Covenants — Poner condiciones a cómo se gasta el BTC"
-description: "OP_CAT, CTV y otras propuestas permitirían restringir cómo se pueden gastar bitcoins en el futuro. Es uno de los debates más activos de 2026."
+title: "Covenants en Bitcoin: qué son OP_CAT, CTV y por qué importan en 2026"
+description: "Qué es un covenant, cómo OP_CAT y OP_CTV permitirían vaults reales, mejores L2 y custodia más segura, y por qué siguen sin activarse en 2026."
 publishedAt: 2026-05-15
+updatedAt: 2026-05-26
 capa: futuro
 tags: [covenants, op_cat, ctv, soft-fork]
 order: 8
+keywords:
+  - covenants Bitcoin
+  - qué es un covenant
+  - OP_CAT
+  - OP_CTV
+  - CheckTemplateVerify
+  - vaults Bitcoin
+  - soft fork Bitcoin
+faqs:
+  - question: "¿Qué es un covenant en Bitcoin?"
+    answer: "Un covenant es una restricción inscrita en un script que limita cómo se pueden gastar los bitcoins recibidos en ese output: a qué dirección, después de cuántos bloques o con qué estructura de salidas. Hoy no son posibles sin opcodes adicionales."
+  - question: "¿OP_CAT y CTV requieren un soft fork?"
+    answer: "Sí. Tanto OP_CAT como OP_CTV (CheckTemplateVerify) requieren un soft fork para activarse, ya que añaden o reintroducen opcodes al lenguaje de scripts."
+  - question: "¿Qué se podría hacer con covenants que hoy no se puede?"
+    answer: "Vaults reales (que permiten revertir un robo si se detecta a tiempo), L2 más eficientes, congresos multi-firma sofisticados, custodia compartida con reglas estrictas y nuevos primitivos para canales Lightning."
+  - question: "¿Cuál es la diferencia entre OP_CAT y OP_CTV?"
+    answer: "OP_CAT es más general: permite concatenar valores y habilita muchos casos de uso. OP_CTV es más específico: permite fijar un template exacto para la transacción de salida. CTV es más conservador; OP_CAT más flexible."
+  - question: "¿Se activarán covenants en 2026?"
+    answer: "No es inminente. Aunque las pruebas en testnet llevan más de un año, no hay consenso suficiente entre desarrolladores y operadores de nodos. Es posible en algún momento del año si converge la discusión, pero Bitcoin prefiere debatir cinco años antes que arriesgarse."
+related:
+  - bitvm-y-citrea
+  - taproot
+  - lightning-network
+  - bip360-resistencia-cuantica
+  - nodos-los-guardianes
 ---
 
 Un **covenant** —del inglés "pacto" o "estipulación"— es una restricción que se inscribe en una transacción para limitar **cómo** se pueden gastar los bitcoins que recibe.

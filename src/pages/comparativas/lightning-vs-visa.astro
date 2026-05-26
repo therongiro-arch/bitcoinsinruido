@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const title = 'Lightning vs Visa: pagos en Bitcoin frente a la red tradicional';
+const description = 'Coste, finalidad, custodia, resistencia a censura y descentralización. Cómo se compara Lightning Network con Visa y por qué la respuesta no es binaria.';
+const url = 'https://bitcoinsinruidos.com/comparativas/lightning-vs-visa';
+
+const faqs = [
+  {
+    question: '¿Es Lightning más rápido que Visa?',
+    answer:
+      'En finalidad real, sí: Lightning liquida en menos de 1 segundo y el receptor controla los fondos al instante. Visa parece instantáneo pero la liquidación entre bancos toma T+1 a T+3 días.',
+  },
+  {
+    question: '¿Lightning aguanta el volumen de Visa?',
+    answer:
+      'Hoy no, pero el modelo es distinto: Visa tiene un cuello de botella central; Lightning escala añadiendo canales en paralelo. La capacidad teórica es muy superior; la práctica depende de adopción y liquidez.',
+  },
+  {
+    question: '¿Es Lightning seguro para pagos grandes?',
+    answer:
+      'Hasta el tamaño del canal disponible, sí. Para sumas muy grandes la capa base de Bitcoin (on-chain) sigue siendo más adecuada por sus garantías de finalidad.',
+  },
+  {
+    question: '¿Lightning protege la privacidad mejor que Visa?',
+    answer:
+      'Sí. Lightning no requiere identidad: cualquiera puede recibir un invoice. Visa exige KYC, vincula cada pago a una identidad y permite congelar fondos. La diferencia es estructural.',
+  },
+  {
+    question: '¿Quién garantiza un pago Lightning si algo falla?',
+    answer:
+      'En autocustodia, nadie: si el pago falla, los fondos no se mueven y la wallet reintenta. En custodia (Cash App, Strike) el proveedor asume el riesgo, con las contrapartes habituales de cualquier custodia.',
+  },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url,
+  inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished: '2026-05-26',
+  dateModified: '2026-05-26',
+  author: { '@type': 'Organization', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Comparativas', item: 'https://bitcoinsinruidos.com/comparativas' },
+    { '@type': 'ListItem', position: 3, name: 'Lightning vs Visa', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  keywords={["Lightning vs Visa", "Lightning Network pagos", "Bitcoin pagos", "comparativa Lightning", "remesas Lightning"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas', href: '/comparativas' }, { name: 'Lightning vs Visa' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">COMPARATIVA</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        Visa es una red de procesamiento privada, custodial y eficiente. Lightning es una red
+        abierta, sin permisos, autocustodial y casi gratis. Las dos resuelven el problema "pagar
+        rápido" pero con modelos opuestos de confianza.
+      </p>
+
+      <h2>Tabla comparativa</h2>
+      <table>
+        <thead>
+          <tr><th>Característica</th><th>Lightning Network</th><th>Visa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tiempo de confirmación</td><td>&lt;1 segundo</td><td>Aparente instantáneo</td></tr>
+          <tr><td>Liquidación final</td><td>Inmediata</td><td>T+1 a T+3 días</td></tr>
+          <tr><td>Coste por pago</td><td>&lt;0,01 USD</td><td>1,5-3 % al comerciante</td></tr>
+          <tr><td>Custodia</td><td>Auto o custodial</td><td>Custodial (banco emisor)</td></tr>
+          <tr><td>Permisos</td><td>Sin permisos</td><td>KYC obligatorio</td></tr>
+          <tr><td>Censurable</td><td>No (autocustodia)</td><td>Sí (bloqueo de tarjeta)</td></tr>
+          <tr><td>Reversible</td><td>No</td><td>Sí (chargebacks)</td></tr>
+          <tr><td>Capacidad por nodo</td><td>Limitada al canal</td><td>~24.000 tx/s pico declarado</td></tr>
+          <tr><td>Operador</td><td>Red P2P</td><td>Visa Inc.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Costes reales en remesas</h2>
+      <p>
+        Las redes tradicionales (Western Union, MoneyGram, SWIFT) cobran <strong>~7,2 %</strong> de
+        media en envíos a África (Cryptonews, 2026). Sobre 100.000 millones de USD/año en remesas,
+        eso son 7.200 millones quemados en comisiones. Lightning baja ese número a fracciones de
+        centavo por pago.
+      </p>
+
+      <h2>Cuándo Visa sigue ganando</h2>
+      <ul>
+        <li><strong>Disputas y chargebacks</strong> — Visa permite revertir cargos fraudulentos; Lightning no.</li>
+        <li><strong>Crédito al consumo</strong> — Visa empuja crédito; Lightning solo mueve fondos que ya tienes.</li>
+        <li><strong>Acuerdo entre partes que ya confían</strong> — Si confías en el banco, Visa simplifica.</li>
+        <li><strong>Pagos en USD/EUR locales</strong> — Visa no requiere conversión a BTC.</li>
+      </ul>
+
+      <h2>Cuándo Lightning gana</h2>
+      <ul>
+        <li><strong>Remesas internacionales</strong> — Costo y velocidad incomparables.</li>
+        <li><strong>Pagos sin permisos</strong> — Ningún emisor puede bloquear.</li>
+        <li><strong>Micropagos</strong> — Pagar fracciones de centavo es viable.</li>
+        <li><strong>Países con inflación o controles</strong> — Argentina, Venezuela, Líbano.</li>
+        <li><strong>Comercio online sin KYC del cliente</strong> — Recibe sin pedir identidad.</li>
+      </ul>
+
+      <h2>Lectura complementaria</h2>
+      <ul>
+        <li><a href="/articulos/lightning-network">Cómo funciona Lightning Network</a></li>
+        <li><a href="/articulos/taproot-assets">Taproot Assets: stablecoins sobre Lightning</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/comparativas" class="btn">← Todas las comparativas</a>
+    </footer>
+  </article>
+</BaseLayout>

@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Sobre Bitcoin Sin Ruido: misión, enfoque técnico y transparencia';
+const description = 'Quién está detrás de Bitcoin Sin Ruido, cómo se investiga el contenido, qué fuentes se usan y por qué nunca verás predicciones de precio en esta web.';
+const url = 'https://bitcoinsinruidos.com/sobre';
+
+const aboutLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  url,
+  name: title,
+  description,
+  inLanguage: 'es',
+  isPartOf: { '@id': 'https://bitcoinsinruidos.com/#website' },
+  mainEntity: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Sobre', item: url },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  keywords={["sobre Bitcoin Sin Ruido", "BSR autor", "Bitcoin español autor", "transparencia editorial Bitcoin"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={aboutLd} />
+    <JsonLd data={breadcrumbLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Sobre' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">SOBRE BSR</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Misión</h2>
+      <p>
+        <strong>Bitcoin Sin Ruido</strong> es una publicación técnica en español sobre el protocolo
+        de Bitcoin. El objetivo es uno solo: explicar cómo funciona la red, sus capas y sus
+        mejoras, con la precisión necesaria para que el lector pueda decidir por su cuenta y la
+        sencillez necesaria para no quedarse fuera por jerga.
+      </p>
+      <p>
+        No publicamos predicciones de precio, llamadas a comprar o vender, ni recomendaciones
+        financieras. Lo que pase con el precio importa, pero no es lo que cubrimos.
+      </p>
+
+      <h2>Enfoque técnico</h2>
+      <ul>
+        <li>El protocolo primero. La especulación, en otra parte.</li>
+        <li>Datos verificables. Cifras con fuente y fecha.</li>
+        <li>Soft forks, BIPs, L2 y criptografía explicadas para quien no es desarrollador, sin perder rigor.</li>
+        <li>Cobertura honesta de límites, riesgos y dudas — no solo de virtudes.</li>
+      </ul>
+
+      <h2>Fuentes de referencia</h2>
+      <p>El contenido se apoya principalmente en:</p>
+      <ul>
+        <li><a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech Newsletter ↗</a> — Resumen semanal técnico de los desarrolladores.</li>
+        <li><a href="https://groups.google.com/g/bitcoindev" target="_blank" rel="noopener noreferrer">Lista bitcoin-dev ↗</a> — Discusión oficial de propuestas.</li>
+        <li><a href="https://github.com/bitcoin/bips" target="_blank" rel="noopener noreferrer">Repositorio BIPs ↗</a> — Documentos formales de propuestas.</li>
+        <li><a href="https://bitnodes.io" target="_blank" rel="noopener noreferrer">Bitnodes ↗</a> — Métricas de descentralización.</li>
+        <li><a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space ↗</a> — Estado en tiempo real de la red.</li>
+        <li>Papers originales de proyectos referenciados (BitVM, Citrea, Taproot Assets).</li>
+        <li>Investigación de Chaincode Labs, Spiral, ACINQ, Blockstream y Lightning Labs.</li>
+      </ul>
+
+      <h2>Transparencia editorial</h2>
+      <ul>
+        <li><strong>Sin patrocinios pagados</strong> que condicionen el contenido. Si alguna vez los hubiera, se marcarán visiblemente.</li>
+        <li><strong>Código del sitio público</strong> en <a href="https://github.com/RonGiro" target="_blank" rel="noopener noreferrer">GitHub ↗</a>. Cualquiera puede revisar, proponer cambios o señalar errores.</li>
+        <li><strong>Correcciones registradas</strong>: cuando un artículo se actualiza, la fecha de actualización es visible en cabecera.</li>
+        <li><strong>Sin afiliados</strong> a exchanges, wallets ni productos financieros.</li>
+        <li><strong>Licencia abierta</strong>: el contenido se publica bajo CC BY-NC-SA 4.0.</li>
+      </ul>
+
+      <h2>Cómo se investiga y se escribe</h2>
+      <ol>
+        <li>Se elige un tema relevante a partir de Bitcoin Optech, bitcoin-dev y el ecosistema técnico de las últimas semanas.</li>
+        <li>Se contrasta con al menos dos fuentes primarias (paper, repositorio, especificación).</li>
+        <li>Se redacta el artículo y se verifica cada cifra antes de publicar.</li>
+        <li>Se incluyen enlaces a fuentes y a los términos del <a href="/glosario">glosario</a> para evitar jerga sin contexto.</li>
+        <li>Se revisa cada artículo al menos una vez al año o cuando aparecen datos nuevos.</li>
+      </ol>
+
+      <h2>Geografía y audiencia</h2>
+      <p>
+        Escrito desde LATAM para hispanohablantes de España, México, Argentina, Colombia, Chile,
+        Perú y Uruguay. La adopción técnica de Bitcoin en la región es uno de los focos editoriales
+        (remesas, controles de capital, stablecoins, autocustodia).
+      </p>
+
+      <h2>Lo que no encontrarás aquí</h2>
+      <ul>
+        <li>Predicciones de precio.</li>
+        <li>"Top 10 monedas para 2026".</li>
+        <li>Promoción de altcoins, ICOs, NFTs o esquemas de yield.</li>
+        <li>Recomendaciones financieras.</li>
+        <li>Clickbait.</li>
+      </ul>
+
+      <h2>Contacto</h2>
+      <ul>
+        <li>X: <a href="https://x.com/BitcoinSinRuido" target="_blank" rel="noopener noreferrer">@BitcoinSinRuido ↗</a></li>
+        <li>Newsletter: <a href="https://paragraph.com/@bitcoinsinruido" target="_blank" rel="noopener noreferrer">Paragraph ↗</a></li>
+        <li>RSS: <a href="/rss.xml">rss.xml</a></li>
+      </ul>
+
+      <h2>Por dónde empezar</h2>
+      <ul>
+        <li><a href="/bitcoin-explicado">Qué es Bitcoin</a> — Guía pillar.</li>
+        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/futuro-bitcoin">Futuro de Bitcoin</a></li>
+        <li><a href="/glosario">Glosario completo</a></li>
+        <li><a href="/articulos">Todos los artículos</a></li>
+      </ul>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,10 +1,34 @@
 ---
-title: "Glosario esencial — Los términos que importan"
-description: "Las palabras que aparecen una y otra vez en cualquier conversación seria sobre Bitcoin. Definiciones breves, sin azúcar."
+title: "Glosario esencial de Bitcoin: UTXO, Taproot, Lightning, BitVM y más"
+description: "Definiciones breves y técnicas de los términos clave de Bitcoin: UTXO, Proof of Work, nodos, halving, Taproot, Lightning, BitVM, covenants y resistencia cuántica."
 publishedAt: 2026-05-21
+updatedAt: 2026-05-26
 capa: glosario
 tags: [glosario, fundamentos]
 order: 11
+keywords:
+  - glosario Bitcoin
+  - términos Bitcoin español
+  - qué es UTXO
+  - qué es Taproot
+  - qué es Lightning Network
+  - qué es Proof of Work
+  - qué es BitVM
+faqs:
+  - question: "¿Cuáles son los términos básicos de Bitcoin que hay que conocer?"
+    answer: "Los esenciales son: UTXO (la unidad de saldo real), nodo (quien verifica), minero (quien propone bloques), Proof of Work (consenso), halving (recorte de emisión cada ~4 años), Taproot (firmas Schnorr) y Lightning (capa 2 de pagos)."
+  - question: "¿Cuál es la diferencia entre UTXO y saldo?"
+    answer: "Bitcoin no tiene saldos: tiene UTXOs (Unspent Transaction Outputs), monedas digitales específicas que solo el receptor puede gastar. Tu 'saldo' es la suma de tus UTXOs."
+  - question: "¿Soft fork y hard fork son lo mismo?"
+    answer: "No. Un soft fork es retrocompatible: los nodos antiguos siguen operando válidamente. Un hard fork no es retrocompatible y divide la red. Bitcoin evita los hard forks por diseño y prefiere soft forks como Taproot."
+  - question: "¿Qué es un BIP?"
+    answer: "BIP significa Bitcoin Improvement Proposal. Es el documento formal para proponer cambios al protocolo, similar a los RFC de internet. Ejemplos relevantes: BIP-341 (Taproot), BIP-360 (resistencia cuántica)."
+related:
+  - que-es-utxo
+  - proof-of-work
+  - lightning-network
+  - taproot
+  - bitvm-y-citrea
 ---
 
 Una colección compacta de los términos que aparecen en casi cualquier conversación técnica sobre Bitcoin. Definiciones cortas, sin rodeos.

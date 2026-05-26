@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Glosario de Bitcoin: 30+ términos técnicos explicados en español';
+const description = 'Diccionario técnico de Bitcoin: UTXO, Taproot, Lightning, BitVM, covenants, halving, mempool, soft fork, MuSig2, Schnorr, splicing y más. Definiciones breves y precisas.';
+const url = 'https://bitcoinsinruidos.com/glosario';
+
+interface Term {
+  id: string;
+  name: string;
+  definition: string;
+  link?: string;
+}
+
+const terms: Term[] = [
+  { id: 'utxo', name: 'UTXO', definition: 'Unspent Transaction Output. La unidad de saldo real en Bitcoin: una moneda digital específica, no un número en una cuenta.', link: '/articulos/que-es-utxo' },
+  { id: 'proof-of-work', name: 'Proof of Work', definition: 'Mecanismo de consenso en el que los mineros gastan energía para encontrar un hash válido. El costo físico es la seguridad.', link: '/articulos/proof-of-work' },
+  { id: 'nodo', name: 'Nodo', definition: 'Computadora con copia completa de la blockchain que verifica cada transacción y bloque contra las reglas del protocolo. Hay más de 24.000 activos.', link: '/articulos/nodos-los-guardianes' },
+  { id: 'halving', name: 'Halving', definition: 'Reducción a la mitad de la recompensa por bloque cada ~210.000 bloques (aprox. 4 años). Garantiza el límite de 21M BTC.', link: '/articulos/los-21-millones' },
+  { id: 'taproot', name: 'Taproot', definition: 'Soft fork activado en 2021 (BIP-341). Introduce firmas Schnorr, MuSig2 y un nuevo tipo de output (P2TR). Base de Lightning eficiente y BitVM.', link: '/articulos/taproot' },
+  { id: 'schnorr', name: 'Firmas Schnorr', definition: 'Esquema de firma digital con linealidad: múltiples firmas pueden combinarse en una sola (agregación). Habilita MuSig2 y multi-firmas baratas.' },
+  { id: 'musig2', name: 'MuSig2', definition: 'Protocolo de firma multi-parte basado en Schnorr. Permite firmar de forma colaborativa con una sola firma final on-chain, indistinguible de una firma simple.' },
+  { id: 'soft-fork', name: 'Soft fork', definition: 'Actualización retrocompatible del protocolo. Los nodos antiguos siguen operando válidamente. Es la forma como Bitcoin evoluciona.' },
+  { id: 'hard-fork', name: 'Hard fork', definition: 'Actualización no retrocompatible que divide la red. Bitcoin evita los hard forks por diseño.' },
+  { id: 'bip', name: 'BIP', definition: 'Bitcoin Improvement Proposal. Documento formal para proponer cambios al protocolo. Ej: BIP-341 (Taproot), BIP-360 (resistencia cuántica).' },
+  { id: 'covenants', name: 'Covenants', definition: 'Restricciones sobre cómo se puede gastar un UTXO. Propuestas activas: OP_CAT y OP_CTV. Requieren soft fork.', link: '/articulos/covenants' },
+  { id: 'op_cat', name: 'OP_CAT', definition: 'Opcode retirado en los primeros días de Bitcoin. Reintroducirlo habilitaría covenants y muchos casos de uso L2. Requiere soft fork.' },
+  { id: 'op_ctv', name: 'OP_CTV', definition: 'CheckTemplateVerify. Opcode propuesto que permite predefinir el template de la transacción de salida. Más conservador que OP_CAT.' },
+  { id: 'lightning', name: 'Lightning Network', definition: 'Capa 2 de Bitcoin para pagos instantáneos y casi gratuitos vía canales bidireccionales.', link: '/articulos/lightning-network' },
+  { id: 'splicing', name: 'Splicing', definition: 'Agregar o retirar fondos de un canal Lightning sin cerrarlo y reabrirlo. Implementado en LDK, Eclair y c-lightning.' },
+  { id: 'lsp', name: 'LSP (Lightning Service Provider)', definition: 'Proveedor de liquidez Lightning que ofrece canales entrantes y enrutamiento a wallets de consumidor.' },
+  { id: 'bitvm', name: 'BitVM', definition: 'Construcción que permite verificar computación arbitraria sobre Bitcoin con scripts simples y fraud proofs. Sin soft fork.', link: '/articulos/bitvm-y-citrea' },
+  { id: 'citrea', name: 'Citrea', definition: 'Primer ZK-rollup nativo sobre Bitcoin. Mainnet desde el 27 de enero de 2026. Usa BitVM y el puente Clementine.', link: '/articulos/bitvm-y-citrea' },
+  { id: 'zk-rollup', name: 'ZK-rollup', definition: 'Agrupa miles de transacciones y publica una sola prueba criptográfica de su validez. Bitcoin solo verifica la prueba.' },
+  { id: 'taproot-assets', name: 'Taproot Assets', definition: 'Protocolo de Lightning Labs (antes Taro) para emitir stablecoins y otros activos sobre Bitcoin y moverlos por Lightning.', link: '/articulos/taproot-assets' },
+  { id: 'bip-360', name: 'BIP-360', definition: 'Propuesta de migración a criptografía postcuántica. Esquema híbrido (clásico + postcuántico). Integrado al repo oficial en febrero de 2026.', link: '/articulos/bip360-resistencia-cuantica' },
+  { id: 'mempool', name: 'Mempool', definition: 'Cola de transacciones pendientes en espera de ser incluidas en un bloque. Cada nodo tiene su propia mempool local.' },
+  { id: 'coinbase-tx', name: 'Coinbase (transacción)', definition: 'Transacción especial que crea bitcoins nuevos como recompensa por minar un bloque. No confundir con el exchange Coinbase.' },
+  { id: 'difficulty', name: 'Difficulty adjustment', definition: 'Cada 2.016 bloques (~14 días) la dificultad de minería se reajusta para mantener un bloque cada ~10 minutos.' },
+  { id: 'hashrate', name: 'Hashrate', definition: 'Cantidad de hashes por segundo que la red de mineros calcula en su búsqueda de bloques válidos. Indicador agregado de potencia minera.' },
+  { id: 'segwit', name: 'SegWit', definition: 'Soft fork de 2017 (BIP-141) que separó la firma del cuerpo de la transacción. Habilitó Lightning y bajó costos.' },
+  { id: 'multisig', name: 'Multisig', definition: 'Esquema donde gastar un UTXO requiere varias firmas (M de N). Con Schnorr y MuSig2 es indistinguible de una firma simple.' },
+  { id: 'autocustodia', name: 'Autocustodia', definition: 'Controlar las claves privadas de los propios bitcoins sin intermediarios. "Not your keys, not your coins".' },
+  { id: 'wallet', name: 'Wallet', definition: 'Software que gestiona claves privadas, construye transacciones e interactúa con la red. Puede ser autocustodial o custodial.' },
+  { id: 'ordinal', name: 'Ordinals', definition: 'Esquema para asociar contenido arbitrario (texto, imagen) a un satoshi específico. Popularizado en 2023, controvertido por el uso de espacio en bloque.' },
+];
+
+const dts = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  name: 'Glosario de Bitcoin Sin Ruido',
+  inLanguage: 'es',
+  hasDefinedTerm: terms.map((t) => ({
+    '@type': 'DefinedTerm',
+    '@id': `${url}#${t.id}`,
+    name: t.name,
+    description: t.definition,
+    inDefinedTermSet: url,
+    url: t.link ? `https://bitcoinsinruidos.com${t.link}` : `${url}#${t.id}`,
+  })),
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Glosario', item: url },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  keywords={["glosario Bitcoin", "diccionario Bitcoin", "términos Bitcoin español", "qué es UTXO", "qué es Taproot", "qué es Lightning", "qué es BitVM"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={dts} />
+    <JsonLd data={breadcrumbLd} />
+  </Fragment>
+
+  <section class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Glosario' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GLOSARIO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <nav aria-label="Índice del glosario" class="mb-10 rounded-lg border border-line p-4 sm:p-5 bg-bg-elev/40">
+      <p class="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2">Salto rápido</p>
+      <ul class="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+        {terms.map((t) => (
+          <li><a href={`#${t.id}`} class="text-ink-muted hover:text-btc transition">{t.name}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <dl class="space-y-6">
+      {terms.map((t) => (
+        <div id={t.id} class="scroll-mt-24 rounded-lg border border-line p-5 sm:p-6 hover:border-btc/40 transition">
+          <dt class="flex items-baseline gap-2 mb-2">
+            <h2 class="text-xl font-semibold text-ink leading-tight">{t.name}</h2>
+            <a href={`#${t.id}`} aria-label={`Enlace permanente a ${t.name}`} class="text-ink-dim hover:text-btc text-sm font-mono transition">#</a>
+          </dt>
+          <dd class="text-ink-muted leading-relaxed">
+            {t.definition}
+            {t.link && (
+              <>
+                {' '}
+                <a href={t.link} class="text-btc hover:underline">Ver artículo completo →</a>
+              </>
+            )}
+          </dd>
+        </div>
+      ))}
+    </dl>
+
+    <section class="mt-16 pt-8 border-t border-line">
+      <h2 class="text-h2 font-semibold tracking-tight mb-4 text-ink">¿Falta un término?</h2>
+      <p class="text-ink-muted text-pretty">
+        Si echas en falta un concepto esencial, propón la incorporación abriendo un issue en el
+        <a href="https://github.com/RonGiro" target="_blank" rel="noopener noreferrer" class="text-btc hover:underline"> repositorio de Bitcoin Sin Ruido ↗</a>.
+        El glosario se actualiza con cada nuevo artículo.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="/bitcoin-explicado" class="btn">Guía Bitcoin →</a>
+        <a href="/articulos" class="btn">Artículos →</a>
+      </div>
+    </section>
+  </section>
+</BaseLayout>

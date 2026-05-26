@@ -1,10 +1,35 @@
 ---
-title: "Proof of Work — Cuando la energía es la ley"
-description: "Los mineros compiten gastando electricidad para producir un hash con características específicas. El costo físico es lo que protege el historial de Bitcoin."
+title: "Proof of Work explicado: por qué la energía es la seguridad de Bitcoin"
+description: "Qué es Proof of Work, por qué el consumo energético protege Bitcoin, en qué se diferencia de Proof of Stake y por qué no se puede sustituir sin romper la red."
 publishedAt: 2026-05-03
+updatedAt: 2026-05-26
 capa: protocolo
 tags: [pow, mineria, seguridad]
 order: 2
+keywords:
+  - Proof of Work
+  - qué es PoW
+  - minería Bitcoin
+  - consumo energético Bitcoin
+  - PoW vs PoS
+  - seguridad Bitcoin
+faqs:
+  - question: "¿Qué es Proof of Work?"
+    answer: "Proof of Work (PoW) es el mecanismo de consenso de Bitcoin: los mineros compiten gastando electricidad para encontrar un hash con propiedades específicas (difficulty). El bloque ganador se propaga, los nodos lo verifican y, si cumple las reglas, se añade a la cadena."
+  - question: "¿Por qué Bitcoin usa tanta energía?"
+    answer: "Porque la energía gastada es exactamente lo que protege el historial. Reescribir bloques antiguos exigiría rehacer todo ese trabajo. Sin un costo físico irreversible, atacar la red sería gratis. PoW no es ineficiente: es costoso por diseño."
+  - question: "¿Proof of Work se puede reemplazar por Proof of Stake?"
+    answer: "No sin convertir Bitcoin en otra cosa. PoS basa la seguridad en quien tiene más capital ya emitido, lo que cambia el modelo de confianza. La inmovilidad de las reglas de Bitcoin —incluyendo PoW— es parte central de la propuesta."
+  - question: "¿Quién controla Bitcoin si los mineros tienen el hashrate?"
+    answer: "Los mineros producen bloques pero no controlan las reglas. Los nodos las controlan: rechazan bloques inválidos sin importar cuánta energía costó producirlos. Hashrate es propuesta; consenso es verificación."
+  - question: "¿La minería de Bitcoin contamina?"
+    answer: "Depende del mix energético. En 2024-2026, una proporción creciente de la minería se ha movido a energía hidráulica (Paraguay, Bhután), gas flare capturado, geotermia (El Salvador) y excedentes renovables. La minería tiende a ir donde la electricidad sobra y nadie más la quiere."
+related:
+  - nodos-los-guardianes
+  - los-21-millones
+  - que-es-utxo
+  - bitcoin-como-tecnologia
+  - bip360-resistencia-cuantica
 ---
 
 Los mineros compiten para encontrar un número aleatorio que, combinado con las transacciones, produzca un hash con características específicas. **Es costoso a propósito.**

@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const title = 'BitVM vs smart contracts de Ethereum: dos filosofías de programabilidad';
+const description = 'Cómo se compara BitVM (fraud proofs sobre Bitcoin) con los smart contracts de la EVM. Confianza, seguridad, expresividad y casos de uso reales en 2026.';
+const url = 'https://bitcoinsinruidos.com/comparativas/bitvm-vs-smart-contracts';
+
+const faqs = [
+  {
+    question: '¿BitVM es lo mismo que un smart contract en Ethereum?',
+    answer:
+      'No. Un smart contract en Ethereum se ejecuta en todos los nodos. BitVM ejecuta off-chain y solo verifica on-chain mediante fraud proofs. Diferencias profundas en modelo de confianza y costo.',
+  },
+  {
+    question: '¿BitVM necesita un soft fork para funcionar?',
+    answer:
+      'No. Usa únicamente los opcodes ya disponibles en Bitcoin tras Taproot. Citrea lanzó mainnet en enero de 2026 sin coordinar una activación de protocolo.',
+  },
+  {
+    question: '¿Qué se puede hacer con BitVM que con EVM no?',
+    answer:
+      'BitVM permite construir contratos que heredan la seguridad de Bitcoin como capa de asentamiento sin renunciar a su modelo monetario conservador. La EVM no aporta esa ancla.',
+  },
+  {
+    question: '¿La EVM es más expresiva que BitVM?',
+    answer:
+      'A nivel de capa de ejecución, la EVM es más expresiva on-chain. BitVM compensa moviendo la ejecución off-chain y dejando solo la verificación on-chain. Es expresividad indirecta, vía pruebas.',
+  },
+  {
+    question: '¿BitVM compite con Citrea?',
+    answer:
+      'No, se complementan. Citrea es un ZK-rollup que usa BitVM como pieza para anclar pruebas a Bitcoin. BitVM es la primitiva; Citrea es una de sus implementaciones reales.',
+  },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url,
+  inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished: '2026-05-26',
+  dateModified: '2026-05-26',
+  author: { '@type': 'Organization', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Comparativas', item: 'https://bitcoinsinruidos.com/comparativas' },
+    { '@type': 'ListItem', position: 3, name: 'BitVM vs Smart Contracts', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  keywords={["BitVM vs smart contracts", "BitVM vs EVM", "Citrea vs Ethereum", "contratos Bitcoin", "fraud proofs"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas', href: '/comparativas' }, { name: 'BitVM vs Smart Contracts' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">COMPARATIVA</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>EVM ejecuta cada contrato en todos los nodos.</strong> <strong>BitVM ejecuta
+        off-chain y solo verifica on-chain si alguien hace trampa.</strong> Esa diferencia define
+        casi todo: costos, expresividad, modelo de confianza y filosofía de capa base.
+      </p>
+
+      <h2>Tabla comparativa</h2>
+      <table>
+        <thead>
+          <tr><th>Característica</th><th>BitVM (Bitcoin)</th><th>EVM (Ethereum)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ejecución</td><td>Off-chain</td><td>On-chain en cada nodo</td></tr>
+          <tr><td>Verificación</td><td>Fraud proofs / pruebas zk</td><td>Re-ejecución</td></tr>
+          <tr><td>Coste para usuarios honestos</td><td>Muy bajo</td><td>Alto (gas)</td></tr>
+          <tr><td>Coste si hay disputa</td><td>Alto (challenge on-chain)</td><td>Constante</td></tr>
+          <tr><td>Requiere soft fork</td><td>No</td><td>N/A</td></tr>
+          <tr><td>Expresividad on-chain</td><td>Limitada (scripts simples)</td><td>Turing-completa</td></tr>
+          <tr><td>Expresividad práctica</td><td>Arbitraria (off-chain)</td><td>Turing-completa</td></tr>
+          <tr><td>Anclaje monetario</td><td>Bitcoin (21M, PoW)</td><td>ETH (suministro variable, PoS)</td></tr>
+          <tr><td>Modelo de confianza</td><td>Optimista (1 honesto basta)</td><td>Consenso de validadores</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Cómo funciona BitVM en una línea</h2>
+      <p>
+        Las partes acuerdan off-chain el resultado de un programa. Si alguien hace trampa,
+        cualquiera puede demostrarlo on-chain con una secuencia de transacciones que solo el
+        tramposo no podría firmar. La amenaza mantiene a todos honestos.
+      </p>
+
+      <h2>Cómo funcionan los smart contracts en EVM</h2>
+      <p>
+        Cada nodo de Ethereum ejecuta el bytecode del contrato cuando se llama. El resultado se
+        consensúa y se registra en estado global. La ejecución es determinista y verificable por
+        todos los validadores.
+      </p>
+
+      <h2>Implicaciones prácticas en 2026</h2>
+      <ul>
+        <li><strong>Costes</strong>: BitVM optimiza el caso honesto; EVM tiene costo constante alto.</li>
+        <li><strong>MEV</strong>: la EVM tiene un problema serio de extracción de valor por ordenamiento. BitVM lo evita por construcción.</li>
+        <li><strong>Bugs</strong>: smart contracts EVM han perdido miles de millones por errores. BitVM tiene un modelo más cerrado y casos de uso más restringidos.</li>
+        <li><strong>Adopción dev</strong>: EVM lleva ~10 años de tooling; BitVM está empezando.</li>
+        <li><strong>Anclaje</strong>: BitVM hereda Bitcoin como capa de asentamiento.</li>
+      </ul>
+
+      <h2>Lectura complementaria</h2>
+      <ul>
+        <li><a href="/articulos/bitvm-y-citrea">BitVM y Citrea explicados</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+        <li><a href="/articulos/taproot">Taproot: la base técnica de BitVM</a></li>
+        <li><a href="/futuro-bitcoin">Futuro de Bitcoin</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/comparativas" class="btn">← Todas las comparativas</a>
+    </footer>
+  </article>
+</BaseLayout>

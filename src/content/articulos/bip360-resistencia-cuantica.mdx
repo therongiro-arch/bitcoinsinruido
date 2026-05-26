@@ -1,10 +1,35 @@
 ---
-title: "BIP-360 — Bitcoin frente a las computadoras cuánticas"
-description: "6.51 millones de BTC viven en direcciones vulnerables a un eventual ataque cuántico. BIP-360 prepara la migración, integrado al repo oficial en febrero 2026."
+title: "BIP-360: Bitcoin frente a las computadoras cuánticas (guía 2026)"
+description: "Qué es BIP-360, por qué 6,51M de BTC podrían ser vulnerables a un ataque cuántico y cómo se prepara la migración postcuántica integrada al repo oficial en febrero de 2026."
 publishedAt: 2026-05-19
+updatedAt: 2026-05-26
 capa: futuro
 tags: [bip-360, criptografia, cuantica]
 order: 10
+keywords:
+  - BIP-360
+  - Bitcoin cuántico
+  - criptografía postcuántica
+  - resistencia cuántica Bitcoin
+  - Q-day Bitcoin
+  - migración postcuántica
+faqs:
+  - question: "¿Qué es BIP-360?"
+    answer: "BIP-360 es la propuesta de mejora de Bitcoin que introduce direcciones resistentes a ataques cuánticos. Fue integrada al repositorio oficial en febrero de 2026 a nivel de testnet, con un esquema híbrido que combina firmas clásicas y postcuánticas."
+  - question: "¿Bitcoin es vulnerable a un computador cuántico hoy?"
+    answer: "No. Hoy no existe un computador cuántico con los miles de qubits estables necesarios para romper ECDSA o Schnorr. El riesgo es futuro: cuando llegue, los BTC cuya clave pública ya está expuesta on-chain (direcciones reutilizadas) serían los primeros vulnerables."
+  - question: "¿Cuántos BTC están en riesgo cuántico?"
+    answer: "Aproximadamente 6,51 millones de BTC (cerca del 32,7% del suministro) están en direcciones cuya pubkey ya fue expuesta. UTXOs en direcciones modernas no gastadas (P2WPKH, P2TR) solo exponen un hash, lo que ofrece más resistencia."
+  - question: "¿BIP-360 requiere un soft fork?"
+    answer: "Sí. Su despliegue final en mainnet implica un soft fork que añada el nuevo tipo de output postcuántico, manteniendo coexistencia con ECDSA y Schnorr durante años."
+  - question: "¿Cuánto tarda la transición postcuántica de Bitcoin?"
+    answer: "Estimación realista: entre 5 y 10 años. Bitcoin no se actualiza por decreto: depende de millones de usuarios moviendo fondos voluntariamente a direcciones nuevas."
+related:
+  - taproot
+  - covenants
+  - que-es-utxo
+  - bitcoin-como-tecnologia
+  - proof-of-work
 ---
 
 **BIP-360** es la propuesta de Bitcoin para resistir ataques de computadoras cuánticas suficientemente potentes. Fue **integrado al repositorio oficial en febrero de 2026**.
