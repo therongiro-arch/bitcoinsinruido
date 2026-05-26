@@ -11,13 +11,10 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content, remarkPluginFrontmatter } = await entry.render();
+const { Content } = await entry.render();
 
-// Rough reading time: 220 wpm on the rendered body.
 const wordCount = entry.body.split(/\s+/).filter(Boolean).length;
 const readingTime = Math.max(1, Math.round(wordCount / 220));
-
-const _ = remarkPluginFrontmatter; // silence unused warning
 ---
 
 <ArticleLayout
@@ -30,6 +27,10 @@ const _ = remarkPluginFrontmatter; // silence unused warning
   cover={entry.data.cover}
   author={entry.data.author}
   readingTime={readingTime}
+  slug={entry.slug}
+  keywords={entry.data.keywords}
+  faqs={entry.data.faqs}
+  related={entry.data.related}
 >
   <Content />
 </ArticleLayout>

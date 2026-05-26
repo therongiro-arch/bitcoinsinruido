@@ -1,0 +1,24 @@
+---
+export interface Crumb {
+  name: string;
+  href?: string;
+}
+export interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+---
+<nav aria-label="Migas de pan" class="mb-6 text-sm text-ink-muted font-mono">
+  <ol class="flex flex-wrap items-center gap-2">
+    {items.map((c, i) => (
+      <li class="flex items-center gap-2">
+        {c.href ? (
+          <a href={c.href} class="hover:text-btc transition">{c.name}</a>
+        ) : (
+          <span aria-current="page" class="text-ink">{c.name}</span>
+        )}
+        {i < items.length - 1 && <span aria-hidden="true">/</span>}
+      </li>
+    ))}
+  </ol>
+</nav>

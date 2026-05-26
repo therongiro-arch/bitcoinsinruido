@@ -4,6 +4,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import BtcWatermark from '../components/BtcWatermark.astro';
 import CardEffects from '../components/CardEffects.astro';
+import JsonLd from '../components/JsonLd.astro';
 
 export interface Props {
   title?: string;
@@ -11,19 +12,69 @@ export interface Props {
   image?: string;
   canonical?: string;
   noindex?: boolean;
+  keywords?: string[];
 }
 
 const {
-  title = 'Bitcoin Sin Ruido — Protocolo, no precio.',
-  description = 'Bitcoin explicado desde el protocolo. Sin hype, sin predicciones de precio, sin ruido. Una mirada técnica desde LATAM.',
+  title = 'Bitcoin Sin Ruido — Bitcoin desde el protocolo, sin ruido de precio',
+  description = 'Bitcoin explicado desde el protocolo: Lightning, Taproot, BitVM, covenants, escalabilidad y futuro. Sin hype ni predicciones de precio. Referencia técnica en español.',
   image = '/og-default.svg',
   canonical,
   noindex = false,
+  keywords = [],
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://bitcoinsinruidos.com';
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'https://bitcoinsinruidos.com').toString();
 const ogImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
+
+const organizationLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${siteUrl}/#organization`,
+  name: 'Bitcoin Sin Ruido',
+  alternateName: 'BSR',
+  url: siteUrl,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${siteUrl}/favicon.svg`,
+    width: 512,
+    height: 512,
+  },
+  description:
+    'Referencia técnica en español sobre Bitcoin: protocolo, Lightning, BitVM, Taproot, covenants y resistencia cuántica. Sin predicciones de precio.',
+  sameAs: ['https://x.com/BitcoinSinRuido', 'https://paragraph.com/@bitcoinsinruido'],
+  knowsAbout: [
+    'Bitcoin',
+    'Lightning Network',
+    'BitVM',
+    'Taproot',
+    'Covenants',
+    'Proof of Work',
+    'UTXO',
+    'Bitcoin scalability',
+    'Post-quantum cryptography',
+  ],
+  foundingDate: '2025',
+  areaServed: ['ES', 'MX', 'AR', 'CO', 'CL', 'PE', 'UY', 'VE', 'US'],
+};
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${siteUrl}/#website`,
+  url: siteUrl,
+  name: 'Bitcoin Sin Ruido',
+  inLanguage: 'es',
+  description:
+    'Bitcoin explicado desde el protocolo. Lightning, BitVM, Taproot, escalabilidad y futuro. Sin ruido de precio.',
+  publisher: { '@id': `${siteUrl}/#organization` },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${siteUrl}/articulos?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
 
 // Home renders the blockchain background; every other page renders the
 // floating ₿ watermark instead.
@@ -56,8 +107,18 @@ const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
 
     <title>{title}</title>
     <meta name="description" content={description} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
     <link rel="canonical" href={canonicalURL} />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
+    {!noindex && <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />}
+    <meta name="author" content="Bitcoin Sin Ruido" />
+    <meta http-equiv="content-language" content="es" />
+    <link rel="alternate" hreflang="es" href={canonicalURL} />
+    <link rel="alternate" hreflang="es-ES" href={canonicalURL} />
+    <link rel="alternate" hreflang="es-MX" href={canonicalURL} />
+    <link rel="alternate" hreflang="es-AR" href={canonicalURL} />
+    <link rel="alternate" hreflang="es-CO" href={canonicalURL} />
+    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="Bitcoin Sin Ruido" href="/rss.xml" />
@@ -91,6 +152,9 @@ const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+
+    <JsonLd data={organizationLd} />
+    <JsonLd data={websiteLd} />
 
     <slot name="head" />
   </head>

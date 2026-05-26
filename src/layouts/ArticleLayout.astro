@@ -1,6 +1,15 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import ArticleMeta from '../components/ArticleMeta.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
 
 export interface Props {
   title: string;
@@ -12,13 +21,109 @@ export interface Props {
   cover?: string;
   author?: string;
   readingTime?: number;
+  slug: string;
+  keywords?: string[];
+  faqs?: FaqItem[];
+  related?: string[];
 }
 
-const { title, description, publishedAt, updatedAt, tags = [], capa, cover, author = 'Bitcoin Sin Ruido', readingTime } = Astro.props;
+const {
+  title,
+  description,
+  publishedAt,
+  updatedAt,
+  tags = [],
+  capa,
+  cover,
+  author = 'Bitcoin Sin Ruido',
+  readingTime,
+  slug,
+  keywords = [],
+  faqs = [],
+  related = [],
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://bitcoinsinruidos.com';
+const url = `${siteUrl}/articulos/${slug}`;
+const ogImage = cover ? (cover.startsWith('http') ? cover : `${siteUrl}${cover}`) : `${siteUrl}/og-default.svg`;
+
+const seoTitle = `${title} | Bitcoin Sin Ruido`;
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${url}#article`,
+  headline: title,
+  description,
+  inLanguage: 'es',
+  url,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  image: [ogImage],
+  datePublished: publishedAt.toISOString(),
+  dateModified: (updatedAt ?? publishedAt).toISOString(),
+  author: {
+    '@type': 'Organization',
+    name: author,
+    url: siteUrl,
+  },
+  publisher: { '@id': `${siteUrl}/#organization` },
+  keywords: [...new Set([...keywords, ...tags])].join(', '),
+  articleSection: capa,
+  isAccessibleForFree: true,
+  wordCount: readingTime ? readingTime * 220 : undefined,
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Artículos', item: `${siteUrl}/articulos` },
+    { '@type': 'ListItem', position: 3, name: title, item: url },
+  ],
+};
+
+const faqLd = faqs.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.answer,
+        },
+      })),
+    }
+  : null;
+
+const allKeywords = [...new Set([...keywords, ...tags])];
 ---
 
-<BaseLayout title={`${title} · Bitcoin Sin Ruido`} description={description} image={cover}>
+<BaseLayout
+  title={seoTitle}
+  description={description}
+  image={cover}
+  keywords={allKeywords}
+>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={publishedAt.toISOString()} />
+    {updatedAt && <meta property="article:modified_time" content={updatedAt.toISOString()} />}
+    <meta property="article:section" content={capa} />
+    {tags.map((t) => <meta property="article:tag" content={t} />)}
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    {faqLd && <JsonLd data={faqLd} />}
+  </Fragment>
+
   <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[
+      { name: 'Inicio', href: '/' },
+      { name: 'Artículos', href: '/articulos' },
+      { name: title },
+    ]} />
+
     <header class="mb-10">
       <div class="flex flex-wrap gap-2 mb-4">
         <span class="chip-btc">Capa · {capa}</span>
@@ -33,8 +138,12 @@ const { title, description, publishedAt, updatedAt, tags = [], capa, cover, auth
       <slot />
     </div>
 
-    <footer class="mt-16 pt-8 border-t border-line">
+    <Faq items={faqs} />
+    <RelatedLinks slugs={related} currentSlug={slug} />
+
+    <footer class="mt-16 pt-8 border-t border-line flex flex-wrap items-center justify-between gap-4">
       <a href="/articulos" class="btn">← Todos los artículos</a>
+      <a href="/glosario" class="text-sm text-ink-muted hover:text-btc transition">¿Dudas con un término? → Glosario</a>
     </footer>
   </article>
 </BaseLayout>
