@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Qué es BitVM y cómo funciona en Bitcoin (contratos sin soft fork)';
+const description = 'Qué es BitVM, cómo permite computación verificable sobre Bitcoin sin modificar el consenso, Citrea, fraud proofs, ZK-rollups y casos reales en 2026.';
+const url = 'https://bitcoinsinruidos.com/bitvm';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué es BitVM en una frase?', answer: 'BitVM es una construcción que permite verificar computación arbitraria sobre Bitcoin usando solo scripts simples, multisig y canales. Si alguien hace trampa off-chain, cualquiera puede probarlo on-chain con un fraud proof. No requiere modificar el consenso ni un soft fork.' },
+  { question: '¿BitVM requiere un soft fork de Bitcoin?', answer: 'No. Usa únicamente los opcodes ya disponibles después de Taproot. Por eso Citrea pudo lanzar mainnet en enero de 2026 sin coordinar una activación con toda la red.' },
+  { question: '¿En qué se diferencia BitVM de un smart contract de Ethereum?', answer: 'Un smart contract Ethereum se ejecuta en todos los nodos. BitVM ejecuta off-chain y solo verifica on-chain mediante fraud proofs. Diferencias profundas en costo, modelo de confianza y filosofía.' },
+  { question: '¿Qué es Citrea?', answer: 'Citrea es el primer ZK-rollup nativo sobre Bitcoin. Mainnet desde el 27 de enero de 2026. Usa BitVM y un puente llamado Clementine para anclar pruebas zk al consenso de Bitcoin.' },
+  { question: '¿Qué es un fraud proof?', answer: 'Un fraud proof es una prueba criptográfica que cualquiera puede publicar para demostrar que una operación off-chain fue inválida. En BitVM, la amenaza del fraud proof mantiene honestos a los participantes: si alguien hace trampa, pierde su garantía.' },
+  { question: '¿Qué se puede construir con BitVM?', answer: 'Puentes trust-minimized entre Bitcoin y rollups, ZK-rollups (Citrea), aplicaciones DeFi ancladas a Bitcoin, juegos verificables, oráculos optimistas y mercados de predicción. Todo sin pedirle nada al consenso de Bitcoin.' },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'BitVM',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'BitVM', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={["qué es BitVM", "cómo funciona BitVM", "Citrea mainnet", "ZK-rollup Bitcoin", "contratos inteligentes Bitcoin", "fraud proofs", "Clementine bridge"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'BitVM' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR · FUTURO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>BitVM permite ejecutar computación arbitraria verificable sobre Bitcoin sin modificar las reglas de consenso.</strong> En lugar de pedir que Bitcoin ejecute contratos como Ethereum, BitVM ejecuta el contrato off-chain entre partes que se vigilan unas a otras. Si alguien hace trampa, cualquiera puede publicar una prueba on-chain (un <strong>fraud proof</strong>) que demuestra el fraude y penaliza al tramposo. Sin soft fork, sin opcodes nuevos.
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Imagina dos jugadores de ajedrez que firman una garantía conjunta: si alguno hace trampa con un movimiento ilegal, el otro puede demostrarlo enseñando una sola pieza del registro de la partida, y se queda con toda la garantía. Como ambos saben que la trampa es demostrable, simplemente <strong>juegan limpio</strong> y la partida se resuelve cooperativamente. Nadie necesita un árbitro ejecutando cada movimiento.
+      </p>
+      <p>
+        BitVM aplica esa idea a cualquier programa computable: el resultado se acuerda off-chain, on-chain solo aparece la verificación si y solo si alguien intenta engañar.
+      </p>
+
+      <h2>Explicación técnica</h2>
+      <h3>1. El problema que resuelve</h3>
+      <p>
+        Bitcoin tiene un lenguaje de scripts limitado a propósito. Añadir contratos completos (como hace Ethereum con la EVM) requeriría modificar el consenso, lo que toma años. La alternativa histórica eran <strong>opcodes nuevos</strong> (OP_CAT, OP_CTV), que también requieren soft forks. BitVM rompe el dilema: <strong>no añade nada al protocolo</strong>.
+      </p>
+
+      <h3>2. Mecanismo: commit + challenge</h3>
+      <p>
+        Las partes acuerdan off-chain ejecutar un programa. Cada paso de la ejecución se "compromete" criptográficamente con un hash y una firma. Si todo va bien, el resultado final se publica y cierra. Si alguien sospecha trampa, abre un <strong>challenge</strong>: una serie de transacciones on-chain que obligan al supuesto tramposo a revelar un paso intermedio. Si ese paso es inválido, su garantía se confisca. Si es válido, el challenge termina y la garantía se devuelve.
+      </p>
+
+      <h3>3. Tipos de pruebas</h3>
+      <ul>
+        <li><strong>Fraud proofs</strong> — Optimistas: se asume validez y solo se prueba lo contrario si alguien lo cuestiona.</li>
+        <li><strong>Pruebas zk-SNARK</strong> — Sucintas: una prueba criptográfica compacta que demuestra validez. Citrea las usa.</li>
+        <li><strong>Multi-firma + timeouts</strong> — Garantías y plazos que fuerzan cooperación.</li>
+      </ul>
+
+      <h3>4. Citrea — Primera implementación seria</h3>
+      <p>
+        <strong>Citrea</strong>, el primer <strong>ZK-rollup nativo sobre Bitcoin</strong>, lanzó mainnet el <strong>27 de enero de 2026</strong>. Usa BitVM como pieza fundamental y un puente bilateral llamado <strong>Clementine</strong> que conecta el rollup con Bitcoin. Throughput: miles de transacciones por segundo, ancladas en Bitcoin.
+      </p>
+
+      <h3>5. Clementine bridge</h3>
+      <p>
+        Clementine es el puente que mueve BTC entre la capa base y Citrea sin custodio centralizado en el camino crítico. Funciona con BitVM: si los operadores hacen trampa, cualquier observador puede publicar la prueba on-chain y recuperar los fondos.
+      </p>
+
+      <h2>Ejemplo real: un puente Bitcoin ↔ rollup</h2>
+      <ol>
+        <li>Alice quiere mover 1 BTC al rollup Citrea para usar una aplicación DeFi.</li>
+        <li>Deposita 1 BTC en una dirección controlada por un grupo de operadores (con BitVM detrás).</li>
+        <li>El rollup acuña 1 cBTC en la cuenta de Alice dentro de Citrea.</li>
+        <li>Alice usa la aplicación, hace varias operaciones, y al final quiere retirar.</li>
+        <li>Solicita retirada. Los operadores firman cooperativamente una transacción que devuelve 1 BTC en mainnet.</li>
+        <li>Si los operadores se niegan o intentan robar, Alice (o cualquiera) puede ejecutar el challenge protocol y recuperar fondos forzosamente.</li>
+      </ol>
+
+      <h2>Ventajas y desventajas</h2>
+      <h3>Ventajas</h3>
+      <ul>
+        <li><strong>No necesita soft fork</strong> — Despliegue inmediato.</li>
+        <li><strong>Hereda seguridad de Bitcoin</strong> como capa de asentamiento.</li>
+        <li><strong>Costo muy bajo en el caso cooperativo</strong>.</li>
+        <li><strong>Expresividad arbitraria</strong> off-chain (cualquier programa).</li>
+        <li><strong>Compatible con tooling Ethereum</strong> (Citrea soporta EVM-compatible).</li>
+      </ul>
+      <h3>Desventajas</h3>
+      <ul>
+        <li><strong>Coste alto si hay disputa</strong> — Los challenges on-chain pueden ser caros.</li>
+        <li><strong>Modelo de confianza específico</strong>: 1-de-N honesto (basta con un participante honesto).</li>
+        <li><strong>Liveness</strong>: requiere que los participantes estén online para responder challenges.</li>
+        <li><strong>Tooling temprano</strong> comparado con la EVM.</li>
+      </ul>
+
+      <h2>Comparativa: BitVM vs smart contracts EVM</h2>
+      <table>
+        <thead>
+          <tr><th>Aspecto</th><th>BitVM (Bitcoin)</th><th>EVM (Ethereum)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ejecución</td><td>Off-chain</td><td>On-chain en cada nodo</td></tr>
+          <tr><td>Verificación</td><td>Fraud proofs / zk</td><td>Re-ejecución</td></tr>
+          <tr><td>Coste caso honesto</td><td>Muy bajo</td><td>Alto (gas)</td></tr>
+          <tr><td>Coste con disputa</td><td>Alto</td><td>Constante</td></tr>
+          <tr><td>Requiere soft fork</td><td>No</td><td>N/A</td></tr>
+          <tr><td>Expresividad on-chain</td><td>Limitada</td><td>Turing-completa</td></tr>
+          <tr><td>Expresividad práctica</td><td>Arbitraria</td><td>Turing-completa</td></tr>
+          <tr><td>Anclaje</td><td>Bitcoin</td><td>ETH</td></tr>
+        </tbody>
+      </table>
+      <p>Comparativa completa: <a href="/comparativas/bitvm-vs-smart-contracts">BitVM vs smart contracts</a>.</p>
+
+      <h2>Por qué importa BitVM</h2>
+      <p>
+        Durante años el argumento contra Bitcoin fue "no es programable". BitVM rompe ese argumento sin tocar la capa base. Citrea ya está vivo en mainnet con throughput de miles de tx/s ancladas en Bitcoin. La filosofía se mantiene: <strong>capa base conservadora, programabilidad encima</strong>. Y, a diferencia de las propuestas que requieren soft forks, BitVM no necesita esperar consenso de toda la red para empezar a operar.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/articulos/bitvm-y-citrea">Artículo corto: BitVM y Citrea</a></li>
+        <li><a href="/taproot">Qué es Taproot</a> — Base técnica de BitVM.</li>
+        <li><a href="/articulos/covenants">Covenants</a> — Alternativa con soft fork.</li>
+        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/futuro-bitcoin">Futuro de Bitcoin</a></li>
+        <li><a href="/comparativas/bitvm-vs-smart-contracts">BitVM vs smart contracts</a></li>
+        <li><a href="/glosario#bitvm">BitVM en el glosario</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://bitvm.org/bitvm.pdf" target="_blank" rel="noopener noreferrer">BitVM whitepaper — Robin Linus ↗</a></li>
+        <li><a href="https://citrea.xyz" target="_blank" rel="noopener noreferrer">Citrea — sitio oficial ↗</a></li>
+        <li><a href="https://www.theblock.co/post/387140/zk-powered-bitcoin-layer-2-citrea-launches-mainnet" target="_blank" rel="noopener noreferrer">Citrea Launches Mainnet — The Block ↗</a></li>
+        <li><a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech Newsletter ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

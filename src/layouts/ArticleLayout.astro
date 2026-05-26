@@ -62,9 +62,10 @@ const articleLd = {
   datePublished: publishedAt.toISOString(),
   dateModified: (updatedAt ?? publishedAt).toISOString(),
   author: {
-    '@type': 'Organization',
+    '@type': 'Person',
     name: author,
-    url: siteUrl,
+    url: `${siteUrl}/sobre`,
+    sameAs: ['https://x.com/BitcoinSinRuido', 'https://paragraph.com/@bitcoinsinruido'],
   },
   publisher: { '@id': `${siteUrl}/#organization` },
   keywords: [...new Set([...keywords, ...tags])].join(', '),

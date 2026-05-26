@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Qué es Taproot y cómo funciona en Bitcoin (Schnorr, MuSig2)';
+const description = 'Qué es Taproot en Bitcoin, cómo funcionan las firmas Schnorr y MuSig2, BIP-341, privacidad estructural y por qué es la base de Lightning, BitVM y Taproot Assets.';
+const url = 'https://bitcoinsinruidos.com/taproot';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué es Taproot en Bitcoin?', answer: 'Taproot es el soft fork activado en noviembre de 2021 (BIPs 340, 341 y 342) que introdujo firmas Schnorr y un nuevo tipo de output (P2TR). Hace las transacciones más pequeñas, más privadas y más baratas, y es la base de Lightning eficiente, MuSig2, BitVM y Taproot Assets.' },
+  { question: '¿Qué son las firmas Schnorr?', answer: 'Schnorr es un esquema de firma digital con dos propiedades clave: linealidad (varias firmas pueden combinarse en una sola, MuSig2) y eficiencia. Sustituyen opcionalmente a ECDSA, reduciendo tamaño y costo de transacciones multi-firma.' },
+  { question: '¿Taproot mejora la privacidad de Bitcoin?', answer: 'Sí, pero estructuralmente, no por anonimato. Un pago simple, una multi-firma y un contrato complejo pueden quedar indistinguibles en la cadena. El observador externo no puede saber qué tipo de transacción está mirando.' },
+  { question: '¿Hay que actualizar la wallet para usar Taproot?', answer: 'Sí. Para gastar a/desde direcciones bech32m (bc1p…) la wallet debe soportar P2TR. Wallets modernas como Sparrow, BlueWallet, Phoenix, Mutiny y Bitcoin Core lo soportan desde hace años.' },
+  { question: '¿En qué se diferencia Taproot de SegWit?', answer: 'SegWit (2017) separó la firma del cuerpo de la transacción y habilitó Lightning. Taproot (2021) cambió el esquema de firma y la estructura de scripts. Son soft forks complementarios.' },
+  { question: '¿Qué es MuSig2?', answer: 'MuSig2 es un protocolo de firma multi-parte basado en Schnorr. Permite firmar de forma colaborativa entre varias partes con una sola firma final on-chain, indistinguible de una firma simple. Aporta privacidad y reduce costos.' },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Taproot',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Taproot', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={["qué es Taproot", "firmas Schnorr", "MuSig2", "BIP-341", "BIP-340", "privacidad Bitcoin", "soft fork Taproot", "P2TR"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Taproot' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR · PRIVACIDAD</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Taproot es el soft fork de Bitcoin activado en noviembre de 2021.</strong> Introdujo firmas Schnorr (BIP-340), una nueva estructura de scripts (BIP-341) y un lenguaje de scripts mejorado (BIP-342). Tres consecuencias prácticas: transacciones <strong>más pequeñas, más privadas y más baratas</strong>. Es la base técnica de <a href="/lightning-network">Lightning</a> moderno, <a href="/bitvm">BitVM</a> y <a href="/articulos/taproot-assets">Taproot Assets</a>.
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Antes de Taproot, las transacciones complejas (multi-firmas, contratos) se veían distintas a las simples en la blockchain. Cualquiera podía mirar y decir "esta es una multi-firma 2-de-3" o "esta es un canal Lightning abriéndose". Eso filtraba información.
+      </p>
+      <p>
+        Con Taproot, una transacción simple, una multi-firma cooperativa y un contrato complejo pueden quedar <strong>indistinguibles</strong> en la cadena. Para el mundo, todas parecen el mismo tipo de pago. Es como si todos los sobres del correo tuvieran exactamente la misma forma: no puedes saber qué hay dentro sin abrirlo.
+      </p>
+
+      <h2>Explicación técnica</h2>
+      <h3>1. Firmas Schnorr (BIP-340)</h3>
+      <p>
+        Schnorr es un esquema de firma con dos propiedades que ECDSA no tiene:
+      </p>
+      <ul>
+        <li><strong>Linealidad</strong>: varias firmas y claves pueden sumarse para producir una firma combinada válida sobre una clave combinada. Es la base de MuSig2.</li>
+        <li><strong>Determinismo</strong>: la firma es determinista (nonce derivado del mensaje), eliminando una clase entera de bugs de implementación.</li>
+      </ul>
+      <p>El tamaño de una firma Schnorr es 64 bytes vs 71-72 de una firma ECDSA. Menos bytes = menos fee.</p>
+
+      <h3>2. P2TR — Pay-to-Taproot (BIP-341)</h3>
+      <p>
+        Taproot introduce un nuevo tipo de output: <strong>P2TR</strong>, que codifica una clave pública en formato bech32m (las direcciones que empiezan por <code>bc1p…</code>). Cada output P2TR contiene una clave pública agregada que puede gastarse por dos rutas:
+      </p>
+      <ul>
+        <li><strong>Key path</strong>: firma directa con la clave agregada. Indistinguible de un pago simple.</li>
+        <li><strong>Script path</strong>: si la firma cooperativa no es viable, se revela un script alternativo de un árbol Merkle (MAST).</li>
+      </ul>
+      <p>La elegancia: si todos cooperan, nadie ve que había un contrato debajo.</p>
+
+      <h3>3. Tapscript (BIP-342)</h3>
+      <p>
+        BIP-342 introduce <strong>tapscript</strong>, una versión revisada del lenguaje de scripts dentro del contexto Taproot. Habilita <code>OP_CHECKSIGADD</code> para multi-firmas más eficientes y deja espacio para opcodes futuros (relevante para covenants).
+      </p>
+
+      <h3>4. MuSig2</h3>
+      <p>
+        <strong>MuSig2</strong> es el protocolo práctico para firmas multi-parte basadas en Schnorr. Permite que N partes generen una firma única indistinguible de una firma simple en la cadena. Aplicaciones: multi-firmas baratas, custodia compartida, canales Lightning de mayor privacidad.
+      </p>
+
+      <h3>5. MAST y árboles de scripts</h3>
+      <p>
+        En la rama script-path, los scripts se organizan en un <strong>Merkle Abstract Syntax Tree</strong>. Solo se revela el script que efectivamente se usa, no los demás. Esto mejora privacidad y reduce costos cuando hay muchas ramas alternativas (contratos complejos).
+      </p>
+
+      <h2>Ejemplo real: una multi-firma 2-de-3 con Taproot</h2>
+      <p>
+        Una empresa quiere una wallet 2-de-3 (CEO, CFO, COO). Pre-Taproot, cada gasto de la wallet aparecía como una multi-firma 2-de-3 explícita en la cadena. Post-Taproot, los tres acuerdan usar MuSig2: cuando los tres están de acuerdo, generan una firma agregada con MuSig2 y el gasto se ve como un pago simple. Solo si hay desacuerdo se cae al script-path y se revela una de las combinaciones 2-de-3.
+      </p>
+      <p>Resultado: privacidad mejorada, fee reducida ~70 % en el caso cooperativo, e indistinguibilidad con respecto a wallets normales.</p>
+
+      <h2>Ventajas y desventajas</h2>
+      <h3>Ventajas</h3>
+      <ul>
+        <li><strong>Privacidad estructural</strong> sin requerir extras.</li>
+        <li><strong>Tamaño menor</strong> de firmas y scripts.</li>
+        <li><strong>Multi-firmas baratas</strong> vía MuSig2.</li>
+        <li><strong>Base para innovación</strong>: BitVM y Taproot Assets son posibles gracias a Taproot.</li>
+        <li><strong>Compatibilidad</strong>: soft fork retrocompatible.</li>
+      </ul>
+      <h3>Desventajas</h3>
+      <ul>
+        <li><strong>Adopción gradual</strong>: no todas las wallets soportan P2TR todavía.</li>
+        <li><strong>Complejidad del modelo</strong> de scripts mayor (curva de aprendizaje para devs).</li>
+        <li><strong>Reservas en multi-firma</strong>: MuSig2 requiere coordinación on-line entre firmantes.</li>
+      </ul>
+
+      <h2>Comparativa: Taproot frente a otros esquemas</h2>
+      <table>
+        <thead>
+          <tr><th>Aspecto</th><th>Legacy P2PKH</th><th>SegWit P2WPKH</th><th>Taproot P2TR</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Año</td><td>2009</td><td>2017</td><td>2021</td></tr>
+          <tr><td>Firma</td><td>ECDSA</td><td>ECDSA</td><td>Schnorr</td></tr>
+          <tr><td>Tamaño firma</td><td>~71 B</td><td>~71 B (witness)</td><td>~64 B (witness)</td></tr>
+          <tr><td>Privacidad multi-firma</td><td>Mínima</td><td>Mínima</td><td>Alta (indistinguible)</td></tr>
+          <tr><td>Prefijo dirección</td><td>1…</td><td>bc1q…</td><td>bc1p…</td></tr>
+          <tr><td>Habilita</td><td>—</td><td>Lightning</td><td>BitVM, Taproot Assets</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Por qué importa Taproot</h2>
+      <p>
+        Taproot no fue una mejora visible al usuario final: no apareció un botón nuevo en la wallet. Fue un cambio <strong>fundacional</strong>. Sin Taproot:
+      </p>
+      <ul>
+        <li>BitVM no sería viable con los costos actuales.</li>
+        <li>Taproot Assets (stablecoins en Lightning) no existiría.</li>
+        <li>Las multi-firmas seguirían siendo caras y poco privadas.</li>
+        <li>Lightning sería significativamente más costoso.</li>
+      </ul>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/articulos/taproot">Artículo corto: Taproot</a></li>
+        <li><a href="/articulos/taproot-assets">Taproot Assets</a></li>
+        <li><a href="/bitvm">Qué es BitVM</a></li>
+        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
+        <li><a href="/articulos/covenants">Covenants y OP_CAT</a></li>
+        <li><a href="/glosario#taproot">Taproot en el glosario</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki" target="_blank" rel="noopener noreferrer">BIP-340 (Schnorr) ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank" rel="noopener noreferrer">BIP-341 (Taproot) ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0342.mediawiki" target="_blank" rel="noopener noreferrer">BIP-342 (Tapscript) ↗</a></li>
+        <li><a href="https://eprint.iacr.org/2020/1261" target="_blank" rel="noopener noreferrer">MuSig2 paper — Nick &amp; Ruffing ↗</a></li>
+        <li><a href="https://bitcoinops.org/en/topics/taproot/" target="_blank" rel="noopener noreferrer">Bitcoin Optech — Taproot topic ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

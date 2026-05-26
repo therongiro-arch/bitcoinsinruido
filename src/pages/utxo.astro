@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Qué es un UTXO en Bitcoin y cómo funciona (explicado fácil)';
+const description = 'Qué es un UTXO en Bitcoin, en qué se diferencia del modelo de cuentas, cómo se genera cambio, privacidad y ejemplos prácticos. Guía técnica en español.';
+const url = 'https://bitcoinsinruidos.com/utxo';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué significa UTXO?', answer: 'UTXO son las siglas de Unspent Transaction Output: una salida de transacción que aún no ha sido gastada. Es la unidad mínima de saldo en Bitcoin. Tu balance es la suma de todos los UTXOs que controla tu clave privada.' },
+  { question: '¿En qué se diferencia el modelo UTXO del modelo de cuentas?', answer: 'Ethereum usa cuentas: cada dirección tiene un saldo que se incrementa o decrementa. Bitcoin usa UTXOs: monedas específicas que se gastan completas y se reemplazan por nuevas. UTXO ofrece mejor privacidad y paralelización; cuentas ofrecen simplicidad para contratos complejos.' },
+  { question: '¿Qué pasa con el cambio al enviar Bitcoin?', answer: 'Si gastas un UTXO de 1 BTC para enviar 0,3, la transacción crea dos outputs: 0,3 BTC al receptor y 0,7 BTC de vuelta a una dirección tuya (change address). El UTXO original deja de existir.' },
+  { question: '¿Puede gastarse dos veces el mismo UTXO?', answer: 'No. El protocolo impide el doble gasto por construcción: una vez un UTXO se referencia como entrada en una transacción confirmada, queda marcado como gastado y los nodos rechazan cualquier transacción que intente reutilizarlo.' },
+  { question: '¿Cómo afecta el modelo UTXO a la privacidad?', answer: 'Cada UTXO es independiente y puede vincularse a una dirección distinta. Esto permite mayor privacidad que un modelo de cuenta unificada, pero requiere herramientas (CoinJoin, Taproot) para evitar el rastreo por análisis de cadena.' },
+  { question: '¿Qué es la coin selection?', answer: 'La coin selection es el algoritmo que decide qué UTXOs combinar para construir una transacción. Afecta a fees, privacidad y al "cambio" generado. Bitcoin Core implementa varias estrategias (BnB, knapsack).' },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'UTXO',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'UTXO', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={["qué es UTXO", "UTXO Bitcoin", "modelo UTXO", "cómo funciona UTXO", "UTXO vs cuentas", "change address Bitcoin"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'UTXO' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR · PROTOCOLO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Un UTXO (Unspent Transaction Output) es la unidad real de saldo en Bitcoin.</strong> No existen "cuentas" con un número de saldo: lo que existe son monedas digitales específicas (UTXOs) que solo el receptor puede gastar. Tu balance es la suma de los UTXOs que controlas con tu clave privada. Cuando pagas, gastas uno o varios UTXOs completos y la transacción crea outputs nuevos (pago + cambio).
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Bitcoin no funciona como una cuenta bancaria. Funciona como una <strong>billetera con billetes físicos</strong>. Si tienes un billete de 20 € y quieres pagar 13 €, no te "descuentan" 13 € de un saldo numérico: entregas el billete de 20 € y recibes 7 € de cambio. Bitcoin hace exactamente lo mismo: el billete de 20 € es un UTXO; al pagar lo "gastas" entero, y la transacción genera dos UTXOs nuevos (13 € para el receptor, 7 € para ti).
+      </p>
+      <p>
+        Tu "balance" en una wallet no es un número guardado en algún sitio: es la <strong>suma de todos los UTXOs que tu clave privada puede desbloquear</strong>.
+      </p>
+
+      <h2>Explicación técnica</h2>
+      <h3>1. Estructura de un UTXO</h3>
+      <p>Un UTXO tiene tres componentes esenciales:</p>
+      <ul>
+        <li><strong>Valor</strong> en satoshis (1 BTC = 100.000.000 sats).</li>
+        <li><strong>Script de bloqueo</strong> (scriptPubKey o tapscript): las condiciones que hay que cumplir para gastarlo.</li>
+        <li><strong>Referencia</strong> a la transacción donde nació (txid + vout).</li>
+      </ul>
+
+      <h3>2. Cómo se gasta un UTXO</h3>
+      <p>
+        Para gastar un UTXO, la transacción debe incluir una <strong>entrada</strong> que apunte al UTXO y un <strong>witness</strong> (firma o script) que satisfaga las condiciones. Una vez incluida en un bloque confirmado, el UTXO se elimina del conjunto activo (<strong>UTXO set</strong>) y se crean los outputs nuevos.
+      </p>
+
+      <h3>3. UTXO set y validación</h3>
+      <p>
+        Cada nodo mantiene un <strong>UTXO set</strong> en disco con todos los UTXOs sin gastar. Cuando llega una transacción, el nodo verifica que cada entrada existe en el set y que el witness es válido. Si todo cumple, la transacción se acepta; si no, se rechaza. Este es el mecanismo que <strong>impide el doble gasto</strong>.
+      </p>
+
+      <h3>4. Change address y coin selection</h3>
+      <p>
+        Cuando una wallet construye una transacción, ejecuta <strong>coin selection</strong>: decide qué UTXOs combinar como entradas para alcanzar el monto a enviar + las fees. Casi siempre sobra; ese excedente vuelve a una nueva dirección tuya (<strong>change address</strong>). Una buena coin selection minimiza fees y mejora privacidad.
+      </p>
+
+      <h3>5. UTXO y privacidad</h3>
+      <p>
+        Como cada UTXO puede vivir en una dirección distinta, Bitcoin permite estructuralmente más privacidad que un modelo de cuentas. Sin embargo, técnicas como <strong>CoinJoin</strong> son necesarias para evitar el rastreo por análisis de cadena cuando se mezclan UTXOs de origen identificado.
+      </p>
+
+      <h2>Ejemplo real: Alice envía 0,3 BTC a Bob</h2>
+      <ol>
+        <li>Alice tiene un UTXO de 1 BTC en su wallet.</li>
+        <li>Quiere enviar 0,3 BTC a Bob. La fee estimada es 0,0001 BTC.</li>
+        <li>La wallet construye una transacción con:
+          <ul>
+            <li><strong>Entrada</strong>: el UTXO de 1 BTC de Alice.</li>
+            <li><strong>Output 1</strong>: 0,3 BTC a la dirección de Bob.</li>
+            <li><strong>Output 2</strong>: 0,6999 BTC a una change address de Alice.</li>
+          </ul>
+        </li>
+        <li>Alice firma con su clave privada. La firma autoriza gastar el UTXO original.</li>
+        <li>La transacción se propaga, se incluye en un bloque y se confirma.</li>
+        <li>El UTXO de 1 BTC desaparece. Aparecen dos UTXOs nuevos: uno controlado por Bob, otro por Alice.</li>
+      </ol>
+
+      <h2>Ventajas y desventajas del modelo UTXO</h2>
+      <h3>Ventajas</h3>
+      <ul>
+        <li><strong>Privacidad estructural</strong> — cada UTXO independiente.</li>
+        <li><strong>Paralelización</strong> — tx que no comparten UTXOs validables en paralelo.</li>
+        <li><strong>Verificación sencilla</strong> — basta con consultar el UTXO set.</li>
+        <li><strong>Sin estado global mutable</strong> — más fácil de razonar formalmente.</li>
+      </ul>
+      <h3>Desventajas</h3>
+      <ul>
+        <li><strong>Más complejo conceptualmente</strong> para quien viene de cuentas bancarias.</li>
+        <li><strong>Coin selection</strong> añade complejidad a las wallets.</li>
+        <li><strong>Contratos complejos</strong> son menos directos que en un modelo de cuentas (mitigado por BitVM y L2).</li>
+      </ul>
+
+      <h2>UTXO vs modelo de cuentas (Ethereum)</h2>
+      <table>
+        <thead>
+          <tr><th>Característica</th><th>UTXO (Bitcoin)</th><th>Accounts (Ethereum)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Unidad</td><td>Monedas específicas</td><td>Saldo numérico</td></tr>
+          <tr><td>Privacidad por defecto</td><td>Mayor</td><td>Menor</td></tr>
+          <tr><td>Paralelización</td><td>Trivial</td><td>Compleja</td></tr>
+          <tr><td>Doble gasto</td><td>Imposible por construcción</td><td>Imposible por nonce</td></tr>
+          <tr><td>Cambio / change</td><td>Sí, generado por la wallet</td><td>No, descuenta del saldo</td></tr>
+          <tr><td>Smart contracts</td><td>Limitados en L1; ricos en L2</td><td>Ricos en L1 (EVM)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Por qué importa el modelo UTXO</h2>
+      <p>
+        El modelo UTXO es lo que hace posible <strong>Lightning Network</strong>, los <strong>covenants</strong>, las construcciones <strong>BitVM</strong> y la paralelización de la verificación. Sin UTXOs, muchas de las propiedades que definen a Bitcoin —privacidad estructural, paralelización, verificación local— serían más difíciles de construir. Es una de las decisiones de diseño más infravaloradas del protocolo.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/articulos/que-es-utxo">Artículo corto: UTXO</a></li>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
+        <li><a href="/articulos/proof-of-work">Proof of Work</a></li>
+        <li><a href="/taproot">Qué es Taproot</a></li>
+        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
+        <li><a href="/glosario#utxo">UTXO en el glosario</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener noreferrer">Bitcoin Whitepaper ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank" rel="noopener noreferrer">BIP-341 (Taproot) ↗</a></li>
+        <li><a href="https://en.bitcoin.it/wiki/UTXO" target="_blank" rel="noopener noreferrer">Bitcoin Wiki — UTXO ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

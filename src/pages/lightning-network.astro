@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Qué es Lightning Network y cómo escala Bitcoin (guía 2026)';
+const description = 'Qué es Lightning Network, cómo funcionan los canales de pago, splicing, liquidez, LSPs y casos de uso. La guía completa de la L2 de Bitcoin en español.';
+const url = 'https://bitcoinsinruidos.com/lightning-network';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  {
+    question: '¿Qué es Lightning Network en una frase?',
+    answer:
+      'Lightning Network es la capa 2 de Bitcoin que permite pagos instantáneos y casi gratuitos abriendo canales bidireccionales entre partes, sin escribir cada movimiento en la blockchain principal.',
+  },
+  {
+    question: '¿Lightning sustituye a Bitcoin?',
+    answer:
+      'No. Lightning depende de Bitcoin: cada canal se abre y se cierra con transacciones on-chain en la cadena principal. Lightning aporta velocidad y costo bajo; Bitcoin aporta el asentamiento final y la seguridad.',
+  },
+  {
+    question: '¿Cuánto cuesta un pago Lightning?',
+    answer:
+      'Las comisiones típicas son fracciones de centavo, normalmente entre 1 y 10 satoshis (menos de 0,01 USD para pagos de hasta cientos de dólares). El costo depende del enrutado y de los nodos intermedios, no del valor enviado.',
+  },
+  {
+    question: '¿Necesito un nodo propio para usar Lightning?',
+    answer:
+      'No. Wallets autocustodiales como Phoenix, Mutiny o Breez gestionan canales y liquidez por debajo. Tener un nodo propio aporta más privacidad y control, pero no es requisito para pagar o recibir.',
+  },
+  {
+    question: '¿Qué es el channel splicing?',
+    answer:
+      'Splicing permite agregar o retirar fondos de un canal Lightning sin cerrarlo y reabrirlo. Está implementado en LDK, Eclair y c-lightning. Hace los canales elásticos y reduce drásticamente el costo de gestionar liquidez.',
+  },
+  {
+    question: '¿Es Lightning seguro para grandes cantidades?',
+    answer:
+      'Lightning está optimizado para pagos pequeños y medianos. Para sumas muy grandes la capa base on-chain sigue siendo más adecuada por sus garantías de finalidad. La elección depende del tamaño, del receptor y de la urgencia.',
+  },
+  {
+    question: '¿Qué es un LSP en Lightning?',
+    answer:
+      'Un LSP (Lightning Service Provider) es un proveedor de liquidez Lightning que ofrece canales entrantes y enrutamiento a wallets de consumidor. Hace que recibir pagos sea posible sin gestionar canales manualmente.',
+  },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre', sameAs: ['https://x.com/BitcoinSinRuido'] },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Lightning Network',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Lightning Network', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={["qué es Lightning Network", "cómo funciona Lightning", "Lightning Bitcoin", "canales de pago", "splicing", "LSP Lightning", "pagos Bitcoin instantáneos"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Lightning Network' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR · L2</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Lightning Network es la capa 2 de Bitcoin para pagos instantáneos y casi gratuitos.</strong> Funciona abriendo canales bidireccionales entre dos partes: una sola transacción on-chain reserva fondos y, a partir de ahí, pueden intercambiarse infinitos pagos fuera de la cadena. Solo el saldo final se asienta on-chain al cerrar el canal. En 2026 mueve más de <strong>12 millones de transacciones al mes</strong> sobre 18.000+ nodos y 5.400+ BTC en canales.
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Imagina que tú y un amigo abrís una cuenta conjunta con 100 € cada uno. En lugar de pedir al banco que mueva dinero cada vez que os pagáis algo, simplemente apuntáis cuánto le debe uno al otro en una libreta privada. Al final del mes, cerráis la cuenta y os repartís el saldo final.
+      </p>
+      <p>
+        Lightning hace exactamente eso, pero con bitcoin: abres un <strong>canal</strong> con alguien y, dentro de ese canal, podéis enviaros pagos infinitas veces. Solo cuando cerráis el canal se actualiza la cadena pública de Bitcoin. Y como los canales se conectan en red, puedes pagar a alguien con quien no tienes canal directo: el pago se enruta por canales intermedios.
+      </p>
+
+      <h2>Explicación técnica</h2>
+      <h3>1. Canales de pago (HTLC)</h3>
+      <p>
+        Un canal Lightning es un multisig 2-de-2 entre dos partes. Cuando se abre, una transacción on-chain bloquea fondos en ese multisig. Los pagos dentro del canal se hacen actualizando un balance privado con firmas que <strong>solo serían válidas si alguien rompe las reglas</strong> (penalty transactions). Eso fuerza la cooperación.
+      </p>
+      <p>
+        Los pagos se enrutan por la red usando <strong>HTLCs</strong> (Hashed Time Locked Contracts): contratos atómicos que garantizan que un pago multi-hop o se completa entero o se revierte entero. Imposible que un nodo intermedio robe.
+      </p>
+
+      <h3>2. Enrutamiento y onion routing</h3>
+      <p>
+        Lightning usa <strong>Sphinx onion routing</strong>: cada nodo en la ruta solo conoce al anterior y al siguiente, no la fuente ni el destino. Es similar a Tor para pagos. Esto aporta privacidad estructural al enrutado.
+      </p>
+
+      <h3>3. Channel splicing</h3>
+      <p>
+        El <strong>channel splicing</strong> está implementado en los tres clientes principales: <strong>LDK</strong> (Spiral), <strong>Eclair</strong> (ACINQ) y <strong>c-lightning</strong> (Blockstream). Permite agregar o retirar fondos de un canal sin cerrarlo y reabrirlo: la operación se hace en una sola transacción on-chain y el canal sigue operando.
+      </p>
+
+      <h3>4. LSPs (Lightning Service Providers)</h3>
+      <p>
+        Los <strong>LSPs</strong> son proveedores de liquidez Lightning. Cuando una wallet nueva quiere recibir pagos, necesita liquidez entrante. Los LSPs venden o dan canales con liquidez precargada. Ejemplos: ACINQ (Phoenix), Mutiny LSP, Voltage, LNbits.
+      </p>
+
+      <h3>5. Taproot Assets sobre Lightning</h3>
+      <p>
+        Con <a href="/articulos/taproot-assets">Taproot Assets</a>, no solo BTC viaja por Lightning: <strong>stablecoins y otros activos</strong> también pueden moverse por la misma red, casi gratis y en segundos. USDT nativo en Lightning se lanzó en 2025.
+      </p>
+
+      <h2>Ejemplo real: pagar un café con Lightning</h2>
+      <ol>
+        <li>Abres tu wallet Lightning (Phoenix, Mutiny, Breez).</li>
+        <li>El comerciante muestra un QR con un invoice Lightning (bolt11).</li>
+        <li>Escaneas el QR. Tu wallet calcula la ruta entre tu nodo y el nodo del comerciante.</li>
+        <li>Pulsas pagar. Tu wallet envía un HTLC al primer nodo de la ruta.</li>
+        <li>El pago salta de nodo en nodo (onion routed) hasta el destino.</li>
+        <li>El comerciante recibe la confirmación en menos de un segundo.</li>
+        <li>El total: pago confirmado, fee inferior a 0,01 USD, sin intermediario bancario.</li>
+      </ol>
+
+      <h2>Ventajas y desventajas</h2>
+      <h3>Ventajas</h3>
+      <ul>
+        <li><strong>Velocidad</strong> — Confirmación &lt;1 segundo.</li>
+        <li><strong>Costo</strong> — Fees típicas inferiores a 0,01 USD.</li>
+        <li><strong>Autocustodia</strong> — Phoenix, Mutiny, Sparrow permiten autocustodia completa.</li>
+        <li><strong>Sin permisos</strong> — Nadie autoriza pagos.</li>
+        <li><strong>Micropagos</strong> — Pagar fracciones de centavo es viable.</li>
+        <li><strong>Hereda seguridad de Bitcoin</strong> como capa de asentamiento.</li>
+      </ul>
+      <h3>Desventajas</h3>
+      <ul>
+        <li><strong>Liquidez entrante</strong> — Sin canal hacia ti, no puedes recibir (mitigado por LSPs).</li>
+        <li><strong>Estar online</strong> — Para recibir, idealmente tu wallet debe estar online.</li>
+        <li><strong>Channel reserves</strong> — Parte de tus fondos quedan reservados para penalty.</li>
+        <li><strong>Watchtowers</strong> — Para máxima seguridad, conviene usar uno (la wallet lo hace por ti).</li>
+        <li><strong>Tamaño máximo</strong> — Pagos limitados al canal disponible (mejorando con AMP y splicing).</li>
+      </ul>
+
+      <h2>Comparativa: Lightning frente a otras vías</h2>
+      <table>
+        <thead>
+          <tr><th>Sistema</th><th>Tiempo</th><th>Coste</th><th>Custodia</th><th>Censurable</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Lightning</strong></td><td>&lt;1 s</td><td>&lt;0,01 USD</td><td>Auto o custodial</td><td>No (auto)</td></tr>
+          <tr><td>Bitcoin on-chain</td><td>10-60 min</td><td>0,5-10 USD</td><td>Auto</td><td>No</td></tr>
+          <tr><td>Visa / Mastercard</td><td>Instantáneo aparente</td><td>1,5-3% comerciante</td><td>Custodial</td><td>Sí</td></tr>
+          <tr><td>Western Union</td><td>Minutos-horas</td><td>5-10%</td><td>Custodial</td><td>Sí</td></tr>
+          <tr><td>Stablecoin Ethereum L1</td><td>Segundos</td><td>0,5-20 USD</td><td>Auto</td><td>Posible</td></tr>
+        </tbody>
+      </table>
+      <p>Comparativa completa: <a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a>.</p>
+
+      <h2>Por qué importa Lightning Network</h2>
+      <p>
+        Lightning convirtió a Bitcoin en algo que <strong>puede competir con tarjetas de crédito sin renunciar a su capa base</strong>. En 2026 lo usan Cash App (con 4M de terminales Square desplegando Lightning), Strike (85+ países), Phoenix, Mutiny y Breez. Tether lanzó USDT nativo en Lightning. En remesas a África, sustituye un margen del 7,2 % por fracciones de centavo.
+      </p>
+
+      <h2>Cómo empezar con Lightning</h2>
+      <ol>
+        <li>Instala una wallet Lightning autocustodial — recomendadas: Phoenix (iOS/Android), Mutiny (web/PWA), Breez (iOS/Android).</li>
+        <li>Recibe satoshis. Si vienes con BTC on-chain, el swap a Lightning lo hace la wallet automáticamente.</li>
+        <li>Haz tu primer pago. Una propina, una factura LNURL o un café. Ver el confirm-instantáneo cambia la intuición.</li>
+        <li>Cuando crezcas, considera un nodo propio (LND, Core Lightning, Eclair) con Umbrel/Start9.</li>
+        <li>Para recibir pagos serios, contrata canal con un LSP.</li>
+      </ol>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/articulos/lightning-network">Artículo corto: Lightning Network</a></li>
+        <li><a href="/taproot">Qué es Taproot</a> — La base técnica.</li>
+        <li><a href="/articulos/taproot-assets">Taproot Assets</a> — Stablecoins en Lightning.</li>
+        <li><a href="/bitvm">Qué es BitVM</a></li>
+        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a></li>
+        <li><a href="/glosario">Glosario</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://lightning.network/lightning-network-paper.pdf" target="_blank" rel="noopener noreferrer">Lightning Network Paper — Poon &amp; Dryja ↗</a></li>
+        <li><a href="https://github.com/lightning/bolts" target="_blank" rel="noopener noreferrer">BOLT specifications ↗</a></li>
+        <li><a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech Newsletter ↗</a></li>
+        <li><a href="https://1ml.com" target="_blank" rel="noopener noreferrer">1ML — Métricas de la red ↗</a></li>
+        <li><a href="https://mempool.space/lightning" target="_blank" rel="noopener noreferrer">mempool.space/lightning ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

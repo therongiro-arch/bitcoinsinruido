@@ -1,0 +1,21 @@
+---
+// Alias SEO de /sobre. Mantiene la URL larga indexable apuntando a la canónica.
+const target = '/sobre';
+---
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sobre Bitcoin Sin Ruido | Bitcoin Sin Ruido</title>
+    <meta name="description" content="Sobre Bitcoin Sin Ruido: misión, enfoque técnico, fuentes y transparencia. Bitcoin explicado desde el protocolo, sin predicciones de precio." />
+    <link rel="canonical" href={`https://bitcoinsinruidos.com${target}`} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex,follow" />
+  </head>
+  <body>
+    <p>Redirigiendo a <a href={target}>Sobre Bitcoin Sin Ruido</a>…</p>
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </body>
+</html>

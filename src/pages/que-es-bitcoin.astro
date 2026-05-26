@@ -1,0 +1,250 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Qué es Bitcoin y cómo funciona: guía técnica completa (2026)';
+const description = 'Qué es Bitcoin, cómo funciona el protocolo, UTXO, Proof of Work, nodos, Lightning, Taproot y BitVM. Una guía técnica en español, sin hype ni precio.';
+const url = 'https://bitcoinsinruidos.com/que-es-bitcoin';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  {
+    question: '¿Qué es Bitcoin en una frase?',
+    answer:
+      'Bitcoin es una red de dinero digital sin emisor central cuyo suministro está fijado por código en 21 millones de unidades y cuya validez se mantiene mediante consenso distribuido (Proof of Work) entre miles de nodos independientes.',
+  },
+  {
+    question: '¿Quién inventó Bitcoin?',
+    answer:
+      'Bitcoin fue propuesto en octubre de 2008 en un whitepaper firmado por Satoshi Nakamoto, un pseudónimo. El primer bloque (genesis block) se minó el 3 de enero de 2009. La identidad real detrás del pseudónimo nunca se confirmó.',
+  },
+  {
+    question: '¿Cómo funciona Bitcoin paso a paso?',
+    answer:
+      'Una transacción se firma con la clave privada del emisor, se propaga por la red de nodos, los mineros la agrupan en un bloque candidato, compiten gastando energía para encontrar un hash válido (Proof of Work), el bloque ganador se difunde, los nodos verifican que cumple las reglas y si es válido se añade a la cadena.',
+  },
+  {
+    question: '¿Quién controla Bitcoin?',
+    answer:
+      'Nadie en particular. Los desarrolladores proponen cambios, los nodos deciden si los aplican y los usuarios eligen qué software correr. No hay CEO, junta ni fundación que pueda imponer modificaciones unilateralmente al protocolo.',
+  },
+  {
+    question: '¿Cuántos Bitcoin existirán?',
+    answer:
+      'El suministro máximo está fijado en 21 millones de BTC. La emisión se reduce a la mitad cada ~210.000 bloques (halving, aproximadamente cada cuatro años). El último Bitcoin se minará alrededor del año 2140; para 2032 ya estará emitido más del 99%.',
+  },
+  {
+    question: '¿Es seguro usar Bitcoin?',
+    answer:
+      'El protocolo en sí es muy seguro y no ha sido comprometido desde 2009. Los riesgos prácticos vienen de cómo se custodian las claves: pérdida de seed phrase, phishing, exchanges centralizados que quiebran. La autocustodia con wallets como Phoenix, Mutiny, Sparrow o Bitcoin Core mitiga la mayoría.',
+  },
+  {
+    question: '¿Bitcoin es legal en España y LATAM?',
+    answer:
+      'Bitcoin es legal en España, México, Argentina, Colombia, Chile, Perú y Uruguay. Cada país regula diferente la fiscalidad y los intermediarios. El Salvador es el único donde es moneda de curso legal. Sudáfrica publicó en abril de 2026 un borrador que criminalizaría la autocustodia.',
+  },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url,
+  inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished,
+  dateModified,
+  author: {
+    '@type': 'Person',
+    name: 'Bitcoin Sin Ruido',
+    url: 'https://bitcoinsinruidos.com/sobre',
+    sameAs: ['https://x.com/BitcoinSinRuido', 'https://paragraph.com/@bitcoinsinruido'],
+  },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Bitcoin',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Qué es Bitcoin', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={["qué es Bitcoin", "cómo funciona Bitcoin", "Bitcoin explicado", "Bitcoin español", "Bitcoin para principiantes", "qué es BTC", "Bitcoin protocolo"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Qué es Bitcoin' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Bitcoin es una red de dinero digital sin emisor central.</strong> Su suministro está fijado por código en 21 millones de unidades, su seguridad se sostiene en energía gastada (<a href="/articulos/proof-of-work">Proof of Work</a>) y su consenso lo mantienen miles de <a href="/articulos/nodos-los-guardianes">nodos independientes</a>. Permite transferir valor a través de internet sin pedir permiso a bancos ni gobiernos, en cualquier cantidad y a cualquier persona con una clave.
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Imagina un libro de cuentas público al que todos pueden mirar y al que nadie puede modificar a posteriori. Cada vez que alguien envía bitcoin, se añade una línea nueva al libro. Para añadir esa línea hay que demostrar trabajo (gastar electricidad), y miles de copias del libro repartidas por el mundo comprueban que la línea cumple las reglas. Si alguien intenta hacer trampa, su versión del libro es ignorada por las demás copias.
+      </p>
+      <p>
+        Eso es Bitcoin: <strong>un libro de cuentas auditable, repartido entre miles de ordenadores, donde añadir información tiene un coste físico y borrarla es prácticamente imposible</strong>. Encima de ese libro funciona dinero — un activo nativo con suministro fijo cuya unidad es el bitcoin (BTC).
+      </p>
+
+      <h2>Explicación técnica</h2>
+      <h3>1. UTXO: la unidad real de saldo</h3>
+      <p>
+        Bitcoin no usa cuentas con saldos. Usa <strong><a href="/utxo">UTXOs</a></strong> (Unspent Transaction Outputs): monedas digitales específicas que solo el receptor puede gastar. Cuando recibes BTC, recibes una moneda; cuando pagas, gastas esa moneda y se crea una nueva con el cambio.
+      </p>
+
+      <h3>2. Transacciones y firmas</h3>
+      <p>
+        Cada transacción se firma con la clave privada del que gasta. La firma demuestra autorización sin revelar la clave. Desde 2021, Bitcoin usa <a href="/taproot">firmas Schnorr</a> (BIP-340 / BIP-341), que permiten agregación criptográfica y mejoran privacidad estructural.
+      </p>
+
+      <h3>3. Bloques y minería</h3>
+      <p>
+        Los mineros agrupan transacciones en <strong>bloques</strong> y compiten gastando energía para encontrar un hash con propiedades específicas (<a href="/articulos/proof-of-work">Proof of Work</a>). El que lo consigue propaga el bloque, gana la recompensa (3,125 BTC en 2026 + comisiones) y la cadena avanza.
+      </p>
+
+      <h3>4. Nodos y consenso</h3>
+      <p>
+        Cada <a href="/articulos/nodos-los-guardianes">nodo completo</a> guarda una copia íntegra de la cadena y verifica cada bloque contra las reglas. Si un bloque viola alguna —emisión incorrecta, doble gasto, firma inválida— el nodo lo rechaza automáticamente. Hay más de 24.000 nodos reachable en 2026.
+      </p>
+
+      <h3>5. Suministro y halving</h3>
+      <p>
+        La recompensa por bloque empezó en 50 BTC y se reduce a la mitad cada ~210.000 bloques (~4 años). La suma de la serie geométrica converge en <a href="/articulos/los-21-millones">21 millones de BTC</a>. No es una decisión política revisable: es una propiedad matemática del código.
+      </p>
+
+      <h3>6. Capas (L1 vs L2)</h3>
+      <p>
+        La capa base (L1) hace lo mínimo: asentamiento final y reserva de valor. Las capas 2 hacen lo demás: <a href="/lightning-network">Lightning Network</a> para pagos instantáneos, <a href="/articulos/taproot-assets">Taproot Assets</a> para stablecoins, <a href="/bitvm">BitVM</a> y <a href="/articulos/bitvm-y-citrea">Citrea</a> para contratos verificables sin soft fork.
+      </p>
+
+      <h2>Ejemplo real: enviar Bitcoin paso a paso</h2>
+      <ol>
+        <li>Alice quiere pagar 0,01 BTC a Bob. Abre su wallet (Phoenix, Sparrow, Bitcoin Core).</li>
+        <li>La wallet selecciona uno o varios UTXOs de Alice cuyo valor cubra el pago + la fee.</li>
+        <li>Alice firma la transacción con su clave privada. La firma autoriza gastar esos UTXOs.</li>
+        <li>La wallet propaga la transacción a la red. Cada nodo que la recibe la valida y la propaga a otros.</li>
+        <li>Los mineros la incluyen en un bloque candidato y compiten por minarlo.</li>
+        <li>Cuando el bloque se mina y se propaga, los nodos lo verifican. Si todo cumple, se añade a la cadena.</li>
+        <li>Bob ve la transacción confirmada en su wallet (1 confirmación). Con 6 confirmaciones (~60 min) se considera prácticamente irreversible.</li>
+      </ol>
+
+      <h2>Ventajas y desventajas</h2>
+      <h3>Ventajas</h3>
+      <ul>
+        <li><strong>Suministro fijo</strong> en 21M — no se puede inflar por decreto.</li>
+        <li><strong>Autocustodia</strong> real — controlas tus claves, controlas tus bitcoins.</li>
+        <li><strong>Resistencia a censura</strong> — una tx válida se incluye da igual quién la firme.</li>
+        <li><strong>Sin permisos</strong> — cualquiera puede recibir o enviar sin pedir autorización.</li>
+        <li><strong>Auditabilidad</strong> — el suministro y cada tx son verificables desde cualquier nodo.</li>
+        <li><strong>Descentralización</strong> — 24.000+ nodos, miles de mineros, miles de devs.</li>
+      </ul>
+      <h3>Desventajas honestas</h3>
+      <ul>
+        <li><strong>Volatilidad</strong> — el precio en moneda fiat fluctúa con fuerza.</li>
+        <li><strong>Responsabilidad de claves</strong> — si pierdes tu seed, pierdes los bitcoins.</li>
+        <li><strong>Curva de aprendizaje</strong> — entender autocustodia y L2 requiere tiempo.</li>
+        <li><strong>Capa base lenta y cara en picos</strong> — la solución son las L2.</li>
+        <li><strong>Riesgo cuántico futuro</strong> — mitigado por <a href="/articulos/bip360-resistencia-cuantica">BIP-360</a>.</li>
+        <li><strong>Riesgo regulatorio</strong> — algunos países restringen exchanges o autocustodia.</li>
+      </ul>
+
+      <h2>Comparativa con otras tecnologías</h2>
+      <table>
+        <thead>
+          <tr><th>Aspecto</th><th>Bitcoin</th><th>Ethereum</th><th>Visa / Bancos</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Emisor</td><td>Sin emisor</td><td>Foundation + devs</td><td>Banco central / privado</td></tr>
+          <tr><td>Suministro</td><td>21M fijo</td><td>Sin tope duro</td><td>Ilimitado</td></tr>
+          <tr><td>Consenso</td><td>Proof of Work</td><td>Proof of Stake</td><td>Confianza centralizada</td></tr>
+          <tr><td>Velocidad L1</td><td>~10 min</td><td>~12 s</td><td>Instantáneo aparente</td></tr>
+          <tr><td>Velocidad L2</td><td>&lt;1 s (Lightning)</td><td>~segundos (rollups)</td><td>N/A</td></tr>
+          <tr><td>Censurable</td><td>No</td><td>No (en L1)</td><td>Sí</td></tr>
+          <tr><td>Autocustodia</td><td>Sí</td><td>Sí</td><td>No</td></tr>
+        </tbody>
+      </table>
+      <p>Profundiza: <a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a> y <a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a>.</p>
+
+      <h2>Por dónde empezar a usar Bitcoin</h2>
+      <ol>
+        <li>Lee <a href="/utxo">qué es un UTXO</a> y <a href="/articulos/proof-of-work">cómo funciona PoW</a>.</li>
+        <li>Instala una wallet Lightning autocustodial (Phoenix, Mutiny, Breez).</li>
+        <li>Compra una cantidad pequeña en un exchange regulado y retírala a tu wallet.</li>
+        <li>Haz un pago Lightning real (un café, una propina, una factura LNURL).</li>
+        <li>Si quieres ir a fondo, corre un <a href="/articulos/nodos-los-guardianes">nodo completo</a> con Umbrel, Start9 o RaspiBlitz.</li>
+        <li>Suscríbete a <a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech ↗</a> para seguir la conversación técnica real.</li>
+      </ol>
+
+      <h2>Por qué importa Bitcoin</h2>
+      <p>
+        Bitcoin importa porque demuestra que es posible construir un sistema monetario auditable, con suministro fijo y sin emisor, que <strong>no depende de la confianza en una institución</strong>. En regiones con inflación alta o controles de capital, eso no es teoría: es la diferencia entre conservar el ahorro o perderlo. En el resto del mundo, es una opción más de un menú que históricamente no existía.
+      </p>
+      <p>
+        En 2026, además, Bitcoin demostró que <strong>se puede programar sin modificar su capa base</strong>. Con <a href="/bitvm">BitVM</a> y <a href="/articulos/bitvm-y-citrea">Citrea</a>, los contratos inteligentes ya no son exclusivos de otras cadenas. Y con <a href="/articulos/bip360-resistencia-cuantica">BIP-360</a>, la red empieza a prepararse para la criptografía postcuántica con años de antelación.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/lightning-network">Qué es Lightning Network</a> — Pagos instantáneos sobre Bitcoin.</li>
+        <li><a href="/utxo">Qué es un UTXO</a> — La unidad real de saldo.</li>
+        <li><a href="/taproot">Qué es Taproot</a> — Schnorr, MuSig2 y privacidad.</li>
+        <li><a href="/bitvm">Qué es BitVM</a> — Contratos sin soft fork.</li>
+        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/futuro-bitcoin">Futuro de Bitcoin</a></li>
+        <li><a href="/glosario">Glosario completo de Bitcoin</a></li>
+        <li><a href="/comparativas">Comparativas técnicas</a></li>
+        <li><a href="/articulos">Todos los artículos</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener noreferrer">Bitcoin Whitepaper — Satoshi Nakamoto (2008) ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips" target="_blank" rel="noopener noreferrer">Bitcoin Improvement Proposals (BIPs) ↗</a></li>
+        <li><a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech Newsletter ↗</a></li>
+        <li><a href="https://bitnodes.io" target="_blank" rel="noopener noreferrer">Bitnodes — Métricas de nodos ↗</a></li>
+        <li><a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>
