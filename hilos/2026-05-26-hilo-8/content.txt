@@ -1,0 +1,81 @@
+HILO SEMANAL — Semana 22 — Covenants
+Generado: 2026-05-26 18:27 UTC
+==================================================
+
+TWEET 1/11 (145/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 22
+
+Estado de la red Bitcoin:
+📦 Bloque: #951,154
+⚡ Fee rapido: 2 sat/vB
+💪 Hashrate: 1130.4 EH/s
+
+Esta semana: Covenants 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #406"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (109/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: COVENANTS
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (174/280 chars)
+────────────────────────────────────────
+Un Covenant es una restriccion programable que viaja con el Bitcoin.
+Ejemplo: 'Este BTC solo puede ir a una de estas 3 direcciones.'
+El protocolo lo verifica automaticamente.
+
+TWEET 5/11 (150/280 chars)
+────────────────────────────────────────
+Las propuestas principales:
+OP_CTV: congela el destino en el momento de crear el gasto.
+OP_CAT: concatena datos, base de muchas capacidades avanzadas.
+
+TWEET 6/11 (162/280 chars)
+────────────────────────────────────────
+¿Para que sirven?
+→ Bovedas: bloqueo con tiempo de espera
+→ Herencias: condiciones automaticas
+→ Canales Lightning mas eficientes
+→ Pagos restringidos por destino
+
+TWEET 7/11 (149/280 chars)
+────────────────────────────────────────
+El debate en la comunidad es intenso.
+A favor: amplian capacidades sin comprometer seguridad.
+En contra: aumentan complejidad y superficie de ataque.
+
+TWEET 8/11 (149/280 chars)
+────────────────────────────────────────
+Activar un soft fork en Bitcoin requiere consenso social amplio.
+No hay CEO que decida.
+Los nodos votan con su software.
+Los mineros con su hashrate.
+
+TWEET 9/11 (98/280 chars)
+────────────────────────────────────────
+Es un proceso lento a proposito.
+Bitcoin prefiere moverse despacio y bien antes que rapido y roto.
+
+TWEET 10/11 (175/280 chars)
+────────────────────────────────────────
+Si OP_CAT y CTV se activan en 2026, Bitcoin tendra capacidades de contratos inteligentes sin abandonar la simplicidad del protocolo base.
+El debate sigue. El protocolo espera.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
