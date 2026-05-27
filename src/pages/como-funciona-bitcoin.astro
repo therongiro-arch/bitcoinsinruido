@@ -1,0 +1,237 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Cómo funciona Bitcoin: el protocolo paso a paso (guía 2026)';
+const description = 'Cómo funciona Bitcoin paso a paso: claves, firmas, transacciones, UTXOs, mempool, bloques, minería, consenso PoW y nodos. Guía técnica completa en español.';
+const url = 'https://bitcoinsinruidos.com/como-funciona-bitcoin';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Cómo funciona Bitcoin en una frase?', answer: 'Bitcoin funciona combinando criptografía de clave pública para firmar transacciones, una estructura encadenada de bloques (blockchain), un mecanismo de consenso basado en gasto energético (Proof of Work) y una red de nodos independientes que verifica cada bloque contra las reglas del protocolo.' },
+  { question: '¿Cuánto tarda una transacción Bitcoin?', answer: 'En la capa base, una transacción suele confirmarse en el siguiente bloque (~10 min). Para considerarla prácticamente irreversible se esperan 6 confirmaciones (~60 min). En Lightning Network los pagos confirman en menos de 1 segundo.' },
+  { question: '¿Quién crea los bitcoins nuevos?', answer: 'Los mineros. Cuando un minero encuentra un bloque válido, incluye una transacción especial llamada coinbase que crea bitcoins nuevos como recompensa. En 2026 la recompensa es de 3,125 BTC por bloque, más las comisiones de las transacciones incluidas.' },
+  { question: '¿Cómo se previene el doble gasto?', answer: 'Cada UTXO solo puede gastarse una vez. Una vez que aparece como entrada en una transacción confirmada en un bloque, queda marcado como gastado en el UTXO set de cada nodo. Cualquier intento de gastarlo de nuevo es rechazado automáticamente por los nodos.' },
+  { question: '¿Quién valida las transacciones de Bitcoin?', answer: 'Las validan los nodos completos: ~24.000 reachable a nivel global en 2026. Cada nodo verifica firmas, ausencia de doble gasto, conformidad con las reglas de consenso y validez de cada bloque entrante. Los mineros producen bloques, los nodos los aceptan o rechazan.' },
+  { question: '¿Qué pasa si dos mineros encuentran un bloque a la vez?', answer: 'Ocurren forks temporales. La red sigue extendiendo ambas ramas hasta que una se vuelve más larga (acumula más trabajo). Los nodos adoptan la cadena más larga; las transacciones del bloque descartado vuelven a la mempool. Suelen resolverse en uno o dos bloques.' },
+  { question: '¿Bitcoin necesita internet para funcionar?', answer: 'No necesariamente. Aunque la mayoría de los nodos usan internet, existen proyectos como Blockstream Satellite (transmisión por satélite) y radio mesh networks para casos extremos. La red está diseñada para sobrevivir con conectividad muy limitada.' },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre', sameAs: ['https://x.com/BitcoinSinRuido'] },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Bitcoin',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Cómo funciona Bitcoin', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={["cómo funciona Bitcoin", "Bitcoin paso a paso", "blockchain Bitcoin", "minería Bitcoin", "consenso PoW", "transacciones Bitcoin", "mempool"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Cómo funciona Bitcoin' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR · PROTOCOLO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Bitcoin funciona combinando criptografía de clave pública, una blockchain como estructura de datos, Proof of Work como mecanismo de consenso y una red de <a href="/que-es-un-nodo-bitcoin">nodos independientes</a> que verifica cada bloque.</strong> Las transacciones se firman con la clave privada del emisor, se propagan por la red, los mineros las agrupan en bloques y compiten gastando electricidad para minarlos. Los nodos verifican y aceptan solo los bloques válidos. El sistema no depende de un intermediario y procesa pagos sin pedir permiso.
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Imagina que <a href="/que-es-bitcoin">Bitcoin</a> es un libro de cuentas público en el que cualquiera puede escribir, pero solo si demuestra que tiene la clave de las monedas que quiere mover. Cada cierto tiempo, alguien (un minero) recoge todas las entradas pendientes y propone un nuevo capítulo. Para que ese capítulo sea aceptado, el minero tiene que resolver un acertijo difícil que requiere gastar energía. Una vez resuelto, miles de personas leen el capítulo y comprueban que todo cuadra antes de aceptarlo.
+      </p>
+      <p>
+        Si todo cuadra, el capítulo se añade al libro y nadie puede borrarlo. Si no, el capítulo es ignorado, da igual cuánta energía costó producirlo. Eso es Bitcoin: un libro contable repartido por todo el mundo donde añadir información es caro y borrarla es prácticamente imposible.
+      </p>
+
+      <h2>Explicación técnica detallada</h2>
+      <h3>1. Claves criptográficas</h3>
+      <p>
+        Cada usuario de Bitcoin tiene un par de claves: una <strong>clave privada</strong> (un número aleatorio de 256 bits) y una <strong>clave pública</strong> derivada matemáticamente de la privada usando criptografía de curva elíptica (secp256k1). De la pública se deriva la <strong>dirección Bitcoin</strong> (una representación corta, tipo <code>bc1q…</code> o <code>bc1p…</code>).
+      </p>
+      <p>
+        La clave privada nunca debe salir de la wallet del usuario. Quien tiene la clave privada, controla los bitcoins asociados a las direcciones derivadas de ella. La pérdida de la clave es irrecuperable.
+      </p>
+
+      <h3>2. UTXOs: la unidad de saldo</h3>
+      <p>
+        Bitcoin no usa cuentas con saldo. Usa <a href="/utxo">UTXOs</a> (Unspent Transaction Outputs): monedas digitales específicas que solo el destinatario puede gastar. Tu balance es la suma de los UTXOs que tu clave privada puede desbloquear.
+      </p>
+
+      <h3>3. Construcción de una transacción</h3>
+      <p>
+        Cuando alguien quiere enviar bitcoin, la wallet:
+      </p>
+      <ol>
+        <li>Selecciona los UTXOs que servirán como <strong>entradas</strong> (coin selection).</li>
+        <li>Construye los <strong>outputs</strong>: uno para el receptor con la cantidad enviada y otro de cambio si sobra.</li>
+        <li>Calcula la <strong>fee</strong> en función del tamaño en vbytes y del estado de la mempool.</li>
+        <li>Firma la transacción con la clave privada (firma Schnorr post-<a href="/taproot">Taproot</a>).</li>
+        <li>Difunde la transacción a los nodos a los que está conectada.</li>
+      </ol>
+
+      <h3>4. Mempool y propagación</h3>
+      <p>
+        Cuando un nodo recibe una transacción, la valida (firma, ausencia de doble gasto, conformidad con las reglas), la guarda en su <strong>mempool</strong> local y la propaga a sus peers. La mempool no es un objeto global: cada nodo tiene su propia versión.
+      </p>
+
+      <h3>5. Minería: encontrar un bloque válido</h3>
+      <p>
+        Los mineros recogen transacciones de la mempool (típicamente las que pagan más fees) y construyen un <strong>bloque candidato</strong>. Para que el bloque sea aceptado, el doble SHA-256 de su cabecera debe estar por debajo de un objetivo (target) determinado por la <strong>difficulty</strong>.
+      </p>
+      <p>
+        Los mineros prueban combinaciones de nonce hasta encontrar una que cumpla. Es un proceso probabilístico: en promedio, la red completa encuentra un bloque cada 10 minutos. La <strong>difficulty se reajusta cada 2.016 bloques</strong> (~14 días) para mantener ese ritmo estable independientemente del hashrate total.
+      </p>
+
+      <h3>6. Coinbase y recompensa</h3>
+      <p>
+        El primer output del bloque es la <strong>transacción coinbase</strong>: crea bitcoins nuevos como recompensa por minar (3,125 BTC en 2026 más fees). Esta es la única forma en que se emiten bitcoins nuevos. El próximo <strong>halving</strong>, en 2028, reducirá la recompensa a ~1,5625 BTC.
+      </p>
+
+      <h3>7. Propagación del bloque y verificación</h3>
+      <p>
+        Cuando un minero encuentra un bloque válido, lo propaga. Cada <a href="/que-es-un-nodo-bitcoin">nodo</a> que lo recibe verifica:
+      </p>
+      <ul>
+        <li>Que el PoW (hash) cumple la dificultad.</li>
+        <li>Que la suma de outputs ≤ suma de inputs + recompensa.</li>
+        <li>Que cada firma es válida.</li>
+        <li>Que ningún UTXO se gasta dos veces.</li>
+        <li>Que las reglas del protocolo se respetan (tamaño, script, etc.).</li>
+      </ul>
+      <p>Si algo falla, el bloque se rechaza. Sin votación. Sin autoridad central. La regla es matemática.</p>
+
+      <h3>8. Forks temporales y la cadena más larga</h3>
+      <p>
+        Si dos mineros encuentran bloques casi a la vez, ambos se propagan. La red queda momentáneamente con dos versiones de la cadena (fork). Los siguientes bloques se construyen sobre una de las dos; la rama con más trabajo acumulado (la "más larga") gana y la otra queda huérfana. Las transacciones del bloque descartado vuelven a la mempool. Estos eventos son raros y se resuelven en uno o dos bloques.
+      </p>
+
+      <h2>Cómo funciona Bitcoin paso a paso (recorrido completo)</h2>
+      <ol>
+        <li>Alice quiere pagar 0,01 BTC a Bob. Abre su wallet (Phoenix, Sparrow, Bitcoin Core).</li>
+        <li>La wallet selecciona un UTXO de Alice cuyo valor cubra el pago + fee.</li>
+        <li>Alice firma la tx con su clave privada.</li>
+        <li>La wallet difunde la transacción a su nodo o a un proveedor.</li>
+        <li>La tx se propaga por la red P2P. Cada nodo la valida y la guarda en su mempool.</li>
+        <li>Los mineros la consideran candidata para incluir en el siguiente bloque (priorizan por fee/vbyte).</li>
+        <li>Un minero la incluye en un bloque candidato y compite por encontrar el hash válido.</li>
+        <li>Cuando lo encuentra (~10 min de media), propaga el bloque.</li>
+        <li>Los nodos verifican el bloque y, si es válido, lo añaden a su copia de la cadena.</li>
+        <li>Bob ve la tx confirmada en su wallet (1 confirmación).</li>
+        <li>Con 6 confirmaciones (~60 min) la tx se considera prácticamente irreversible.</li>
+      </ol>
+
+      <h2>Ejemplo real con números</h2>
+      <p>
+        Alice tiene un UTXO de 0,05 BTC y quiere enviar 0,01 BTC a Bob con una fee de ~3 sat/vbyte. La wallet construye una tx que gasta el UTXO de 0,05 y crea dos outputs: 0,01 BTC a Bob y 0,03998 BTC de vuelta a una <em>change address</em> de Alice (los ~200 sats restantes son fee). Alice firma. La tx se propaga, entra en mempool, un minero la incluye y, ~10 minutos después, Bob ve los 0,01 BTC confirmados.
+      </p>
+
+      <h2>Ventajas y desventajas</h2>
+      <h3>Ventajas</h3>
+      <ul>
+        <li><strong>Sin intermediarios</strong> — Las tx no requieren banco emisor.</li>
+        <li><strong>Auditable</strong> — Cualquiera puede verificar el suministro y cada tx.</li>
+        <li><strong>Resistente a censura</strong> — Las tx válidas no se pueden bloquear.</li>
+        <li><strong>Suministro fijo</strong> en 21 millones.</li>
+        <li><strong>Descentralizado</strong> — Miles de nodos verifican.</li>
+      </ul>
+      <h3>Desventajas honestas</h3>
+      <ul>
+        <li><strong>Capa base lenta</strong> — 10 min por bloque vs L2 instantáneas.</li>
+        <li><strong>Volatilidad</strong> en moneda fiat.</li>
+        <li><strong>Responsabilidad de claves</strong>: pérdida = irrecuperable.</li>
+        <li><strong>Curva de aprendizaje</strong> para autocustodia.</li>
+        <li><strong>Costo energético</strong> de la minería (mitigado por uso de excedentes).</li>
+      </ul>
+
+      <h2>Comparativa con sistemas tradicionales</h2>
+      <table>
+        <thead>
+          <tr><th>Aspecto</th><th>Bitcoin</th><th>Banca tradicional</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Confirmación</td><td>~10 min on-chain, &lt;1 s Lightning</td><td>Instantáneo aparente, T+1/T+3 real</td></tr>
+          <tr><td>Hora de apertura</td><td>24/7/365</td><td>Horario bancario</td></tr>
+          <tr><td>Intermediario</td><td>Ninguno</td><td>Banco emisor y corresponsales</td></tr>
+          <tr><td>Censurable</td><td>No (autocustodia)</td><td>Sí</td></tr>
+          <tr><td>Reversible</td><td>No</td><td>Sí (chargebacks)</td></tr>
+          <tr><td>Auditabilidad</td><td>Total y pública</td><td>Limitada</td></tr>
+          <tr><td>Suministro</td><td>21M fijo</td><td>Variable (banco central)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Relación con otras tecnologías</h2>
+      <ul>
+        <li><a href="/articulos/proof-of-work">Proof of Work</a> — El consenso que ata Bitcoin a energía física.</li>
+        <li><a href="/utxo">UTXO</a> — El modelo de saldo.</li>
+        <li><a href="/que-es-un-nodo-bitcoin">Nodos</a> — Los verificadores.</li>
+        <li><a href="/taproot">Taproot</a> — La actualización de firmas y privacidad.</li>
+        <li><a href="/lightning-network">Lightning Network</a> — La capa de pagos rápidos.</li>
+        <li><a href="/bitvm">BitVM</a> — Contratos sin soft fork.</li>
+        <li><a href="/articulos/los-21-millones">21 millones</a> — La política monetaria.</li>
+      </ul>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin (guía pillar)</a></li>
+        <li><a href="/que-es-un-nodo-bitcoin">Qué es un nodo Bitcoin</a></li>
+        <li><a href="/utxo">Qué es un UTXO</a></li>
+        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
+        <li><a href="/taproot">Qué es Taproot</a></li>
+        <li><a href="/bitvm">Qué es BitVM</a></li>
+        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
+        <li><a href="/glosario">Glosario completo</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener noreferrer">Bitcoin Whitepaper — Satoshi Nakamoto ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips" target="_blank" rel="noopener noreferrer">BIPs (Bitcoin Improvement Proposals) ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bitcoin" target="_blank" rel="noopener noreferrer">Bitcoin Core (código fuente) ↗</a></li>
+        <li><a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech Newsletter ↗</a></li>
+        <li><a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

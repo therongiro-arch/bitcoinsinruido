@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const title = 'Custodia vs autocustodia en Bitcoin: diferencias y cuándo usar cada una';
+const description = 'Custodia vs autocustodia en Bitcoin: qué significa each, riesgos, ventajas, herramientas (Phoenix, Sparrow, Trezor) y cuándo elegir cada modelo en 2026.';
+const url = 'https://bitcoinsinruidos.com/comparativas/custodia-vs-autocustodia';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué significa autocustodia en Bitcoin?', answer: 'Autocustodia significa controlar tú mismo las claves privadas de tus bitcoins, sin que un tercero (exchange, banco, fintech) las custodie por ti. La regla popular: "not your keys, not your coins".' },
+  { question: '¿Cuál es el riesgo principal de la custodia?', answer: 'El custodio puede congelar tus fondos, perderlos por insolvencia (FTX, Celsius, Mt. Gox), ser hackeado o ser forzado por un regulador a entregarlos. Su política, no la tuya, decide.' },
+  { question: '¿Cuál es el riesgo principal de la autocustodia?', answer: 'La responsabilidad es tuya: si pierdes la seed phrase o la dejas accesible a un atacante, los bitcoins se pierden. No hay servicio de atención al cliente que pueda recuperarlos.' },
+  { question: '¿Qué wallets son autocustodiales?', answer: 'On-chain: Sparrow, BlueWallet, Bitcoin Core, Trezor, Ledger, Coldcard. Lightning autocustodial: Phoenix, Mutiny, Breez. Cash App, Strike y los exchanges (Binance, Coinbase) son custodiales.' },
+  { question: '¿Una multi-firma es autocustodia?', answer: 'Sí, si tú participas en al menos una de las firmas. Multi-sig colaborativa (ej. Casa, Unchained) es autocustodia compartida: nadie puede mover los fondos sin tu participación, pero recuperación es posible si pierdes una llave.' },
+  { question: '¿Cuándo tiene sentido custodia?', answer: 'Para trading frecuente en exchange, para reglas regulatorias específicas (algunos países exigen intermediario), o si la cantidad es lo bastante pequeña como para que el riesgo operativo de autocustodia supere el del custodio.' },
+];
+
+const articleLd = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description, url, inLanguage: 'es', mainEntityOfPage: { '@type': 'WebPage', '@id': url }, datePublished, dateModified, author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' }, publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' } };
+const breadcrumbLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [ { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' }, { '@type': 'ListItem', position: 2, name: 'Comparativas', item: 'https://bitcoinsinruidos.com/comparativas' }, { '@type': 'ListItem', position: 3, name: 'Custodia vs autocustodia', item: url } ] };
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })) };
+---
+
+<BaseLayout title={`${title} | Bitcoin Sin Ruido`} description={description} canonical={url} keywords={["custodia vs autocustodia", "autocustodia Bitcoin", "not your keys not your coins", "wallet Bitcoin", "Phoenix", "Sparrow", "Trezor", "Ledger"]}>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas', href: '/comparativas' }, { name: 'Custodia vs autocustodia' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">COMPARATIVA</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Custodia</strong> = un tercero (exchange, app, banco) guarda tus claves privadas; tú confías en ellos. <strong>Autocustodia</strong> = tú controlas tus claves y eres responsable de su seguridad. La autocustodia es la propuesta original de <a href="/que-es-bitcoin">Bitcoin</a>: sin intermediarios, sin permisos, sin terceros que puedan congelar fondos.
+      </p>
+
+      <h2>Qué es la custodia</h2>
+      <p>
+        En un modelo custodial, las claves privadas las gestiona un servicio (Binance, Coinbase, Cash App, Strike, un banco). Tú tienes una cuenta con un saldo, pero en el fondo el bitcoin pertenece al custodio. Cuando "envías" desde un exchange, técnicamente <strong>le pides al custodio que mueva su bitcoin a una dirección externa</strong>.
+      </p>
+
+      <h2>Qué es la autocustodia</h2>
+      <p>
+        En autocustodia, las claves privadas viven en tu dispositivo (móvil, ordenador, hardware wallet). Tú firmas las transacciones; nadie puede mover los fondos sin tu firma. La seguridad recae en cómo proteges la <strong>seed phrase</strong> (12 o 24 palabras que regeneran las claves).
+      </p>
+
+      <h2>Diferencias clave</h2>
+      <table>
+        <thead>
+          <tr><th>Factor</th><th>Custodia</th><th>Autocustodia</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Control de claves</td><td>El custodio</td><td>El usuario</td></tr>
+          <tr><td>Riesgo principal</td><td>Quiebra, hack, censura del custodio</td><td>Pérdida de seed phrase</td></tr>
+          <tr><td>Recuperación de cuenta</td><td>Sí (KYC + soporte)</td><td>No (solo seed)</td></tr>
+          <tr><td>Censurable</td><td>Sí</td><td>No</td></tr>
+          <tr><td>KYC obligatorio</td><td>Sí en la mayoría</td><td>No</td></tr>
+          <tr><td>Tx instantánea interna</td><td>Sí (entre cuentas)</td><td>No (siempre on-chain o Lightning)</td></tr>
+          <tr><td>Comisiones</td><td>A veces ocultas</td><td>Transparentes (fee de minero)</td></tr>
+          <tr><td>Backup</td><td>Email + 2FA</td><td>Seed phrase (offline)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Ventajas y desventajas</h2>
+      <h3>Custodia</h3>
+      <p>Ventajas: facilidad para principiantes, trading rápido, recuperación de cuenta si olvidas contraseña, soporte humano. Desventajas: dependes del custodio (Mt. Gox 2014, Quadriga 2019, FTX 2022, Celsius 2022), congelaciones por compliance, exposición a hackeos masivos.</p>
+      <h3>Autocustodia</h3>
+      <p>Ventajas: soberanía total, sin censura, sin permisos, sin riesgo de quiebra de terceros, privacidad superior. Desventajas: responsabilidad total sobre la seed, curva de aprendizaje, riesgo operativo (phishing, pérdida física).</p>
+
+      <h2>Cuándo elegir cada uno</h2>
+      <ul>
+        <li><strong>Custodia</strong> si: trading frecuente, cantidades pequeñas, principiante absoluto, jurisdicción que exige intermediario.</li>
+        <li><strong>Autocustodia individual</strong> si: HODL a largo plazo, cantidades medianas, dispuesto a aprender backups.</li>
+        <li><strong>Autocustodia multisig</strong> si: cantidades grandes, herencia patrimonial, distribución geográfica del riesgo.</li>
+        <li><strong>Autocustodia colaborativa</strong> (Casa, Unchained) si: quieres autocustodia con red de seguridad ante errores.</li>
+      </ul>
+
+      <h2>Conclusión</h2>
+      <p>
+        La frase "<strong>not your keys, not your coins</strong>" no es una exageración: <a href="/que-es-bitcoin">Bitcoin</a> fue diseñado precisamente para eliminar la necesidad de confiar en terceros. La autocustodia tiene costos (responsabilidad, aprendizaje), pero es la única configuración en la que un usuario puede afirmar honestamente que posee sus bitcoins. La custodia es una capa de comodidad que reintroduce los riesgos que Bitcoin pretende evitar.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
+        <li><a href="/lightning-network">Lightning Network</a></li>
+        <li><a href="/que-es-un-nodo-bitcoin">Qué es un nodo Bitcoin</a></li>
+        <li><a href="/utxo">Qué es un UTXO</a></li>
+        <li><a href="/taproot">Qué es Taproot</a> — MuSig2 para multisig privada.</li>
+        <li><a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+        <li><a href="/glosario">Glosario</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/comparativas" class="btn">← Todas las comparativas</a>
+    </footer>
+  </article>
+</BaseLayout>

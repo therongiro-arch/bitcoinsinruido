@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Qué es un nodo Bitcoin y cómo funciona (guía 2026)';
+const description = 'Qué es un nodo Bitcoin, qué hace, qué tipos hay, cómo correr uno (Umbrel, Start9, RaspiBlitz, Bitcoin Core) y por qué los nodos —no los mineros— son los verdaderos guardianes.';
+const url = 'https://bitcoinsinruidos.com/que-es-un-nodo-bitcoin';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué es un nodo Bitcoin?', answer: 'Un nodo Bitcoin es una computadora que ejecuta el software del protocolo (típicamente Bitcoin Core), guarda una copia completa de la blockchain y verifica cada transacción y cada bloque contra las reglas. Si algo no cumple, lo rechaza automáticamente.' },
+  { question: '¿Cuántos nodos Bitcoin hay en 2026?', answer: 'Aproximadamente 24.000 nodos reachable (visibles desde fuera) en marzo de 2026 según Bitnodes. El número total, incluyendo nodos no expuestos, es significativamente mayor.' },
+  { question: '¿Cuánto cuesta correr un nodo?', answer: 'Hardware: 200-400 USD (Raspberry Pi 4/5 + SSD de 1-2 TB). Electricidad: similar a un router (~5-10 W). Banda: 200-500 GB/mes. En total, unos pocos euros al mes en electricidad y la inversión inicial de hardware.' },
+  { question: '¿Hace falta minar para correr un nodo?', answer: 'No. Minar y correr un nodo son actividades distintas. La mayoría de los nodos no minan. Un nodo verifica; un minero compite por proponer bloques. Para minar hace falta hardware ASIC y electricidad muy barata; para verificar basta una Raspberry Pi.' },
+  { question: '¿Qué hace mi nodo si lo dejo encendido?', answer: 'Descarga y verifica nuevos bloques cuando llegan, propaga transacciones recibidas a sus peers, atiende peticiones de tu wallet (que ya no depende de servidores externos) y mantiene actualizado el UTXO set.' },
+  { question: '¿Cuál es la diferencia entre full node y SPV node?', answer: 'Un full node guarda y verifica toda la cadena. Un SPV (Simplified Payment Verification, ej. wallets ligeras) solo verifica cabeceras y confía en nodos completos para el resto. Para máxima soberanía, full node.' },
+  { question: '¿Qué pasa si todos los nodos rechazan un bloque del minero más grande?', answer: 'El bloque se queda huérfano y la recompensa se pierde. El minero gastó energía para nada. Esto demuestra que el hashrate no es poder: si los nodos no aceptan, el bloque no existe en la red.' },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre', sameAs: ['https://x.com/BitcoinSinRuido'] },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Bitcoin node',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Qué es un nodo Bitcoin', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={["qué es un nodo Bitcoin", "cómo correr un nodo Bitcoin", "Umbrel", "Start9", "RaspiBlitz", "Bitcoin Core", "full node", "SPV"]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Qué es un nodo Bitcoin' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR · PROTOCOLO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Un nodo Bitcoin es una computadora que ejecuta el software del protocolo y verifica cada transacción y cada bloque contra las reglas.</strong> Si un bloque viola alguna regla —emisión incorrecta, doble gasto, firma inválida— el nodo lo rechaza automáticamente, sin votación ni autoridad. Hay más de 24.000 nodos reachable en 2026. Los nodos —no los mineros— son los que <strong>deciden qué reglas se aplican</strong>. Correr un nodo cuesta unos cientos de euros en hardware y es la forma máxima de soberanía en Bitcoin.
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Imagina que <a href="/que-es-bitcoin">Bitcoin</a> es un libro de cuentas global. Un nodo es un ordenador que guarda una copia íntegra de ese libro y revisa cada nueva entrada en cuanto llega. Si la entrada cuadra con las reglas, la añade a su copia y la pasa al siguiente. Si no cuadra, la rechaza y no la propaga. No hay un director del libro: cada nodo aplica las reglas que él mismo eligió correr.
+      </p>
+      <p>
+        Eso es lo que hace tan fuerte la red: <strong>no hay un punto único donde apretar</strong>. Miles de copias verificándose mutuamente, repartidas por todo el mundo, sin autoridad central que pueda dar órdenes.
+      </p>
+
+      <h2>Explicación técnica</h2>
+      <h3>1. Qué guarda un nodo</h3>
+      <ul>
+        <li>La <strong>blockchain completa</strong> desde el bloque génesis (2009). En 2026 ronda 600 GB.</li>
+        <li>El <strong>UTXO set</strong> activo (~10 GB) para validar gastos rápidamente.</li>
+        <li>Su <strong>mempool</strong> local de transacciones pendientes.</li>
+        <li>La <strong>lista de peers</strong> conocidos para mantener la conectividad P2P.</li>
+      </ul>
+
+      <h3>2. Qué hace un nodo en tiempo real</h3>
+      <ul>
+        <li>Verifica cada transacción que recibe contra las reglas (firmas, scripts, no doble gasto).</li>
+        <li>Acepta o rechaza bloques nuevos validando PoW, suma de outputs, fees y consenso.</li>
+        <li>Propaga transacciones válidas y bloques válidos a sus peers.</li>
+        <li>Sirve a wallets locales (si las hay) sin depender de servidores externos.</li>
+        <li>Sincroniza con peers nuevos cuando se conectan.</li>
+      </ul>
+
+      <h3>3. Tipos de nodo</h3>
+      <ul>
+        <li><strong>Full node (archive)</strong> — Guarda todo. Permite responder cualquier consulta histórica.</li>
+        <li><strong>Pruned node</strong> — Verifica todo pero descarta historia antigua para ahorrar disco (hasta 5 GB).</li>
+        <li><strong>SPV / light client</strong> — Solo descarga cabeceras y confía en full nodes para el resto. Menos soberanía.</li>
+        <li><strong>Mining node</strong> — Full node + software de minería. Compite por bloques.</li>
+        <li><strong>Lightning node</strong> — Full Bitcoin node + software Lightning (LND, Core Lightning, Eclair).</li>
+      </ul>
+
+      <h3>4. Reglas que un nodo aplica</h3>
+      <ul>
+        <li>El suministro nunca supera los <a href="/articulos/los-21-millones">21 millones</a>.</li>
+        <li>Cada bloque cumple la dificultad de <a href="/articulos/proof-of-work">Proof of Work</a>.</li>
+        <li>Ningún <a href="/utxo">UTXO</a> se gasta dos veces.</li>
+        <li>Cada firma es matemáticamente válida.</li>
+        <li>El tamaño de bloque y peso respetan los límites.</li>
+        <li>Los scripts ejecutan correctamente.</li>
+      </ul>
+
+      <h3>5. Software de nodo</h3>
+      <ul>
+        <li><strong>Bitcoin Core</strong> — Implementación de referencia. ~95 % de la red.</li>
+        <li><strong>btcd</strong> — Implementación en Go.</li>
+        <li><strong>Knots</strong> — Fork con políticas opinionadas.</li>
+        <li><strong>libbitcoin</strong> — Implementación modular.</li>
+      </ul>
+
+      <h2>Cómo correr un nodo paso a paso</h2>
+      <h3>Opción A: distribución empaquetada (recomendado para empezar)</h3>
+      <ol>
+        <li>Comprar hardware: Raspberry Pi 4/5 (4-8 GB RAM) + SSD de 1-2 TB.</li>
+        <li>Instalar <strong>Umbrel</strong>, <strong>Start9</strong> o <strong>RaspiBlitz</strong> en la microSD.</li>
+        <li>Conectar al router con Ethernet. Encender.</li>
+        <li>Acceder a la interfaz web local. Esperar el initial block download (1-3 días).</li>
+        <li>Una vez sincronizado, conectar tu wallet al nodo (Sparrow, BlueWallet, Phoenix).</li>
+      </ol>
+
+      <h3>Opción B: Bitcoin Core directo en Linux/Mac/Windows</h3>
+      <ol>
+        <li>Descargar Bitcoin Core de bitcoincore.org. Verificar la firma PGP.</li>
+        <li>Instalar y configurar <code>bitcoin.conf</code> con preferencias (pruning, tor, etc.).</li>
+        <li>Ejecutar <code>bitcoind</code>. Esperar el IBD.</li>
+        <li>Conectar wallet vía RPC o como nodo backend.</li>
+      </ol>
+
+      <h2>Ejemplo real: por qué importa correr un nodo</h2>
+      <p>
+        En 2017, durante el conflicto SegWit2x, una coalición de exchanges y empresas intentó forzar un hard fork. La razón por la que la propuesta fracasó: <strong>los nodos rehusaron actualizarse</strong>. Da igual que la mayoría de mineros y compañías firmaran un acuerdo: si los nodos no aplican las nuevas reglas, la cadena que se construye con esas reglas no es Bitcoin. El veto silencioso de miles de operadores independientes terminó imponiendo el resultado.
+      </p>
+
+      <h2>Ventajas y desventajas</h2>
+      <h3>Ventajas</h3>
+      <ul>
+        <li><strong>Soberanía total</strong> — Tu wallet no depende de terceros.</li>
+        <li><strong>Privacidad</strong> — No filtras tus direcciones a servidores externos.</li>
+        <li><strong>Validación propia</strong> — Verificas las reglas tú mismo.</li>
+        <li><strong>Contribución a la red</strong> — Sumas un punto de verificación.</li>
+        <li><strong>Resistencia a censura</strong> — Puedes difundir tx directamente.</li>
+      </ul>
+      <h3>Desventajas</h3>
+      <ul>
+        <li><strong>Inversión inicial</strong> en hardware (200-400 USD).</li>
+        <li><strong>Mantenimiento</strong> — Actualizaciones de software, backups.</li>
+        <li><strong>Tiempo de sincronización</strong> — Initial block download tarda 1-3 días.</li>
+        <li><strong>Banda y disco</strong> — Requiere ~200-500 GB/mes y ~600 GB de almacenamiento.</li>
+      </ul>
+
+      <h2>Comparativa: tipos de nodo</h2>
+      <table>
+        <thead>
+          <tr><th>Tipo</th><th>Disco</th><th>Soberanía</th><th>Privacidad</th><th>Compatible Lightning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Full archive</td><td>~600 GB</td><td>Máxima</td><td>Máxima</td><td>Sí</td></tr>
+          <tr><td>Pruned</td><td>~5-10 GB</td><td>Máxima</td><td>Máxima</td><td>Sí (con caveats)</td></tr>
+          <tr><td>SPV / mobile</td><td>~50 MB</td><td>Limitada</td><td>Baja</td><td>Sí (Phoenix, Mutiny)</td></tr>
+          <tr><td>Custodial backend</td><td>0</td><td>Ninguna</td><td>Nula</td><td>Sí (custodial)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Por qué los nodos importan más que los mineros</h2>
+      <p>
+        Los medios suelen presentar a los mineros como "quienes controlan Bitcoin". Es falso. Los mineros <strong>producen</strong> bloques; los nodos <strong>deciden</strong> si esos bloques son válidos. Un bloque inválido es ignorado, da igual cuánta energía costó. El minero más grande del mundo es irrelevante ante un nodo que se niega a aceptar sus reglas.
+      </p>
+      <p>
+        Esa asimetría es lo que protege la red: atacar Bitcoin no es solo caro en electricidad — es <strong>socialmente imposible</strong> mientras haya miles de nodos independientes. Cualquier intento de cambiar las reglas requiere convencer a operadores anónimos repartidos por el mundo, cada uno con sus motivos para mantener las reglas tal como están.
+      </p>
+
+      <h2>Relación con otras tecnologías</h2>
+      <ul>
+        <li><a href="/articulos/proof-of-work">Proof of Work</a> — Lo que verifican los nodos sobre bloques.</li>
+        <li><a href="/utxo">UTXO</a> — La estructura que el nodo valida.</li>
+        <li><a href="/articulos/los-21-millones">21 millones</a> — La regla más conocida que aplica.</li>
+        <li><a href="/lightning-network">Lightning Network</a> — Capa 2 que monta sobre nodos Bitcoin.</li>
+        <li><a href="/taproot">Taproot</a> — Una de las mejoras que los nodos hacen cumplir.</li>
+        <li><a href="/articulos/covenants">Covenants</a> — Cambios pendientes que requerirían que los nodos actualicen.</li>
+      </ul>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
+        <li><a href="/como-funciona-bitcoin">Cómo funciona Bitcoin</a></li>
+        <li><a href="/articulos/nodos-los-guardianes">Artículo corto: Nodos</a></li>
+        <li><a href="/articulos/proof-of-work">Proof of Work</a></li>
+        <li><a href="/utxo">UTXO</a></li>
+        <li><a href="/taproot">Taproot</a></li>
+        <li><a href="/lightning-network">Lightning Network</a></li>
+        <li><a href="/comparativas/custodia-vs-autocustodia">Custodia vs autocustodia</a></li>
+        <li><a href="/glosario">Glosario</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://bitcoincore.org" target="_blank" rel="noopener noreferrer">Bitcoin Core ↗</a></li>
+        <li><a href="https://bitnodes.io" target="_blank" rel="noopener noreferrer">Bitnodes — Métricas de la red ↗</a></li>
+        <li><a href="https://getumbrel.com" target="_blank" rel="noopener noreferrer">Umbrel ↗</a></li>
+        <li><a href="https://start9.com" target="_blank" rel="noopener noreferrer">Start9 ↗</a></li>
+        <li><a href="https://raspiblitz.org" target="_blank" rel="noopener noreferrer">RaspiBlitz ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

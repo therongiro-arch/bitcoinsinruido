@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import JsonLd from '../../components/JsonLd.astro';
+
+const title = 'Layer 1 vs Layer 2 en Bitcoin: diferencias y cuándo usar cada capa';
+const description = 'Layer 1 (cadena base) vs Layer 2 (Lightning, BitVM, Taproot Assets, Citrea) en Bitcoin: qué hace cada capa, costos, seguridad y cuándo elegirla.';
+const url = 'https://bitcoinsinruidos.com/comparativas/layer-1-vs-layer-2';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué es Layer 1 en Bitcoin?', answer: 'Layer 1 es la cadena base de Bitcoin: la blockchain donde se asientan los bloques cada ~10 minutos, mantenida por Proof of Work y verificada por miles de nodos. Es la capa de máxima seguridad y finalidad.' },
+  { question: '¿Qué es Layer 2 en Bitcoin?', answer: 'Layer 2 son protocolos construidos encima de Bitcoin que heredan su seguridad pero operan fuera de la cadena para ofrecer mayor velocidad, menor costo o mayor expresividad. Ejemplos: Lightning Network, Taproot Assets, Citrea (ZK-rollup).' },
+  { question: '¿Layer 2 es menos seguro que Layer 1?', answer: 'Cada L2 tiene su propio modelo de seguridad. Lightning hereda la finalidad de Bitcoin al cerrar canales. Citrea hereda al publicar pruebas zk. La seguridad efectiva depende de cómo está diseñada cada L2.' },
+  { question: '¿Cuándo usar L1 vs L2?', answer: 'L1 para grandes cantidades, asentamiento final y HODL. L2 (Lightning) para pagos cotidianos, micropagos y remesas. L2 (Citrea, Taproot Assets) para contratos y stablecoins. La elección depende del caso de uso, no de una preferencia absoluta.' },
+  { question: '¿Bitcoin necesita más capas para escalar?', answer: 'Sí. La L1 está limitada a ~7 tx/s por diseño (mantenerla descentralizada). El escalado masivo viene de L2: Lightning ya mueve más de 12M tx/mes en 2026 y Citrea aporta miles de tx/s adicionales ancladas en Bitcoin.' },
+  { question: '¿Layer 2 es lo mismo que sidechain?', answer: 'No. Una sidechain (ej. Liquid) es una blockchain independiente con su propio consenso conectada por un puente. Una L2 hereda directamente la seguridad de L1 (vía canales, fraud proofs o zk). Lightning es L2; Liquid es sidechain.' },
+];
+
+const articleLd = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description, url, inLanguage: 'es', mainEntityOfPage: { '@type': 'WebPage', '@id': url }, datePublished, dateModified, author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' }, publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' } };
+const breadcrumbLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [ { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' }, { '@type': 'ListItem', position: 2, name: 'Comparativas', item: 'https://bitcoinsinruidos.com/comparativas' }, { '@type': 'ListItem', position: 3, name: 'Layer 1 vs Layer 2', item: url } ] };
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })) };
+---
+
+<BaseLayout title={`${title} | Bitcoin Sin Ruido`} description={description} canonical={url} keywords={["Layer 1 vs Layer 2", "L1 vs L2 Bitcoin", "Lightning Network", "Citrea", "Taproot Assets", "escalabilidad Bitcoin", "rollup"]}>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas', href: '/comparativas' }, { name: 'Layer 1 vs Layer 2' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">COMPARATIVA</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Layer 1 (L1)</strong> es la cadena base de <a href="/que-es-bitcoin">Bitcoin</a>: bloques cada ~10 minutos, asentamiento final, máxima seguridad. <strong>Layer 2 (L2)</strong> son protocolos construidos encima que heredan esa seguridad pero operan fuera de la cadena para ofrecer velocidad, costo bajo o mayor expresividad. En 2026 las L2 principales sobre Bitcoin son <a href="/lightning-network">Lightning Network</a>, <a href="/articulos/taproot-assets">Taproot Assets</a> y <a href="/bitvm">BitVM</a>/<a href="/articulos/bitvm-y-citrea">Citrea</a>.
+      </p>
+
+      <h2>Qué es Layer 1</h2>
+      <p>
+        La L1 de Bitcoin es la blockchain mantenida por <a href="/articulos/proof-of-work">Proof of Work</a>: los mineros compiten gastando energía para añadir bloques, los <a href="/que-es-un-nodo-bitcoin">nodos</a> verifican y la cadena más larga gana. Cada bloque cuesta ~10 minutos de media. Es donde vive la verdad última de quién tiene qué bitcoin, expresado en <a href="/utxo">UTXOs</a>.
+      </p>
+
+      <h2>Qué es Layer 2</h2>
+      <p>
+        Una L2 es un protocolo que <strong>delega la mayoría de la actividad a un canal off-chain</strong> y solo escribe en Bitcoin las apertura/cierre o pruebas de validez. Hereda la seguridad de L1 porque cualquier disputa o cierre se resuelve on-chain. Beneficios: velocidad (Lightning &lt;1s), costo (centavos vs euros) y expresividad (BitVM permite contratos arbitrarios).
+      </p>
+
+      <h2>Diferencias clave</h2>
+      <table>
+        <thead>
+          <tr><th>Factor</th><th>Layer 1 (Bitcoin base)</th><th>Layer 2 (Lightning, Citrea, ...)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Confirmación</td><td>~10 min/bloque</td><td>&lt;1 s (Lightning), segundos (rollups)</td></tr>
+          <tr><td>Coste por tx</td><td>0,5-10 USD</td><td>&lt;0,01 USD</td></tr>
+          <tr><td>Throughput</td><td>~7 tx/s</td><td>Miles de tx/s</td></tr>
+          <tr><td>Finalidad</td><td>~60 min (6 conf)</td><td>Inmediata cooperativa</td></tr>
+          <tr><td>Modelo de seguridad</td><td>PoW + nodos</td><td>Hereda de L1 + reglas L2</td></tr>
+          <tr><td>Contratos</td><td>Scripts limitados</td><td>BitVM, Citrea EVM-compatible</td></tr>
+          <tr><td>Custodia</td><td>Autocustodia siempre</td><td>Auto o custodial</td></tr>
+          <tr><td>Idóneo para</td><td>Asentamiento, HODL</td><td>Pagos, contratos, stablecoins</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Ventajas y desventajas de cada capa</h2>
+      <h3>Layer 1</h3>
+      <ul>
+        <li>Ventajas: máxima seguridad, finalidad robusta, sin dependencia de operadores L2.</li>
+        <li>Desventajas: lento, caro en picos, throughput limitado.</li>
+      </ul>
+      <h3>Layer 2</h3>
+      <ul>
+        <li>Ventajas: rápido, barato, programable, escalable.</li>
+        <li>Desventajas: liquidez gestionada, requiere protocolo específico, modelo de confianza adicional según L2.</li>
+      </ul>
+
+      <h2>Cuándo usar cada uno</h2>
+      <ul>
+        <li><strong>Layer 1</strong> para: transferencias grandes, HODL a largo plazo, abrir/cerrar canales Lightning, asentamientos finales.</li>
+        <li><strong>Layer 2 (Lightning)</strong> para: pagos cotidianos, micropagos, remesas, propinas, comercio online sin chargebacks.</li>
+        <li><strong>Layer 2 (Taproot Assets)</strong> para: stablecoins y tokens sobre Bitcoin.</li>
+        <li><strong>Layer 2 (Citrea/BitVM)</strong> para: contratos inteligentes, DeFi, aplicaciones ancladas a Bitcoin.</li>
+      </ul>
+
+      <h2>Conclusión</h2>
+      <p>
+        L1 y L2 no compiten: <strong>cooperan</strong>. La L1 es la verdad última, lenta y cara por diseño porque debe ser verificable por cualquiera. Las L2 son rápidas y baratas porque dejan a la L1 el trabajo más costoso (asentar). En 2026, la combinación es lo que permite a Bitcoin escalar sin renunciar a su descentralización. Para entender la estrategia completa, ver <a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a>.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
+        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
+        <li><a href="/bitvm">Qué es BitVM</a></li>
+        <li><a href="/articulos/taproot-assets">Taproot Assets</a></li>
+        <li><a href="/articulos/bitvm-y-citrea">Citrea</a></li>
+        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a></li>
+        <li><a href="/comparativas/bitvm-vs-smart-contracts">BitVM vs smart contracts</a></li>
+        <li><a href="/glosario">Glosario</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/comparativas" class="btn">← Todas las comparativas</a>
+    </footer>
+  </article>
+</BaseLayout>
