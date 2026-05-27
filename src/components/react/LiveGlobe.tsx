@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useExchangeStream } from './useExchangeStream';
-import type { Trade } from '../../lib/exchanges';
+import { useMempoolStream, type MempoolTx } from './useMempoolStream';
 import {
   ACCUMULATION,
   CATEGORY_COLOR,
@@ -17,24 +16,30 @@ const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
 // (only the `name` property kept, ~170 KB gzipped). No external CDN dependency.
 const COUNTRIES_URL = '/data/countries.geojson';
 
-const MIN_BTC = 1;
-const RING_DURATION_MS = 3000;
-const PULSE_MS = 3500;
-const FOCUS_HOLD_MS = 3800;
-const MAX_RINGS = 12;
+// --- Arc visualisation tuning ---------------------------------------------
+// Each new mempool transaction becomes a curved light-beam arc between two
+// random anchors taken from the accumulation map. We cap the number of arcs
+// rendered simultaneously to keep the globe legible and pick only the top-N
+// txs (by BTC value) from each poll so dense mempool bursts don't drown the
+// scene. The dash animation is what gives the "moving beam" feel.
+const MAX_ARCS = 8;
+const ARC_LIFE_MS = 4500;
+const ARCS_PER_POLL = 3;
+const ARC_DASH_ANIMATE_MS = 2200;
 const AUTO_ROTATE_SPEED = 0.35;
-const POV_TRANSITION_MS = 1100;
 
-interface Ring {
-  lat: number;
-  lng: number;
+interface Arc {
+  id: string;
+  startLat: number;
+  startLng: number;
+  endLat: number;
+  endLng: number;
   color: string;
+  stroke: number;
   ts: number;
-  label: string;
 }
 
 interface DisplayPoint extends AccumulationPoint {
-  pulsing: boolean;
   color: string;
   size: number;
 }
@@ -48,6 +53,39 @@ function formatBtc(btc: number): string {
   if (btc >= 1_000_000) return `${(btc / 1_000_000).toFixed(2)} M ₿`;
   if (btc >= 1_000) return `${Math.round(btc / 1_000)} K ₿`;
   return `${btc.toLocaleString('es-ES')} ₿`;
+}
+
+// Map mempool fee rate (sat/vB) to a colour. Low fees read as cool gray,
+// economy as brand orange, premium fees as a bright red-orange so high-fee
+// flow stands out visually.
+function colorForFeeRate(satPerVbyte: number): string {
+  if (satPerVbyte >= 30) return '#ef4444';
+  if (satPerVbyte >= 5) return '#f7931a';
+  return '#7c8aa0';
+}
+
+// Larger transactions get a slightly thicker beam, capped so a whale doesn't
+// dominate the whole globe.
+function strokeForBtc(btc: number): number {
+  if (btc >= 50) return 1.2;
+  if (btc >= 5) return 0.85;
+  if (btc >= 0.5) return 0.6;
+  return 0.4;
+}
+
+function pickAnchor(): AccumulationPoint {
+  return ACCUMULATION[Math.floor(Math.random() * ACCUMULATION.length)];
+}
+
+function pickDistinctAnchors(): { a: AccumulationPoint; b: AccumulationPoint } {
+  const a = pickAnchor();
+  let b = pickAnchor();
+  let guard = 0;
+  while (b.id === a.id && guard < 5) {
+    b = pickAnchor();
+    guard++;
+  }
+  return { a, b };
 }
 
 // Color texture: gold gradient + dark engraved-looking text.
@@ -374,12 +412,10 @@ export default function LiveGlobe() {
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
   const [size, setSize] = useState({ w: 480, h: 480 });
   const [countries, setCountries] = useState<any[]>([]);
-  const [rings, setRings] = useState<Ring[]>([]);
-  const [pulsing, setPulsing] = useState<Record<string, number>>({});
-  const [lastBigBuy, setLastBigBuy] = useState<Trade | null>(null);
-  const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSeenTsRef = useRef<number>(0);
-  const { trades, connected } = useExchangeStream();
+  const [arcs, setArcs] = useState<Arc[]>([]);
+  const [lastTx, setLastTx] = useState<MempoolTx | null>(null);
+  const lastSeenIdRef = useRef<string | null>(null);
+  const { txs, connected } = useMempoolStream();
   const reduced = useMemo(reducedMotion, []);
 
   // Load globe component
@@ -599,72 +635,63 @@ export default function LiveGlobe() {
     };
   }, [GlobeCmp, reduced, contextEpoch]);
 
-  // React to live trades
+  // React to live mempool transactions: take the top-N by value from any
+  // batch of unseen txs and draw arcs between two random anchors taken from
+  // the accumulation map. We don't reposition the camera on tx events — the
+  // globe just keeps slowly rotating while light beams flow across it.
   useEffect(() => {
-    if (!trades.length) return;
-    const newest = trades[trades.length - 1];
-    if (newest.ts <= lastSeenTsRef.current) return;
-    if (newest.side && newest.side !== 'buy') return;
-    if (newest.amountBtc < MIN_BTC) return;
-    lastSeenTsRef.current = newest.ts;
+    if (!txs.length) return;
+    // Find the index of the last tx we already processed.
+    const lastSeen = lastSeenIdRef.current;
+    let firstNewIdx = 0;
+    if (lastSeen) {
+      const i = txs.findIndex((t) => t.id === lastSeen);
+      if (i >= 0) firstNewIdx = i + 1;
+    }
+    const unseen = txs.slice(firstNewIdx);
+    if (!unseen.length) return;
+    lastSeenIdRef.current = txs[txs.length - 1].id;
+
+    // Update the live ticker with the most recent tx regardless of how many
+    // we render arcs for.
+    setLastTx(unseen[unseen.length - 1]);
+
+    if (reduced) return;
+
+    // Pick the top-N by amount so a dense burst doesn't choke the scene.
+    const top = [...unseen]
+      .sort((a, b) => b.amountBtc - a.amountBtc)
+      .slice(0, ARCS_PER_POLL);
 
     const now = Date.now();
-    setLastBigBuy(newest);
-
-    setRings((prev) => {
-      const next = [
-        ...prev,
-        {
-          lat: newest.lat,
-          lng: newest.lon,
-          color: newest.color,
+    setArcs((prev) => {
+      const next = [...prev];
+      for (const tx of top) {
+        const { a, b } = pickDistinctAnchors();
+        next.push({
+          id: tx.id,
+          startLat: a.lat,
+          startLng: a.lng,
+          endLat: b.lat,
+          endLng: b.lng,
+          color: colorForFeeRate(tx.feeRate),
+          stroke: strokeForBtc(tx.amountBtc),
           ts: now,
-          label: `${newest.exchangeName} · ${newest.amountBtc.toFixed(2)} BTC · $${Math.round(newest.priceUsd * newest.amountBtc).toLocaleString('en-US')}`,
-        },
-      ];
-      return next.length > MAX_RINGS ? next.slice(-MAX_RINGS) : next;
+        });
+      }
+      return next.length > MAX_ARCS ? next.slice(-MAX_ARCS) : next;
     });
+  }, [txs, reduced]);
 
-    const match = ACCUMULATION.find((p) => p.matchExchange === newest.exchange);
-    if (match) {
-      setPulsing((prev) => ({ ...prev, [match.id]: now }));
-    }
-
-    if (globeRef.current && !reduced) {
-      const controls = globeRef.current.controls?.();
-      if (controls) controls.autoRotate = false;
-      globeRef.current.pointOfView?.(
-        { lat: newest.lat, lng: newest.lon, altitude: 2.2 },
-        POV_TRANSITION_MS,
-      );
-      if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
-      focusTimerRef.current = setTimeout(() => {
-        if (globeRef.current) {
-          const c = globeRef.current.controls?.();
-          if (c) c.autoRotate = true;
-        }
-      }, FOCUS_HOLD_MS);
-    }
-  }, [trades, reduced]);
-
-  // Periodic GC
+  // Periodic GC for stale arcs
   useEffect(() => {
     const id = setInterval(() => {
       const now = Date.now();
-      setRings((prev) => {
-        const f = prev.filter((r) => now - r.ts < RING_DURATION_MS);
+      setArcs((prev) => {
+        const f = prev.filter((arc) => now - arc.ts < ARC_LIFE_MS);
         return f.length === prev.length ? prev : f;
       });
-      setPulsing((prev) => {
-        let changed = false;
-        const next: Record<string, number> = {};
-        for (const [k, t] of Object.entries(prev)) {
-          if (now - t < PULSE_MS) next[k] = t;
-          else changed = true;
-        }
-        return changed ? next : prev;
-      });
-    }, 400);
+    }, 500);
     return () => clearInterval(id);
   }, []);
 
@@ -672,15 +699,11 @@ export default function LiveGlobe() {
     () =>
       ACCUMULATION.map((p) => ({
         ...p,
-        pulsing: !!pulsing[p.id],
         color: CATEGORY_COLOR[p.category],
         size: sizeForBtc(p.btc),
       })),
-    [pulsing],
+    [],
   );
-
-  const connectedCount = Object.values(connected).filter(Boolean).length;
-  const totalExchanges = 5;
 
   return (
     <div ref={containerRef} className="relative w-full h-full flex flex-col items-center justify-center">
@@ -699,26 +722,31 @@ export default function LiveGlobe() {
             // a pale disc behind the continents that breaks the "floating
             // continents" illusion. Without it the oceans are fully see-through.
             showAtmosphere={false}
-            // Accumulation points
+            // Accumulation points (static, sized by sqrt of BTC stash)
             pointsData={displayPoints}
             pointLat={(d: DisplayPoint) => d.lat}
             pointLng={(d: DisplayPoint) => d.lng}
             pointColor={(d: DisplayPoint) => d.color}
-            pointAltitude={(d: DisplayPoint) => (d.pulsing ? 0.07 : 0.02)}
-            pointRadius={(d: DisplayPoint) => (d.pulsing ? d.size * 1.6 : d.size)}
+            pointAltitude={0.02}
+            pointRadius={(d: DisplayPoint) => d.size}
             pointResolution={8}
             pointLabel={(d: DisplayPoint) =>
               `<div style="font:12px ui-monospace,monospace;background:#0a0a0bee;color:#f5f5f4;border:1px solid #26262b;border-radius:8px;padding:6px 10px;min-width:200px"><div style="font-weight:600;font-size:13px;color:${d.color}">${d.name}</div><div style="opacity:0.7;margin-top:2px">${d.city} · ${d.country}</div><div style="margin-top:4px;font-weight:600">${formatBtc(d.btc)}</div><div style="opacity:0.55;margin-top:2px;text-transform:uppercase;letter-spacing:0.05em;font-size:10px">${CATEGORY_LABEL[d.category]}</div></div>`
             }
-            // Live ≥ 1 BTC rings
-            ringsData={reduced ? [] : rings}
-            ringLat={(d: Ring) => d.lat}
-            ringLng={(d: Ring) => d.lng}
-            ringColor={(d: Ring) => d.color}
-            ringMaxRadius={6}
-            ringPropagationSpeed={2.4}
-            ringRepeatPeriod={0}
-            ringAltitude={0.01}
+            // Live mempool transactions as curved light-beam arcs.
+            // Dash animation gives the "flowing" feel of the reference image.
+            arcsData={reduced ? [] : arcs}
+            arcStartLat={(d: Arc) => d.startLat}
+            arcStartLng={(d: Arc) => d.startLng}
+            arcEndLat={(d: Arc) => d.endLat}
+            arcEndLng={(d: Arc) => d.endLng}
+            arcColor={(d: Arc) => d.color}
+            arcStroke={(d: Arc) => d.stroke}
+            arcAltitudeAutoScale={0.55}
+            arcDashLength={0.4}
+            arcDashGap={0.6}
+            arcDashAnimateTime={ARC_DASH_ANIMATE_MS}
+            arcsTransitionDuration={0}
             enablePointerInteraction
           />
         ) : (
@@ -727,21 +755,18 @@ export default function LiveGlobe() {
       </div>
 
       <div className="mt-4 w-full max-w-full sm:max-w-md min-h-[42px] px-3 sm:px-4 py-2 rounded-xl border border-line bg-bg-card/60 backdrop-blur flex items-center justify-center text-center overflow-hidden">
-        {lastBigBuy ? (
+        {lastTx ? (
           <div className="text-xs font-mono flex flex-wrap items-center gap-x-2 gap-y-0.5 justify-center">
-            <span className="text-btc font-semibold">● COMPRA EN VIVO</span>
-            <span className="text-ink-muted">{lastBigBuy.exchangeName}</span>
+            <span className="text-btc font-semibold">● TX EN VIVO</span>
+            <span className="text-ink font-semibold">{lastTx.amountBtc.toFixed(4)} ₿</span>
             <span className="text-ink-dim">·</span>
-            <span className="text-ink font-semibold">{lastBigBuy.amountBtc.toFixed(3)} ₿</span>
+            <span className="text-ink-muted">{lastTx.feeRate.toFixed(1)} sat/vB</span>
             <span className="text-ink-dim">·</span>
-            <span className="text-ink-muted">${Math.round(lastBigBuy.priceUsd * lastBigBuy.amountBtc).toLocaleString('en-US')}</span>
+            <span className="text-ink-muted opacity-70">mempool</span>
           </div>
         ) : (
           <div className="text-xs font-mono text-ink-dim">
-            esperando compras ≥ 1 ₿…{' '}
-            <span className="opacity-60">
-              ({connectedCount}/{totalExchanges} exchanges en vivo)
-            </span>
+            {connected ? 'esperando transacciones del mempool…' : 'conectando con mempool.space…'}
           </div>
         )}
       </div>
@@ -756,11 +781,27 @@ export default function LiveGlobe() {
         <span className="text-ink-dim/70">tamaño ∝ BTC acumulado</span>
       </div>
 
+      <div className="mt-2 w-full max-w-full flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] sm:text-[11px] font-mono text-ink-dim px-2">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-0.5 rounded-full" style={{ background: '#7c8aa0' }} aria-hidden="true" />
+          <span>fee bajo</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-0.5 rounded-full" style={{ background: '#f7931a' }} aria-hidden="true" />
+          <span>fee medio</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-0.5 rounded-full" style={{ background: '#ef4444' }} aria-hidden="true" />
+          <span>fee alto</span>
+        </span>
+        <span className="text-ink-dim/70">grosor ∝ BTC enviados</span>
+      </div>
+
       <p className="mt-2 max-w-md w-full text-center text-[10px] leading-relaxed text-ink-dim px-2">
         {ACCUMULATION.length} ubicaciones · {formatBtc(TOTAL_TRACKED_BTC)} acumulados.
-        Datos de DOJ, BitcoinTreasuries y análisis on-chain (~Q2 2026). El globo
-        gira y enfoca cada compra ≥ 1 ₿ que llega vía WebSocket a Binance, Coinbase,
-        Kraken, Bitstamp y Bitso. En el núcleo, el límite inmutable: 21 millones.
+        Datos de DOJ, BitcoinTreasuries y análisis on-chain (~Q2 2026). Cada arco
+        luminoso es una transacción Bitcoin que acaba de llegar al mempool
+        (fuente: mempool.space). En el núcleo, el límite inmutable: 21 millones.
       </p>
     </div>
   );
