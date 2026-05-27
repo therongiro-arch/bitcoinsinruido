@@ -130,6 +130,28 @@
     @apply border-line my-10;
   }
 
+  /* When .prose-bsr lives inside a CSS multi-column container (home page
+     uses `lg:columns-2`), prevent the worst flow artefacts:
+     - headings should never split mid-element or detach from their first
+       paragraph
+     - lists should stay together so bullets don't orphan into the next
+       column
+     - the very first heading of a column shouldn't push the content
+       down with its default top margin */
+  .prose-bsr h2,
+  .prose-bsr h3 {
+    break-inside: avoid;
+    break-after: avoid-column;
+  }
+  .prose-bsr ul,
+  .prose-bsr ol {
+    break-inside: avoid;
+  }
+  .prose-bsr > h2:first-child,
+  .prose-bsr > h3:first-child {
+    margin-top: 0;
+  }
+
   .chip {
     @apply inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-mono text-ink-muted border border-line rounded-full px-2.5 py-1;
   }

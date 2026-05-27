@@ -126,7 +126,8 @@ const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="Bitcoin Sin Ruido" href="/rss.xml" />
 
-    <!-- Preconnect to exchange WS endpoints -->
+    <!-- Preconnect to the live data sources powering the globe and ticker -->
+    <link rel="preconnect" href="https://mempool.space" />
     <link rel="preconnect" href="https://stream.binance.com" />
     <link rel="preconnect" href="https://ws-feed.exchange.coinbase.com" />
     <link rel="preconnect" href="https://ws.kraken.com" />
