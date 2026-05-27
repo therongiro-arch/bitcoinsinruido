@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useMempoolStream, type MempoolTx } from './useMempoolStream';
+import { useAttributedTxStream, type AttributedSpend } from './useAttributedTxStream';
+import { knownAddressCount } from '../../lib/known-addresses';
 import {
   ACCUMULATION,
   CATEGORY_COLOR,
@@ -73,19 +74,11 @@ function strokeForBtc(btc: number): number {
   return 0.4;
 }
 
-function pickAnchor(): AccumulationPoint {
-  return ACCUMULATION[Math.floor(Math.random() * ACCUMULATION.length)];
-}
+// Map entity id -> AccumulationPoint for O(1) arc endpoint resolution.
+const ENTITY_BY_ID = new Map<string, AccumulationPoint>(ACCUMULATION.map((p) => [p.id, p]));
 
-function pickDistinctAnchors(): { a: AccumulationPoint; b: AccumulationPoint } {
-  const a = pickAnchor();
-  let b = pickAnchor();
-  let guard = 0;
-  while (b.id === a.id && guard < 5) {
-    b = pickAnchor();
-    guard++;
-  }
-  return { a, b };
+function resolveEntity(entityId: string): AccumulationPoint | undefined {
+  return ENTITY_BY_ID.get(entityId);
 }
 
 // Color texture: gold gradient + dark engraved-looking text.
@@ -413,9 +406,9 @@ export default function LiveGlobe() {
   const [size, setSize] = useState({ w: 480, h: 480 });
   const [countries, setCountries] = useState<any[]>([]);
   const [arcs, setArcs] = useState<Arc[]>([]);
-  const [lastTx, setLastTx] = useState<MempoolTx | null>(null);
-  const lastSeenIdRef = useRef<string | null>(null);
-  const { txs, connected } = useMempoolStream();
+  const [lastEvent, setLastEvent] = useState<AttributedSpend | null>(null);
+  const lastSeenEventRef = useRef<string | null>(null);
+  const { events, inspected, attributed, mempoolConnected } = useAttributedTxStream();
   const reduced = useMemo(reducedMotion, []);
 
   // Load globe component
@@ -635,53 +628,55 @@ export default function LiveGlobe() {
     };
   }, [GlobeCmp, reduced, contextEpoch]);
 
-  // React to live mempool transactions: take the top-N by value from any
-  // batch of unseen txs and draw arcs between two random anchors taken from
-  // the accumulation map. We don't reposition the camera on tx events — the
-  // globe just keeps slowly rotating while light beams flow across it.
+  // React to attributed spend events: one arc per UTXO spent from a known
+  // entity, going to the largest known output (or skipped entirely if the
+  // destination isn't a tracked entity either). Endpoints come straight
+  // from ACCUMULATION coordinates — every arc represents a real on-chain
+  // movement between two real organisations.
   useEffect(() => {
-    if (!txs.length) return;
-    // Find the index of the last tx we already processed.
-    const lastSeen = lastSeenIdRef.current;
+    if (!events.length) return;
+    const lastSeen = lastSeenEventRef.current;
     let firstNewIdx = 0;
     if (lastSeen) {
-      const i = txs.findIndex((t) => t.id === lastSeen);
+      // Compose key like txid + fromEntity for dedupe so two inputs of the
+      // same tx don't collapse to a single event.
+      const i = events.findIndex((e) => `${e.txid}:${e.fromEntityId}` === lastSeen);
       if (i >= 0) firstNewIdx = i + 1;
     }
-    const unseen = txs.slice(firstNewIdx);
+    const unseen = events.slice(firstNewIdx);
     if (!unseen.length) return;
-    lastSeenIdRef.current = txs[txs.length - 1].id;
-
-    // Update the live ticker with the most recent tx regardless of how many
-    // we render arcs for.
-    setLastTx(unseen[unseen.length - 1]);
+    const newest = unseen[unseen.length - 1];
+    lastSeenEventRef.current = `${newest.txid}:${newest.fromEntityId}`;
+    setLastEvent(newest);
 
     if (reduced) return;
-
-    // Pick the top-N by amount so a dense burst doesn't choke the scene.
-    const top = [...unseen]
-      .sort((a, b) => b.amountBtc - a.amountBtc)
-      .slice(0, ARCS_PER_POLL);
 
     const now = Date.now();
     setArcs((prev) => {
       const next = [...prev];
-      for (const tx of top) {
-        const { a, b } = pickDistinctAnchors();
+      for (const ev of unseen) {
+        const from = resolveEntity(ev.fromEntityId);
+        if (!from) continue;
+        // If the destination isn't a tracked entity, skip — we won't draw
+        // an arc to a fabricated location. Loosen this branch if you'd
+        // rather show "known sender, unknown receiver" arcs.
+        if (!ev.toEntityId) continue;
+        const to = resolveEntity(ev.toEntityId);
+        if (!to) continue;
         next.push({
-          id: tx.id,
-          startLat: a.lat,
-          startLng: a.lng,
-          endLat: b.lat,
-          endLng: b.lng,
-          color: colorForFeeRate(tx.feeRate),
-          stroke: strokeForBtc(tx.amountBtc),
+          id: `${ev.txid}:${ev.fromEntityId}:${ev.toEntityId}`,
+          startLat: from.lat,
+          startLng: from.lng,
+          endLat: to.lat,
+          endLng: to.lng,
+          color: colorForFeeRate(ev.feeRate),
+          stroke: strokeForBtc(ev.amountBtc),
           ts: now,
         });
       }
       return next.length > MAX_ARCS ? next.slice(-MAX_ARCS) : next;
     });
-  }, [txs, reduced]);
+  }, [events, reduced]);
 
   // Periodic GC for stale arcs
   useEffect(() => {
@@ -755,18 +750,26 @@ export default function LiveGlobe() {
       </div>
 
       <div className="mt-4 w-full max-w-full sm:max-w-md min-h-[42px] px-3 sm:px-4 py-2 rounded-xl border border-line bg-bg-card/60 backdrop-blur flex items-center justify-center text-center overflow-hidden">
-        {lastTx ? (
-          <div className="text-xs font-mono flex flex-wrap items-center gap-x-2 gap-y-0.5 justify-center">
-            <span className="text-btc font-semibold">● TX EN VIVO</span>
-            <span className="text-ink font-semibold">{lastTx.amountBtc.toFixed(4)} ₿</span>
-            <span className="text-ink-dim">·</span>
-            <span className="text-ink-muted">{lastTx.feeRate.toFixed(1)} sat/vB</span>
-            <span className="text-ink-dim">·</span>
-            <span className="text-ink-muted opacity-70">mempool</span>
-          </div>
+        {lastEvent ? (
+          (() => {
+            const from = resolveEntity(lastEvent.fromEntityId);
+            const to = lastEvent.toEntityId ? resolveEntity(lastEvent.toEntityId) : null;
+            return (
+              <div className="text-xs font-mono flex flex-wrap items-center gap-x-2 gap-y-0.5 justify-center">
+                <span className="text-btc font-semibold">● TX EN VIVO</span>
+                <span className="text-ink-muted">{from?.name ?? lastEvent.fromEntityId}</span>
+                <span className="text-ink-dim">→</span>
+                <span className="text-ink-muted">{to?.name ?? '—'}</span>
+                <span className="text-ink-dim">·</span>
+                <span className="text-ink font-semibold">{lastEvent.amountBtc.toFixed(3)} ₿</span>
+              </div>
+            );
+          })()
         ) : (
           <div className="text-xs font-mono text-ink-dim">
-            {connected ? 'esperando transacciones del mempool…' : 'conectando con mempool.space…'}
+            {mempoolConnected
+              ? `mempool conectado · ${inspected} tx analizadas · ${attributed} atribuidas`
+              : 'conectando con mempool.space…'}
           </div>
         )}
       </div>
@@ -800,8 +803,10 @@ export default function LiveGlobe() {
       <p className="mt-2 max-w-md w-full text-center text-[10px] leading-relaxed text-ink-dim px-2">
         {ACCUMULATION.length} ubicaciones · {formatBtc(TOTAL_TRACKED_BTC)} acumulados.
         Datos de DOJ, BitcoinTreasuries y análisis on-chain (~Q2 2026). Cada arco
-        luminoso es una transacción Bitcoin que acaba de llegar al mempool
-        (fuente: mempool.space). En el núcleo, el límite inmutable: 21 millones.
+        luminoso es un <span className="text-ink-muted">UTXO real</span> gastado
+        por una de las entidades del mapa, detectado en el mempool (fuente:
+        mempool.space) vía atribución de direcciones ({knownAddressCount()} en
+        la base actual). En el núcleo, el límite inmutable: 21 millones.
       </p>
     </div>
   );
