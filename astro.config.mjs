@@ -18,6 +18,14 @@ export default defineConfig({
     inlineStylesheets: 'auto',
   },
   vite: {
+    // Force a single resolved instance of `three` across the bundle.
+    // Without this, react-globe.gl's internal three import and our own
+    // `import * as THREE from 'three'` can resolve to separate copies,
+    // which triggers `THREE.WARNING: Multiple instances of Three.js being
+    // imported` and can break `instanceof` checks at runtime.
+    resolve: {
+      dedupe: ['three'],
+    },
     ssr: {
       noExternal: ['react-globe.gl', 'three'],
     },
