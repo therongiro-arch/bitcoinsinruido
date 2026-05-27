@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Anatomía de una transacción Bitcoin: campos, scripts y fees explicados';
+const description = 'Recorrido campo a campo de una transacción Bitcoin: inputs, outputs, witness, scripts (P2WPKH, P2TR), txid, fees, vbytes, signing y propagación. Con diagramas.';
+const url = 'https://bitcoinsinruidos.com/anatomia-de-una-transaccion-bitcoin';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué campos tiene una transacción Bitcoin?', answer: 'Versión (4 bytes), número de inputs (varInt), inputs (cada uno con outpoint, scriptSig, secuencia), número de outputs (varInt), outputs (cada uno con valor en satoshis y scriptPubKey), opcionalmente witnesses para SegWit/Taproot, y locktime (4 bytes).' },
+  { question: '¿Qué es el txid?', answer: 'El txid es el doble SHA-256 de la serialización legacy de la transacción (sin witness). Sirve como identificador único e inmutable de la transacción.' },
+  { question: '¿Qué diferencia hay entre weight, vbytes y bytes?', answer: 'Bytes es el tamaño bruto. Weight = (base × 4) + witness. Vbytes = weight / 4. Las fees se calculan típicamente en sat/vbyte. Un bloque tiene un peso máximo de 4 millones de unidades (~1 MB legacy + ~3 MB de witness).' },
+  { question: '¿Cómo se calculan las fees?', answer: 'fee = sum(inputs) - sum(outputs). El minero se queda con la fee. Las wallets estiman fees consultando la mempool actual (sat/vbyte) y multiplican por el tamaño en vbytes de la tx.' },
+  { question: '¿Qué es el locktime?', answer: 'Locktime es el bloque o timestamp mínimo a partir del cual la transacción puede incluirse en un bloque. Bitcoin Core la rechaza si llega antes. Habilita transacciones programadas y es base de Lightning.' },
+  { question: '¿Una transacción confirmada se puede revertir?', answer: 'En teoría sí mediante reorg, en la práctica no después de 6 confirmaciones (1 hora). Cuanto más profunda está en la cadena, más caro es revertirla — exige rehacer todo el PoW posterior.' },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', '@id': 'https://bitcoinsinruidos.com/sobre#editor', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Bitcoin transaction',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Anatomía de una transacción Bitcoin', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout title={`${title} | Bitcoin Sin Ruido`} description={description} canonical={url} keywords={["anatomía transacción Bitcoin", "estructura tx Bitcoin", "inputs outputs Bitcoin", "scriptSig", "scriptPubKey", "P2WPKH", "P2TR", "vbytes", "fees Bitcoin"]}>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Anatomía de una transacción Bitcoin' }]} />
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">REFERENCIA TÉCNICA</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        Una transacción <a href="/que-es-bitcoin">Bitcoin</a> es una estructura binaria con seis bloques: versión, lista de <strong>inputs</strong> (qué <a href="/utxo">UTXOs</a> gastas), lista de <strong>outputs</strong> (a quién y cuánto), <strong>witness</strong> opcional (firmas SegWit/<a href="/taproot">Taproot</a>), <strong>locktime</strong> y serialización. El <strong>txid</strong> identifica la transacción de forma única. Las <strong>fees</strong> son la diferencia entre inputs y outputs, expresadas en sat/vbyte. Esta página recorre cada campo.
+      </p>
+
+      <h2>Diagrama conceptual</h2>
+      <pre><code>┌─────────────────────────────────────────────────────────┐
+│                  TRANSACCIÓN BITCOIN                    │
+├─────────────────────────────────────────────────────────┤
+│ Versión (4 bytes)                                       │
+├─────────────────────────────────────────────────────────┤
+│ Marker + Flag (SegWit, 2 bytes)                         │
+├─────────────────────────────────────────────────────────┤
+│ N° inputs (varInt)                                      │
+│ ┌─── INPUT 0 ───────────────────────────────────────┐   │
+│ │ outpoint (txid del UTXO + vout, 36 bytes)         │   │
+│ │ scriptSig length + scriptSig                      │   │
+│ │ sequence (4 bytes)                                │   │
+│ └───────────────────────────────────────────────────┘   │
+│ ...                                                     │
+├─────────────────────────────────────────────────────────┤
+│ N° outputs (varInt)                                     │
+│ ┌─── OUTPUT 0 ──────────────────────────────────────┐   │
+│ │ value en satoshis (8 bytes)                       │   │
+│ │ scriptPubKey length + scriptPubKey                │   │
+│ └───────────────────────────────────────────────────┘   │
+│ ...                                                     │
+├─────────────────────────────────────────────────────────┤
+│ Witness data (SegWit/Taproot, 1 por input)              │
+├─────────────────────────────────────────────────────────┤
+│ Locktime (4 bytes)                                      │
+└─────────────────────────────────────────────────────────┘</code></pre>
+
+      <h2>Campo a campo</h2>
+
+      <h3>1. Versión (4 bytes, little-endian)</h3>
+      <p>
+        Indica la versión del formato de transacción. Versiones válidas: 1 y 2. La 2 habilita el uso de <code>nSequence</code> para BIP-68 (relative locktime), necesario para canales <a href="/lightning-network">Lightning</a>.
+      </p>
+
+      <h3>2. Marker + Flag (SegWit/Taproot)</h3>
+      <p>
+        Si la transacción usa witness data (SegWit, <a href="/taproot">Taproot</a>), incluye dos bytes: <code>0x00</code> (marker) y <code>0x01</code> (flag). Transacciones legacy las omiten.
+      </p>
+
+      <h3>3. Inputs (entradas)</h3>
+      <p>Cada input gasta un <a href="/utxo">UTXO</a> anterior. Contiene:</p>
+      <ul>
+        <li><strong>Outpoint</strong> (36 bytes) — Identifica el UTXO: <code>txid</code> del bloque que lo creó + <code>vout</code> (índice del output dentro de esa tx).</li>
+        <li><strong>scriptSig</strong> — En transacciones legacy contiene la firma. En SegWit/Taproot suele estar vacío (la firma vive en el witness).</li>
+        <li><strong>Sequence</strong> (4 bytes) — Habilita RBF (Replace-By-Fee), relative locktime y otras políticas de gasto.</li>
+      </ul>
+
+      <h3>4. Outputs (salidas)</h3>
+      <p>Cada output crea un UTXO nuevo. Contiene:</p>
+      <ul>
+        <li><strong>Value</strong> (8 bytes) — Cantidad en satoshis. 1 BTC = 100.000.000 sats.</li>
+        <li><strong>scriptPubKey</strong> — El "candado" que indica las condiciones para gastar este output más adelante.</li>
+      </ul>
+
+      <h3>5. Witness data (SegWit/Taproot)</h3>
+      <p>
+        Las firmas digitales y otros datos de gasto viven aquí desde 2017 (SegWit) y 2021 (<a href="/taproot">Taproot</a>). Separar el witness del cuerpo reduce el peso efectivo y habilita Lightning, Taproot, MuSig2 y <a href="/bitvm">BitVM</a>.
+      </p>
+
+      <h3>6. Locktime (4 bytes)</h3>
+      <p>
+        Bloque mínimo o timestamp Unix mínimo a partir del cual la transacción es válida. Si es 0, la tx puede incluirse inmediatamente. Locktime + sequence habilitan transacciones programadas y canales Lightning.
+      </p>
+
+      <h2>Tipos de scriptPubKey en 2026</h2>
+      <table>
+        <thead>
+          <tr><th>Tipo</th><th>Prefijo dirección</th><th>Año</th><th>Witness</th><th>Uso típico</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>P2PKH (legacy)</td><td><code>1…</code></td><td>2009</td><td>No</td><td>Histórico</td></tr>
+          <tr><td>P2SH</td><td><code>3…</code></td><td>2012</td><td>No</td><td>Multisig pre-SegWit</td></tr>
+          <tr><td>P2WPKH (SegWit nativo)</td><td><code>bc1q…</code></td><td>2017</td><td>Sí</td><td>Estándar mayoritario</td></tr>
+          <tr><td>P2WSH</td><td><code>bc1q…</code></td><td>2017</td><td>Sí</td><td>Multisig SegWit, Lightning</td></tr>
+          <tr><td>P2TR (Taproot)</td><td><code>bc1p…</code></td><td>2021</td><td>Sí (Schnorr)</td><td>Moderno, MuSig2, BitVM</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Cómo se calculan las fees</h2>
+      <p>
+        <code>fee = Σ inputs − Σ outputs</code>. La diferencia se la queda el minero que incluye la tx. Las wallets estiman fees en <strong>sat/vbyte</strong>:
+      </p>
+      <ul>
+        <li><strong>Vbytes</strong> = peso de la tx / 4. Un input P2WPKH pesa ~68 vbytes; un output P2WPKH ~31 vbytes.</li>
+        <li><strong>Estimación</strong> — Las wallets consultan la mempool (<a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space ↗</a>) para conocer el sat/vbyte mínimo que está entrando en bloques.</li>
+        <li><strong>RBF (Replace-By-Fee)</strong> — Si una tx queda atascada con fee baja, se puede reenviar con fee más alta sustituyendo la original.</li>
+        <li><strong>CPFP (Child-Pays-For-Parent)</strong> — Una tx hija que gasta un output de la pendiente puede pagar fee extra para que el minero incluya ambas.</li>
+      </ul>
+
+      <h2>Ejemplo: tx P2WPKH simple</h2>
+      <p>Alice gasta un UTXO de 50.000 sats y envía 30.000 a Bob con fee de ~1.500 sats:</p>
+      <ul>
+        <li>1 input P2WPKH (~68 vbytes).</li>
+        <li>2 outputs P2WPKH (Bob + change) (~62 vbytes).</li>
+        <li>Overhead (~11 vbytes).</li>
+        <li>Total: ~141 vbytes.</li>
+        <li>Si el sat/vbyte actual es 10, fee ≈ 1.410 sats.</li>
+        <li>Change a Alice: 50.000 − 30.000 − 1.410 = 18.590 sats.</li>
+      </ul>
+
+      <h2>Estados de una transacción</h2>
+      <ol>
+        <li><strong>Creada</strong> — Construida y firmada pero no propagada.</li>
+        <li><strong>Difundida (broadcast)</strong> — Enviada a la red P2P.</li>
+        <li><strong>En mempool</strong> — Aceptada por uno o más nodos pero sin confirmar.</li>
+        <li><strong>1 confirmación</strong> — Incluida en un bloque.</li>
+        <li><strong>6 confirmaciones</strong> — Considerada prácticamente irreversible (~60 min).</li>
+        <li><strong>Reorg (raro)</strong> — Si un fork temporal supera la cadena que la incluía, vuelve a la mempool.</li>
+      </ol>
+
+      <h2>Por qué importa entender la anatomía</h2>
+      <p>
+        Conocer los campos permite leer transacciones directamente en exploradores como <a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space ↗</a>, evaluar fees por uno mismo en lugar de aceptar la estimación de una wallet, detectar patrones de privacidad (consolidaciones, change heuristics) y entender por qué <a href="/lightning-network">Lightning</a>, <a href="/articulos/taproot-assets">Taproot Assets</a> y <a href="/bitvm">BitVM</a> son posibles encima de este formato relativamente simple.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
+        <li><a href="/como-funciona-bitcoin">Cómo funciona Bitcoin paso a paso</a></li>
+        <li><a href="/utxo">Qué es un UTXO</a></li>
+        <li><a href="/taproot">Qué es Taproot</a></li>
+        <li><a href="/que-es-un-nodo-bitcoin">Qué es un nodo Bitcoin</a></li>
+        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
+        <li><a href="/que-es-blockchain">Qué es blockchain</a></li>
+        <li><a href="/mapa-stack-bitcoin">Mapa del stack de Bitcoin</a></li>
+        <li><a href="/glosario">Glosario completo</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://en.bitcoin.it/wiki/Transaction" target="_blank" rel="noopener noreferrer">Bitcoin Wiki — Transaction ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki" target="_blank" rel="noopener noreferrer">BIP-141 (SegWit) ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank" rel="noopener noreferrer">BIP-341 (Taproot) ↗</a></li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki" target="_blank" rel="noopener noreferrer">BIP-125 (RBF) ↗</a></li>
+        <li><a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space — explorer ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

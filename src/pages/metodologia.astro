@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Metodología editorial de Bitcoin Sin Ruido: cómo se investiga y se publica';
+const description = 'Política de fuentes, criterios de validación, jerarquía de evidencias, transparencia, correcciones y proceso editorial completo de Bitcoin Sin Ruido.';
+const url = 'https://bitcoinsinruidos.com/metodologia';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const methodLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  url, name: title, description, inLanguage: 'es',
+  datePublished, dateModified,
+  isPartOf: { '@id': 'https://bitcoinsinruidos.com/#website' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Metodología', item: url },
+  ],
+};
+---
+
+<BaseLayout title={`${title} | Bitcoin Sin Ruido`} description={description} canonical={url} keywords={["metodología editorial Bitcoin Sin Ruido", "política fuentes Bitcoin", "transparencia editorial", "BSR metodología"]}>
+  <Fragment slot="head">
+    <JsonLd data={methodLd} />
+    <JsonLd data={breadcrumbLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Metodología' }]} />
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">E-E-A-T</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        En Bitcoin Sin Ruido toda afirmación factual sale de al menos <strong>tres fuentes primarias o secundarias verificables</strong> (BIPs, código fuente, paper original, Bitcoin Optech, bitcoin-dev). Cada artículo se firma, se data y, cuando se actualiza, conserva la fecha original junto a la fecha de la modificación. No publicamos predicciones de precio, no usamos afiliados, no aceptamos patrocinios opacos. El código del sitio es público.
+      </p>
+
+      <h2>Principios editoriales</h2>
+      <ol>
+        <li><strong>Protocolo, no precio.</strong> Cubrimos el funcionamiento técnico de Bitcoin. No hay coberturas de mercado, llamadas a comprar/vender ni "X subirá".</li>
+        <li><strong>Fuente sobre opinión.</strong> Si no hay fuente verificable, no hay artículo.</li>
+        <li><strong>Transparencia operativa.</strong> Las correcciones se marcan; los errores no se borran, se anotan.</li>
+        <li><strong>Sin conflictos de interés.</strong> Sin afiliados a exchanges, wallets ni productos financieros.</li>
+        <li><strong>Verificable por el lector.</strong> Cada cifra clave incluye fuente o instrucciones para reproducirla con un nodo propio.</li>
+      </ol>
+
+      <h2>Jerarquía de fuentes</h2>
+      <ol>
+        <li><strong>Fuentes primarias técnicas</strong>
+          <ul>
+            <li>Whitepaper original (Bitcoin, BitVM, Lightning, MuSig2, etc.).</li>
+            <li>Código fuente publicado (Bitcoin Core, LDK, Citrea, btcd, Eclair).</li>
+            <li><a href="https://github.com/bitcoin/bips" target="_blank" rel="noopener noreferrer">BIPs (Bitcoin Improvement Proposals) ↗</a>.</li>
+            <li>Hilos en la lista <code>bitcoin-dev</code>.</li>
+          </ul>
+        </li>
+        <li><strong>Fuentes secundarias técnicas</strong>
+          <ul>
+            <li><a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech Newsletter ↗</a> — resumen semanal por desarrolladores.</li>
+            <li>Investigación de Chaincode Labs, Spiral, ACINQ, Blockstream, Lightning Labs, Hiro.</li>
+            <li>Publicaciones académicas en eprint.iacr.org u otras conferencias revisadas por pares.</li>
+          </ul>
+        </li>
+        <li><strong>Fuentes operacionales</strong>
+          <ul>
+            <li><a href="https://bitnodes.io" target="_blank" rel="noopener noreferrer">Bitnodes ↗</a> — métricas de descentralización.</li>
+            <li><a href="https://mempool.space" target="_blank" rel="noopener noreferrer">mempool.space ↗</a> — estado en tiempo real.</li>
+            <li><a href="https://1ml.com" target="_blank" rel="noopener noreferrer">1ML / Amboss ↗</a> — Lightning Network.</li>
+          </ul>
+        </li>
+        <li><strong>Fuentes periodísticas</strong> (cuando aportan contexto)
+          <ul>
+            <li>Bitcoin Magazine (sección Technical), The Block, CoinDesk, Decrypt.</li>
+            <li>Reuters, AP News, BBC, El País — para contexto regulatorio y macro.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h2>Criterios de validación de fuentes</h2>
+      <p>Una fuente entra al artículo si cumple <strong>al menos tres</strong> de los siguientes:</p>
+      <ul>
+        <li>Autoría identificable con afiliación institucional o reputación verificable en el dominio.</li>
+        <li>Fecha de publicación o actualización posterior a 2024 (preferentemente 2025-2026).</li>
+        <li>Revisada por pares, o publicada en medio con responsabilidad editorial.</li>
+        <li>Citada por otras fuentes independientes.</li>
+        <li>Sin conflicto de interés detectable.</li>
+      </ul>
+
+      <h2>Criterios de descarte automático</h2>
+      <ul>
+        <li>Fuentes anónimas sin respaldo institucional.</li>
+        <li>Titulares sensacionalistas sin datos que los sostengan.</li>
+        <li>Contenido patrocinado o afiliado sin disclosure.</li>
+        <li>Información que contradice consenso técnico sin evidencia sólida.</li>
+        <li>Estudios o métricas con metodología no replicable.</li>
+      </ul>
+
+      <h2>Proceso editorial paso a paso</h2>
+      <ol>
+        <li><strong>Selección del tema</strong> — A partir de Bitcoin Optech, bitcoin-dev y movimientos en repositorios oficiales (Bitcoin Core, BIPs, Citrea, BitVM).</li>
+        <li><strong>Recolección de fuentes</strong> — Mínimo cinco. Se construye una tabla con autor, URL, fecha, dato clave.</li>
+        <li><strong>Validación</strong> — Cada fuente pasa por los criterios de la sección anterior. Las que no cumplen se descartan.</li>
+        <li><strong>Identificación del ángulo de impacto</strong> — Qué dato sorprende, qué creencia popular se rompe, qué acción es accionable para el lector.</li>
+        <li><strong>Redacción</strong> — Tono divulgativo y punchy. Cada afirmación factual con su cita inline.</li>
+        <li><strong>Revisión técnica</strong> — Verificación cruzada: BIPs, código fuente, paper original.</li>
+        <li><strong>Publicación</strong> — Con fecha visible (<code>publishedAt</code>) y firma del editor.</li>
+        <li><strong>Actualización</strong> — Anual o cuando un hecho nuevo cambia las cifras. La fecha de actualización (<code>updatedAt</code>) queda visible en cabecera.</li>
+      </ol>
+
+      <h2>Política de correcciones</h2>
+      <p>
+        Cuando un artículo contiene un error material lo corregimos y anotamos qué cambió y cuándo. <strong>No borramos errores</strong>: se conservan en el repositorio Git público para que cualquiera pueda auditar el historial. Los cambios menores (tipos, mejoras de redacción sin afectar contenido) no requieren nota.
+      </p>
+
+      <h2>Conflictos de interés</h2>
+      <ul>
+        <li><strong>Sin afiliados</strong> a exchanges, wallets, hardware o servicios financieros.</li>
+        <li><strong>Sin patrocinios opacos.</strong> Si en algún momento aceptáramos un patrocinio, sería visible en cabecera del artículo.</li>
+        <li><strong>Sin posición de cartera divulgada.</strong> Recomendamos al lector asumir que el editor tiene exposición a Bitcoin como ahorro a largo plazo; ninguna decisión editorial se condiciona por movimientos de precio.</li>
+        <li><strong>Código abierto</strong> — El código del sitio está en <a href="https://github.com/RonGiro" target="_blank" rel="noopener noreferrer">GitHub ↗</a>. Cualquiera puede revisar, proponer cambios o señalar inexactitudes.</li>
+      </ul>
+
+      <h2>Sobre el editor</h2>
+      <p>
+        Bitcoin Sin Ruido lo edita un equipo bajo la marca <strong>Bitcoin Sin Ruido</strong>. La identidad concreta del editor se mantiene reservada para evitar sesgos de personalidad en la cobertura, manteniendo la firma editorial estable a lo largo del tiempo. La autoría se atribuye a "Bitcoin Sin Ruido" como entidad técnica responsable. Para cualquier consulta sobre conflictos de interés, correcciones o licencias, escribe a <a href="https://x.com/BitcoinSinRuido" target="_blank" rel="noopener noreferrer">@BitcoinSinRuido en X ↗</a>.
+      </p>
+
+      <h2>Áreas de especialización editorial</h2>
+      <ul>
+        <li><strong>Protocolo base</strong> — <a href="/articulos/proof-of-work">Proof of Work</a>, <a href="/utxo">UTXO</a>, <a href="/articulos/los-21-millones">política monetaria</a>.</li>
+        <li><strong>Mejoras de mainnet</strong> — <a href="/taproot">Taproot</a>, MuSig2, <a href="/articulos/covenants">covenants</a>.</li>
+        <li><strong>Capas 2</strong> — <a href="/lightning-network">Lightning</a>, <a href="/articulos/taproot-assets">Taproot Assets</a>.</li>
+        <li><strong>Contratos sin soft fork</strong> — <a href="/bitvm">BitVM</a>, <a href="/articulos/bitvm-y-citrea">Citrea</a>.</li>
+        <li><strong>Resistencia futura</strong> — <a href="/articulos/bip360-resistencia-cuantica">BIP-360</a>.</li>
+        <li><strong>Adopción LATAM y España</strong> — autocustodia, remesas, regulación.</li>
+      </ul>
+
+      <h2>Licencia y derechos</h2>
+      <p>
+        Todo el contenido se publica bajo <strong>Creative Commons BY-NC-SA 4.0</strong>: puedes copiarlo, redistribuirlo y adaptarlo siempre que cites a Bitcoin Sin Ruido, no lo uses comercialmente y compartas tus adaptaciones bajo la misma licencia.
+      </p>
+
+      <h2>Enlaces relacionados</h2>
+      <ul>
+        <li><a href="/sobre">Sobre Bitcoin Sin Ruido</a></li>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
+        <li><a href="/glosario">Glosario completo</a></li>
+        <li><a href="/articulos">Todos los artículos</a></li>
+        <li><a href="/comparativas">Comparativas técnicas</a></li>
+      </ul>
+    </div>
+  </article>
+</BaseLayout>

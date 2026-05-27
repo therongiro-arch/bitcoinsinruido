@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Qué es blockchain y cómo funciona: guía técnica en español (2026)';
+const description = 'Qué es una blockchain, cómo se forma una cadena de bloques, hashes, Merkle trees, consenso, ejemplos en Bitcoin, diferencias con bases de datos y mitos comunes.';
+const url = 'https://bitcoinsinruidos.com/que-es-blockchain';
+const datePublished = '2026-05-27';
+const dateModified = '2026-05-27';
+
+const faqs = [
+  { question: '¿Qué es una blockchain en una frase?', answer: 'Una blockchain es una estructura de datos donde los registros se agrupan en bloques encadenados por funciones hash criptográficas, de modo que modificar un bloque antiguo invalida todos los posteriores. Cuando esa estructura se replica entre miles de nodos sin autoridad central, se convierte en un libro contable distribuido y resistente a manipulación.' },
+  { question: '¿Bitcoin y blockchain son lo mismo?', answer: 'No. Bitcoin usa una blockchain, pero blockchain es la tecnología subyacente. Existen blockchains públicas (Bitcoin, Ethereum, Litecoin), privadas (Hyperledger, R3 Corda) y permissioned. No todas las blockchains son cripto y no todas las cripto necesitan blockchain pública.' },
+  { question: '¿Es lo mismo una blockchain que una base de datos?', answer: 'No. Una base de datos tradicional confía en un administrador que aplica las reglas. Una blockchain pública se replica entre miles de nodos que se vigilan mutuamente. Las propiedades clave —inmutabilidad, sin autoridad central, auditabilidad por cualquiera— solo aparecen cuando hay descentralización real.' },
+  { question: '¿Qué es un bloque?', answer: 'Un bloque contiene una cabecera (versión, hash del bloque anterior, raíz Merkle de transacciones, timestamp, dificultad, nonce) y una lista de transacciones. La cabecera enlaza criptográficamente con el bloque anterior, formando la cadena.' },
+  { question: '¿Qué función cumple el hash criptográfico?', answer: 'El hash (SHA-256 en Bitcoin) actúa como huella digital: cualquier modificación al bloque cambia su hash. Como cada bloque incluye el hash del anterior, alterar un bloque obliga a recalcular todos los siguientes — algo computacionalmente prohibitivo con Proof of Work.' },
+  { question: '¿Qué es un Merkle tree?', answer: 'Un árbol Merkle resume todas las transacciones de un bloque en un solo hash (la raíz Merkle). Permite probar que una transacción está en el bloque sin descargar el bloque entero. Es la base de los light clients (SPV).' },
+  { question: '¿Las blockchains son anónimas?', answer: 'Las blockchains públicas son pseudónimas: cada participante usa direcciones, no identidades. Pero las transacciones son rastreables. Bitcoin con Taproot y técnicas como CoinJoin mejora privacidad estructural, pero no garantiza anonimato.' },
+  { question: '¿Para qué sirven las blockchains aparte de cripto?', answer: 'Casos reales en producción: prueba de tiempo (timestamping), trazabilidad de cadenas de suministro, registros notariales en algunos países, asentamiento de tokens RWA. Muchos casos hype 2017-2021 no llegaron a producción seria.' },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: title, description, url, inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished, dateModified,
+  author: { '@type': 'Person', '@id': 'https://bitcoinsinruidos.com/sobre#editor', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Blockchain',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Qué es blockchain', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })),
+};
+---
+
+<BaseLayout title={`${title} | Bitcoin Sin Ruido`} description={description} canonical={url} keywords={["qué es blockchain", "cómo funciona blockchain", "blockchain explicado", "cadena de bloques", "hash criptográfico", "Merkle tree", "blockchain Bitcoin"]}>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Qué es blockchain' }]} />
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">GUÍA PILLAR · PROTOCOLO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        <strong>Una blockchain (cadena de bloques) es una estructura de datos donde los registros se agrupan en bloques encadenados por funciones hash criptográficas.</strong> Cuando esa estructura se replica entre miles de <a href="/que-es-un-nodo-bitcoin">nodos</a> sin autoridad central y se asegura con un mecanismo de consenso como <a href="/articulos/proof-of-work">Proof of Work</a>, se convierte en un libro contable distribuido, auditable y resistente a manipulación. <a href="/que-es-bitcoin">Bitcoin</a> fue la primera implementación funcional, lanzada en enero de 2009.
+      </p>
+
+      <h2>Explicación simple</h2>
+      <p>
+        Imagina un cuaderno donde cada hoja nueva escribe arriba un código que resume la hoja anterior. Si alguien intenta modificar una hoja vieja, el código deja de cuadrar y todas las hojas siguientes quedan invalidadas. Ahora imagina que el cuaderno no lo guarda una persona, sino que existe en miles de copias repartidas por todo el mundo, y cada propietario revisa todas las hojas nuevas antes de añadirlas a su copia.
+      </p>
+      <p>
+        Eso es una blockchain. Las hojas son <strong>bloques</strong>, el código que las une es un <strong>hash criptográfico</strong> y la verificación distribuida es lo que la hace inmutable en la práctica: para falsificar una entrada antigua tendrías que convencer simultáneamente a miles de propietarios de aceptar tu versión modificada, algo computacionalmente caro y socialmente imposible mientras la red sea grande y diversa.
+      </p>
+
+      <h2>Anatomía de un bloque</h2>
+      <p>Un bloque de Bitcoin tiene dos partes:</p>
+      <ul>
+        <li><strong>Cabecera (80 bytes)</strong> — Versión del protocolo, hash del bloque anterior, raíz del Merkle tree de transacciones, timestamp, dificultad actual y nonce.</li>
+        <li><strong>Cuerpo</strong> — Lista de transacciones (típicamente entre 1.500 y 3.500 por bloque en 2026, limitado por el peso máximo de 4 MWU).</li>
+      </ul>
+      <p>
+        El <strong>hash del bloque</strong> se calcula aplicando doble SHA-256 sobre la cabecera. Como la cabecera incluye el hash del bloque anterior, la cadena queda enlazada criptográficamente: cualquier modificación retroactiva invalida todos los hashes posteriores.
+      </p>
+
+      <h2>Hash criptográfico: la pieza fundamental</h2>
+      <p>
+        Bitcoin usa <strong>SHA-256</strong>, una función hash con tres propiedades clave:
+      </p>
+      <ul>
+        <li><strong>Determinismo</strong> — La misma entrada siempre produce el mismo hash.</li>
+        <li><strong>Resistencia a preimagen</strong> — Dado un hash, es computacionalmente inviable encontrar la entrada que lo produjo.</li>
+        <li><strong>Sensibilidad</strong> — Un cambio de un bit en la entrada cambia drásticamente el hash (efecto avalancha).</li>
+      </ul>
+      <p>
+        Estas propiedades convierten el hash en una "huella digital" del bloque: cualquier modificación es detectable comparando hashes.
+      </p>
+
+      <h2>Merkle tree: cómo se resumen las transacciones</h2>
+      <p>
+        En vez de hashear cada transacción individualmente en la cabecera, Bitcoin las organiza en un <strong>árbol Merkle</strong>: pares de transacciones se hashean, sus hashes se vuelven a parear y hashear, y así sucesivamente hasta producir una sola raíz Merkle que cabe en la cabecera. Esto permite a un cliente ligero (SPV) probar que una transacción concreta está en un bloque sin descargar el bloque entero: basta con el camino Merkle.
+      </p>
+
+      <h2>Consenso: cómo se decide qué bloque va a continuación</h2>
+      <p>
+        Una blockchain sin consenso es inútil: si cada nodo añade los bloques que quiere, no hay verdad compartida. Bitcoin usa <a href="/articulos/proof-of-work">Proof of Work</a>: los mineros compiten gastando energía para encontrar un nonce que produzca un hash por debajo del objetivo de dificultad. El primero que lo consigue propaga el bloque y, si los nodos lo validan, se añade a la cadena.
+      </p>
+      <p>Otros mecanismos de consenso (Proof of Stake, Delegated Proof of Stake, PBFT) existen en otras blockchains. Cada uno tiene compromisos distintos entre seguridad, energía consumida y descentralización.</p>
+
+      <h2>Blockchain vs base de datos tradicional</h2>
+      <table>
+        <thead>
+          <tr><th>Aspecto</th><th>Blockchain pública</th><th>Base de datos tradicional</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Autoridad</td><td>Sin admin central</td><td>Admin con permisos</td></tr>
+          <tr><td>Inmutabilidad</td><td>Sí (PoW)</td><td>Reversible por admin</td></tr>
+          <tr><td>Auditabilidad</td><td>Pública</td><td>Privada o limitada</td></tr>
+          <tr><td>Velocidad escritura</td><td>~7 tx/s (Bitcoin L1)</td><td>Miles de tx/s</td></tr>
+          <tr><td>Eficiencia energética</td><td>Costosa por diseño</td><td>Eficiente</td></tr>
+          <tr><td>Caso de uso ideal</td><td>Sin confianza entre partes</td><td>Una sola parte controla</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Tipos de blockchain</h2>
+      <ul>
+        <li><strong>Pública / permissionless</strong> — Cualquiera puede leer, escribir y operar nodos (Bitcoin, Ethereum).</li>
+        <li><strong>Privada / permissioned</strong> — Solo entidades autorizadas pueden participar (Hyperledger Fabric, R3 Corda).</li>
+        <li><strong>Consortium</strong> — Operada por un grupo cerrado de organizaciones.</li>
+        <li><strong>Sidechain</strong> — Blockchain independiente conectada a la principal por un puente (Liquid).</li>
+        <li><strong>Layer 2</strong> — Protocolos sobre la blockchain base que escalan velocidad/costo (<a href="/lightning-network">Lightning</a>, <a href="/bitvm">BitVM</a>).</li>
+      </ul>
+
+      <h2>Cómo funciona Bitcoin sobre blockchain (resumen)</h2>
+      <p>
+        Bitcoin combina varias piezas:
+      </p>
+      <ol>
+        <li><a href="/utxo">UTXOs</a> como modelo de saldo.</li>
+        <li>Firmas <a href="/taproot">Schnorr</a> (y ECDSA legacy) para autorizar gasto.</li>
+        <li>Bloques cada ~10 minutos con difficulty adjustment cada 2.016 bloques.</li>
+        <li><a href="/articulos/proof-of-work">Proof of Work</a> como mecanismo de consenso.</li>
+        <li>Red P2P de <a href="/que-es-un-nodo-bitcoin">nodos</a> que validan cada bloque y transacción.</li>
+        <li>Suministro limitado por código a <a href="/articulos/los-21-millones">21 millones</a>.</li>
+      </ol>
+      <p>Para el recorrido completo paso a paso, ver <a href="/como-funciona-bitcoin">Cómo funciona Bitcoin</a>.</p>
+
+      <h2>Mitos comunes sobre blockchain</h2>
+      <ul>
+        <li><strong>"Blockchain resuelve cualquier problema"</strong> — No. Solo aporta valor cuando hace falta consenso entre partes que no se conocen y no quieren un intermediario único.</li>
+        <li><strong>"Es totalmente inmutable"</strong> — Es <em>económicamente</em> inmutable. En Bitcoin, modificar un bloque antiguo exige más hashrate que toda la red honesta sostenido durante horas — prohibitivo pero no matemáticamente imposible.</li>
+        <li><strong>"Las blockchains privadas tienen los mismos beneficios"</strong> — Falso. Una blockchain privada con admin centralizado es una base de datos compartida con costos extra; las propiedades clave (inmutabilidad, censura-resistencia) solo aparecen con descentralización real.</li>
+        <li><strong>"Es anónimo"</strong> — Pseudónimo. Las direcciones no llevan tu nombre, pero las transacciones son rastreables por análisis de cadena.</li>
+        <li><strong>"Más blockchains es mejor"</strong> — La fragmentación crea más superficie de ataque y peor liquidez. El consenso es valioso precisamente porque es difícil construirlo.</li>
+      </ul>
+
+      <h2>Casos de uso reales en 2026</h2>
+      <ul>
+        <li><strong>Dinero digital sin emisor</strong> — Bitcoin, mainstream desde 2017 e infraestructura financiera en El Salvador.</li>
+        <li><strong>Pagos internacionales</strong> — Lightning Network, USDT sobre Taproot Assets.</li>
+        <li><strong>Asentamiento de tokens RWA</strong> — Tokenización de bonos, fondos monetarios en Ethereum y Liquid.</li>
+        <li><strong>Timestamping</strong> — Notarización de documentos, prueba de existencia (OpenTimestamps).</li>
+        <li><strong>Cadenas de suministro</strong> — Trazabilidad de farma, alimentación (Walmart, Nestlé).</li>
+      </ul>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
+        <li><a href="/como-funciona-bitcoin">Cómo funciona Bitcoin</a></li>
+        <li><a href="/articulos/proof-of-work">Proof of Work</a></li>
+        <li><a href="/utxo">Qué es un UTXO</a></li>
+        <li><a href="/que-es-un-nodo-bitcoin">Qué es un nodo Bitcoin</a></li>
+        <li><a href="/anatomia-de-una-transaccion-bitcoin">Anatomía de una transacción Bitcoin</a></li>
+        <li><a href="/mapa-stack-bitcoin">Mapa del stack de Bitcoin</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
+        <li><a href="/glosario">Glosario completo</a></li>
+      </ul>
+
+      <h2>Fuentes</h2>
+      <ul>
+        <li><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener noreferrer">Bitcoin Whitepaper — Satoshi Nakamoto (2008) ↗</a></li>
+        <li><a href="https://en.bitcoin.it/wiki/Block" target="_blank" rel="noopener noreferrer">Bitcoin Wiki — Block ↗</a></li>
+        <li><a href="https://en.bitcoin.it/wiki/Merkle_tree" target="_blank" rel="noopener noreferrer">Bitcoin Wiki — Merkle tree ↗</a></li>
+        <li><a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf" target="_blank" rel="noopener noreferrer">NIST FIPS 180-4 — SHA-256 ↗</a></li>
+        <li><a href="https://bitcoinops.org" target="_blank" rel="noopener noreferrer">Bitcoin Optech Newsletter ↗</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>
