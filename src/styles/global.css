@@ -152,6 +152,19 @@
     margin-top: 0;
   }
 
+  /* Mining pin: floats subtly above its geographic point on the globe.
+     The SVG itself is 22x60 with the visible pin in the top half — the
+     empty bottom half lets react-globe.gl's "center on lat/lng" rule
+     leave the visible tip exactly on the location. */
+  @keyframes mining-pin-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+  }
+  .mining-pin-anim {
+    animation: mining-pin-float 3.2s ease-in-out infinite;
+    transform-origin: 50% 100%;
+  }
+
   .chip {
     @apply inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-mono text-ink-muted border border-line rounded-full px-2.5 py-1;
   }

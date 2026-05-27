@@ -10,6 +10,11 @@ import {
   sizeForBtc,
   type AccumulationPoint,
 } from '../../lib/accumulation';
+import {
+  MINING_LOCATIONS,
+  MINING_KIND_LABEL,
+  type MiningLocation,
+} from '../../lib/mining-locations';
 
 const loadGlobe = () => import('react-globe.gl').then((m) => m.default);
 
@@ -79,6 +84,38 @@ const ENTITY_BY_ID = new Map<string, AccumulationPoint>(ACCUMULATION.map((p) => 
 
 function resolveEntity(entityId: string): AccumulationPoint | undefined {
   return ENTITY_BY_ID.get(entityId);
+}
+
+// Build a "Google-Maps-style" teardrop pin SVG for a mining location.
+// The SVG is 22x60 so that, when react-globe.gl centres the element on
+// the lat/lng, the *visible* tip (which lives in the top 30 px) lands
+// exactly on the geographic point. The bottom 30 px are intentional
+// empty space acting as a counterweight for the centring.
+function buildMiningPin(d: MiningLocation): HTMLElement {
+  const wrapper = document.createElement('div');
+  wrapper.title = `${d.name} · ${d.city}, ${d.country}\n${MINING_KIND_LABEL[d.kind]}${d.notes ? ' — ' + d.notes : ''}`;
+  wrapper.style.cssText =
+    'width:22px;height:60px;pointer-events:auto;cursor:help;will-change:transform;';
+  // Unique gradient id per pin so they don't collide in the DOM.
+  const gid = `mp-${d.id}`;
+  wrapper.innerHTML = `
+    <div class="mining-pin-anim" style="width:100%;height:100%;">
+      <svg width="22" height="60" viewBox="0 0 22 60" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));">
+        <defs>
+          <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#8ec1ea" stop-opacity="0.55"/>
+            <stop offset="1" stop-color="#3d6fa8" stop-opacity="0.7"/>
+          </linearGradient>
+        </defs>
+        <path d="M11 0 C4.9 0 0 4.9 0 11 C0 16.5 5.5 22 11 30 C16.5 22 22 16.5 22 11 C22 4.9 17.1 0 11 0 Z"
+              fill="url(#${gid})"
+              stroke="rgba(160,200,235,0.95)"
+              stroke-width="0.8"/>
+        <text x="11" y="15.5" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif">₿</text>
+      </svg>
+    </div>
+  `;
+  return wrapper;
 }
 
 // Color texture: gold gradient + dark engraved-looking text.
@@ -850,6 +887,14 @@ export default function LiveGlobe() {
             arcDashGap={0.6}
             arcDashAnimateTime={ARC_DASH_ANIMATE_MS}
             arcsTransitionDuration={0}
+            // Mining-node pins (Google-Maps-style teardrops with ₿).
+            // Floating animation lives in the wrapper class .mining-pin-anim
+            // declared in global.css.
+            htmlElementsData={MINING_LOCATIONS}
+            htmlLat={(d: MiningLocation) => d.lat}
+            htmlLng={(d: MiningLocation) => d.lng}
+            htmlAltitude={0.005}
+            htmlElement={buildMiningPin}
             enablePointerInteraction
           />
           </div>
@@ -910,6 +955,17 @@ export default function LiveGlobe() {
           <span>fee alto</span>
         </span>
         <span className="text-ink-dim/70">grosor ∝ BTC enviados</span>
+      </div>
+
+      <div className="mt-2 w-full max-w-full flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] sm:text-[11px] font-mono text-ink-dim px-2">
+        <span className="inline-flex items-center gap-1.5">
+          <svg width="11" height="15" viewBox="0 0 22 30" aria-hidden="true">
+            <path d="M11 0 C4.9 0 0 4.9 0 11 C0 16.5 5.5 22 11 30 C16.5 22 22 16.5 22 11 C22 4.9 17.1 0 11 0 Z" fill="rgba(80,130,200,0.7)" stroke="rgba(160,200,235,0.95)" strokeWidth="0.8" />
+            <text x="11" y="15.5" textAnchor="middle" fontSize="13" fontWeight="700" fill="#fff" fontFamily="Inter, sans-serif">₿</text>
+          </svg>
+          <span>{MINING_LOCATIONS.length} nodos de minado</span>
+        </span>
+        <span className="text-ink-dim/70">pools · granjas · minería estatal</span>
       </div>
 
       <p className="mt-2 max-w-md w-full text-center text-[10px] leading-relaxed text-ink-dim px-2">
