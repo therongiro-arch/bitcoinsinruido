@@ -193,6 +193,41 @@ const faqLd = {
         <li>Para recibir pagos serios, contrata canal con un LSP.</li>
       </ol>
 
+      <h2>Historia y evolución de Lightning Network</h2>
+      <ul>
+        <li><strong>2015</strong> — Joseph Poon y Thaddeus Dryja publican el paper original de Lightning Network.</li>
+        <li><strong>2017</strong> — Activación de <strong>SegWit</strong> en Bitcoin, prerequisito técnico para Lightning.</li>
+        <li><strong>2018</strong> — Mainnet de Lightning. Tres implementaciones compitiendo: LND (Lightning Labs), c-lightning (Blockstream), Eclair (ACINQ).</li>
+        <li><strong>2019-2020</strong> — Crecimiento orgánico de canales, mejoras de routing. Wumbo channels.</li>
+        <li><strong>2021</strong> — Activación de <a href="/taproot">Taproot</a>: base para PTLCs (próximo paso evolutivo). Adopción masiva en El Salvador.</li>
+        <li><strong>2022</strong> — Cash App integra Lightning para 70M+ usuarios. Twitter (X) tipping con Lightning.</li>
+        <li><strong>2023-2024</strong> — Implementación generalizada de <strong>channel splicing</strong> en LDK, Eclair y c-lightning. Cash App reporta 7x crecimiento.</li>
+        <li><strong>2025</strong> — Tether lanza USDT nativo sobre Lightning vía <a href="/articulos/taproot-assets">Taproot Assets</a>.</li>
+        <li><strong>2026</strong> — Strike opera en 85+ países. 18.000+ nodos públicos, 5.400+ BTC en canales, 12M+ tx/mes.</li>
+      </ul>
+
+      <h2>Errores comunes al usar Lightning</h2>
+      <ul>
+        <li><strong>No tener liquidez entrante</strong> — Sin un canal hacia ti, no puedes recibir. Solución: usar una wallet con LSP integrado (Phoenix gestiona esto automáticamente).</li>
+        <li><strong>Pagar invoices viejas</strong> — Los invoices Lightning tienen expiración. Si caducó, el comerciante debe generar uno nuevo.</li>
+        <li><strong>Apagar la wallet a la fuerza durante un pago</strong> — Puede dejar HTLCs colgados. Las wallets modernas resuelven esto, pero conviene esperar la confirmación.</li>
+        <li><strong>Confundir on-chain con Lightning</strong> — Una dirección que empieza por <code>bc1…</code> es on-chain. Un invoice Lightning empieza por <code>lnbc…</code>. No son intercambiables.</li>
+        <li><strong>No hacer backup del estado del canal</strong> — En autocustodia avanzada, perder el estado puede significar perder fondos. Las wallets modernas (Phoenix, Mutiny) abstraen esto.</li>
+        <li><strong>Asumir que es totalmente anónimo</strong> — Los nodos intermedios ven menos información que en on-chain, pero quien abre canal contigo ve actividad. La privacidad es estructural, no absoluta.</li>
+      </ul>
+
+      <h2>Quién usa Lightning en producción (2026)</h2>
+      <ul>
+        <li><strong>Cash App</strong> (Block, ex-Square) — Lightning para depósitos/retiros en 4M+ terminales Square.</li>
+        <li><strong>Strike</strong> — Operativo en 85+ países, infraestructura de remesas Lightning a USD.</li>
+        <li><strong>Phoenix</strong> (ACINQ) — Wallet móvil autocustodial de referencia.</li>
+        <li><strong>Mutiny</strong> — Wallet web/PWA autocustodial, soporta Taproot Assets.</li>
+        <li><strong>Breez</strong> — Wallet con SDK para integraciones de terceros.</li>
+        <li><strong>Wallet of Satoshi</strong> — Custodial sencilla, popular en LATAM.</li>
+        <li><strong>OpenNode, BTCPay Server</strong> — Procesadores para comercios.</li>
+        <li><strong>Galoy, LNbits</strong> — Stacks para comunidades y "Bitcoin Beach" replicas.</li>
+      </ul>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/articulos/lightning-network">Artículo corto: Lightning Network</a></li>

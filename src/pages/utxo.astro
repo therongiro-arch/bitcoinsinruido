@@ -156,6 +156,41 @@ const faqLd = {
         El modelo UTXO es lo que hace posible <strong>Lightning Network</strong>, los <strong>covenants</strong>, las construcciones <strong>BitVM</strong> y la paralelización de la verificación. Sin UTXOs, muchas de las propiedades que definen a Bitcoin —privacidad estructural, paralelización, verificación local— serían más difíciles de construir. Es una de las decisiones de diseño más infravaloradas del protocolo.
       </p>
 
+      <h2>Privacidad y UTXO: lo que sí y lo que no</h2>
+      <p>
+        Bitcoin es <strong>pseudónimo</strong>, no anónimo. Cada UTXO está asociado a una dirección, y las direcciones se pueden conectar entre sí mediante <strong>análisis de cadena</strong> (clustering por co-spending, change heuristics, timing). Empresas como Chainalysis, Elliptic y CipherTrace ofrecen este servicio a exchanges y reguladores.
+      </p>
+      <p>
+        El modelo UTXO ofrece ventajas estructurales que un modelo de cuentas no tiene:
+      </p>
+      <ul>
+        <li><strong>Sin dirección "principal"</strong> — Cada UTXO puede vivir en una dirección distinta.</li>
+        <li><strong>Sin balance público</strong> — A diferencia de Ethereum, no hay un saldo agregado público por usuario.</li>
+        <li><strong>Compatible con CoinJoin</strong> — Técnica que mezcla UTXOs de varios usuarios para romper trazabilidad (Whirlpool, JoinMarket).</li>
+        <li><strong>Compatible con <a href="/taproot">Taproot</a></strong> — Indistinguibilidad entre pago simple y contrato complejo.</li>
+      </ul>
+      <p>
+        Para máxima privacidad, las prácticas recomendadas son: usar una dirección nueva por cada transacción, evitar reutilización, considerar CoinJoin antes de mezclar UTXOs de fuentes distintas y usar wallets que implementen coin selection consciente de privacidad (Sparrow, Bitcoin Core).
+      </p>
+
+      <h2>Errores comunes con UTXOs</h2>
+      <ul>
+        <li><strong>Reutilizar direcciones</strong> — La buena práctica es una dirección por uso. Reutilizar revela patrones y, post-cuántico, expone la pubkey ([BIP-360](/articulos/bip360-resistencia-cuantica)).</li>
+        <li><strong>Mezclar UTXOs de KYC y no-KYC</strong> — Combinar UTXOs de un exchange con KYC y de fuentes anónimas en una misma tx vincula ambos orígenes.</li>
+        <li><strong>Olvidar las dust UTXOs</strong> — Pequeñas cantidades pueden costar más en fee que su valor. Las wallets ofrecen consolidación.</li>
+        <li><strong>No revisar coin selection</strong> — Por defecto las wallets eligen UTXOs sin considerar privacidad. Sparrow y otras permiten control manual.</li>
+        <li><strong>Confundir change con direcciones del receptor</strong> — La change address es tuya, pero un analista la puede identificar heurísticamente. Taproot ayuda a mitigarlo.</li>
+      </ul>
+
+      <h2>UTXO en contextos avanzados</h2>
+      <ul>
+        <li><strong>Lightning Network</strong> — Cada canal Lightning empieza con un UTXO multisig 2-de-2.</li>
+        <li><strong>Covenants</strong> — Las propuestas <a href="/articulos/covenants">OP_CAT y CTV</a> añadirían restricciones a cómo se gastan UTXOs.</li>
+        <li><strong>BitVM y Citrea</strong> — Usan UTXOs para anclar pruebas y compromisos.</li>
+        <li><strong>Taproot Assets</strong> — Codifica activos arbitrarios sobre UTXOs Bitcoin.</li>
+        <li><strong>Vaults</strong> — Esquemas (con covenants) donde un UTXO solo se puede gastar tras un periodo de gracia, permitiendo revertir un robo si se detecta a tiempo.</li>
+      </ul>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/articulos/que-es-utxo">Artículo corto: UTXO</a></li>

@@ -160,6 +160,41 @@ const faqLd = {
         <li>Lightning sería significativamente más costoso.</li>
       </ul>
 
+      <h2>Historia de Taproot: cómo se activó</h2>
+      <ul>
+        <li><strong>2018</strong> — Greg Maxwell, Pieter Wuille, AJ Towns y otros publican los primeros borradores.</li>
+        <li><strong>2019</strong> — Aparecen los BIPs 340, 341 y 342. Discusión técnica intensa en bitcoin-dev.</li>
+        <li><strong>2020</strong> — Primer borrador estable. Implementación en Bitcoin Core 0.21.</li>
+        <li><strong>2021 (Q1-Q2)</strong> — Activación mediante <strong>Speedy Trial</strong>: ventana de tres meses donde los mineros señalan readiness. Más del 90 % señaló rápido.</li>
+        <li><strong>2021 (noviembre)</strong> — Activación oficial en el bloque 709.632.</li>
+        <li><strong>2022-2024</strong> — Adopción progresiva por wallets (Sparrow, Bitcoin Core, Phoenix, BlueWallet). MuSig2 finalizado.</li>
+        <li><strong>2025</strong> — Lanzamiento de <a href="/articulos/taproot-assets">Taproot Assets</a> mainnet.</li>
+        <li><strong>2026</strong> — <a href="/bitvm">BitVM</a> y <a href="/articulos/bitvm-y-citrea">Citrea</a> demuestran que Taproot habilita primitivas que antes parecían imposibles sin un soft fork adicional.</li>
+      </ul>
+
+      <h2>Mitos comunes sobre Taproot</h2>
+      <ul>
+        <li><strong>"Taproot rompió Bitcoin"</strong> — Falso. Es retrocompatible (soft fork). Los nodos sin actualizar siguen funcionando válidamente.</li>
+        <li><strong>"Taproot es solo privacidad"</strong> — También aporta eficiencia (firmas más pequeñas) y abre la puerta a primitivas como MuSig2, BitVM y Taproot Assets.</li>
+        <li><strong>"Taproot habilita NFTs en Bitcoin"</strong> — Ordinals usan Taproot pero el debate sobre si ese era el uso previsto es otro. Técnicamente, Taproot no fue diseñado para Ordinals; fue un efecto secundario de la mayor flexibilidad.</li>
+        <li><strong>"Mi wallet vieja deja de funcionar"</strong> — No. Las wallets sin Taproot siguen siendo válidas para sus tipos de output. No pueden interactuar con direcciones bc1p, pero el resto funciona.</li>
+        <li><strong>"Schnorr reemplaza a ECDSA"</strong> — Lo añade como opción. ECDSA sigue siendo válido. La transición es gradual.</li>
+      </ul>
+
+      <h2>Cómo identificar una dirección Taproot</h2>
+      <p>
+        Las direcciones Taproot (P2TR) empiezan por <code>bc1p…</code> (bech32m). Para diferenciarlas:
+      </p>
+      <ul>
+        <li><code>1…</code> — Legacy P2PKH (2009).</li>
+        <li><code>3…</code> — P2SH (2012), normalmente multisig.</li>
+        <li><code>bc1q…</code> — SegWit nativo P2WPKH/P2WSH (2017).</li>
+        <li><code>bc1p…</code> — Taproot P2TR (2021).</li>
+      </ul>
+      <p>
+        Si vas a recibir un pago Taproot, asegúrate de que el emisor soporte bech32m. La mayoría de wallets ya lo hacen, pero algunos exchanges (sobre todo legacy) aún limitan a SegWit nativo.
+      </p>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/articulos/taproot">Artículo corto: Taproot</a></li>

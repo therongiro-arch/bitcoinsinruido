@@ -154,6 +154,49 @@ const faqLd = {
         Durante años el argumento contra Bitcoin fue "no es programable". BitVM rompe ese argumento sin tocar la capa base. Citrea ya está vivo en mainnet con throughput de miles de tx/s ancladas en Bitcoin. La filosofía se mantiene: <strong>capa base conservadora, programabilidad encima</strong>. Y, a diferencia de las propuestas que requieren soft forks, BitVM no necesita esperar consenso de toda la red para empezar a operar.
       </p>
 
+      <h2>Historia de BitVM y Citrea</h2>
+      <ul>
+        <li><strong>Octubre 2023</strong> — Robin Linus publica el whitepaper original "BitVM: Compute Anything on Bitcoin".</li>
+        <li><strong>2024 (Q1)</strong> — Aparecen BitVM2 y mejoras al modelo de challenges. Comunidad técnica se vuelca.</li>
+        <li><strong>2024 (Q2-Q4)</strong> — Citrea anuncia la primera implementación de un ZK-rollup sobre Bitcoin usando BitVM. Testnets sucesivas.</li>
+        <li><strong>2025</strong> — Implementaciones competidoras (Bitlayer, BOB, Yona) emergen. Maduración del puente Clementine.</li>
+        <li><strong>27 enero 2026</strong> — Citrea lanza <strong>mainnet</strong>: primer ZK-rollup nativo sobre Bitcoin en producción.</li>
+        <li><strong>2026 (Q1-Q2)</strong> — Aplicaciones EVM-compatibles desplegadas en Citrea. Puente Clementine en producción.</li>
+      </ul>
+
+      <h2>Mitos comunes sobre BitVM</h2>
+      <ul>
+        <li><strong>"BitVM convierte Bitcoin en Ethereum"</strong> — Falso. La capa base sigue siendo simple, conservadora y predecible. Toda la lógica vive fuera; Bitcoin solo arbitra.</li>
+        <li><strong>"BitVM requiere un soft fork"</strong> — Falso. Usa solo los opcodes ya disponibles desde <a href="/taproot">Taproot</a>.</li>
+        <li><strong>"BitVM es teórico, no se usa"</strong> — Falso. <a href="/articulos/bitvm-y-citrea">Citrea</a> está en mainnet desde enero de 2026 con throughput real.</li>
+        <li><strong>"BitVM compite con Lightning"</strong> — No. Lightning es para pagos; BitVM es para computación verificable. Coexisten.</li>
+        <li><strong>"BitVM es trust-less como Ethereum"</strong> — Tiene su propio modelo: 1-de-N honesto (basta con un participante honesto). Diferente, no estrictamente peor o mejor.</li>
+        <li><strong>"BitVM permite cualquier programa Turing completo en Bitcoin"</strong> — Permite verificar cualquier programa off-chain. La ejecución no se hace on-chain.</li>
+      </ul>
+
+      <h2>Comparativa: BitVM frente a otras vías de contratos en Bitcoin</h2>
+      <table>
+        <thead>
+          <tr><th>Aproximación</th><th>Requiere soft fork</th><th>Estado en 2026</th><th>Expresividad</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>BitVM</strong></td><td>No</td><td>Mainnet (Citrea)</td><td>Arbitraria off-chain</td></tr>
+          <tr><td>Covenants (OP_CAT)</td><td>Sí</td><td>En debate</td><td>Restricciones de gasto</td></tr>
+          <tr><td>Covenants (OP_CTV)</td><td>Sí</td><td>En debate</td><td>Templates fijos</td></tr>
+          <tr><td>Drivechain (BIP-300)</td><td>Sí</td><td>Sin consenso</td><td>Sidechain completa</td></tr>
+          <tr><td>Sidechains federadas (Liquid)</td><td>No</td><td>Producción</td><td>EVM-compat</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Casos de uso reales en 2026</h2>
+      <ul>
+        <li><strong>Puentes trust-minimized</strong> — Mover BTC entre L1 y rollups (Clementine).</li>
+        <li><strong>ZK-rollups</strong> — Citrea con throughput de miles de tx/s.</li>
+        <li><strong>DeFi anclado a Bitcoin</strong> — Lending, AMMs en Citrea aprovechando seguridad de BTC.</li>
+        <li><strong>Verificación de cómputo externo</strong> — Oracles, mercados de predicción, juegos verificables.</li>
+        <li><strong>Coordinación off-chain</strong> — Cualquier dApp que necesite asentamiento final en Bitcoin.</li>
+      </ul>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/articulos/bitvm-y-citrea">Artículo corto: BitVM y Citrea</a></li>
