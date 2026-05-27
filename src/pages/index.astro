@@ -64,9 +64,12 @@ const itemListLd = {
   <HomeBackground />
   <Hero />
 
-  <!-- Bloque textual SEO -->
-  <section class="container-reading py-12 sm:py-16 border-b border-line">
-    <div class="prose-bsr">
+  <!-- Bloque textual SEO. Ancho alineado con la rejilla de articulos.
+       En desktop fluye en 2 columnas via CSS multi-column: el DOM se
+       mantiene 1:1 (mismo orden de h2, p, ul) para crawlers, screen
+       readers y JSON-LD; solo cambia la pintura. -->
+  <section class="container-wide py-12 sm:py-16 border-b border-line">
+    <div class="prose-bsr lg:columns-2 lg:gap-x-12 xl:gap-x-16">
       <h2>Qué es Bitcoin Sin Ruido</h2>
       <p>
         <strong>Bitcoin Sin Ruido</strong> es un medio técnico en español enfocado en explicar
