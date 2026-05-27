@@ -228,6 +228,60 @@ const faqLd = {
         <li><strong>Galoy, LNbits</strong> — Stacks para comunidades y "Bitcoin Beach" replicas.</li>
       </ul>
 
+      <h2>Glosario semántico interno (entidades clave de Lightning)</h2>
+      <p>Términos que aparecen siempre que se habla de Lightning Network. Si entiendes estos diez, entiendes el 90% del protocolo:</p>
+      <ul>
+        <li><strong>Canal de pago</strong> — Multisig 2-de-2 entre dos partes que reserva fondos para pagos bidireccionales repetidos.</li>
+        <li><strong>HTLC (Hashed Time Locked Contract)</strong> — Contrato atómico que asegura que un pago multi-hop o se completa entero o se revierte entero. Imposible que un nodo intermedio robe.</li>
+        <li><strong>PTLC (Point Time Locked Contract)</strong> — Sucesor de HTLC basado en firmas Schnorr post-Taproot. Mejora privacidad y habilita pagos más complejos.</li>
+        <li><strong>Routing</strong> — Mecanismo por el cual un pago salta de nodo en nodo siguiendo la ruta calculada por el emisor. Usa Sphinx onion routing para que ningún nodo intermedio sepa origen y destino.</li>
+        <li><strong>Liquidez (inbound/outbound)</strong> — Capacidad de un canal para enviar (outbound) o recibir (inbound) pagos. Sin liquidez entrante, no puedes recibir.</li>
+        <li><strong>Invoice (bolt11)</strong> — Solicitud de pago codificada que el receptor genera y comparte. Incluye monto, hash de pago, expiración, descripción.</li>
+        <li><strong>Bolt12 offers</strong> — Sucesor de bolt11: invoices reutilizables, sin necesidad de generar uno nuevo por cada pago.</li>
+        <li><strong>Watchtower</strong> — Servicio que vigila los canales por ti cuando estás offline para evitar fraude. Si tu contraparte intenta cerrar el canal con un estado antiguo, el watchtower lo detecta y publica la penalty transaction.</li>
+        <li><strong>Fees</strong> — Comisiones que cobran los nodos intermedios por enrutar pagos. Típicamente fracciones de centavo. Distintas de las fees on-chain.</li>
+        <li><strong>Nodos Lightning</strong> — Cualquier nodo Bitcoin que además ejecuta software Lightning (LND, Core Lightning, Eclair, LDK). En 2026 hay ~18.000 públicos.</li>
+        <li><strong>LSP (Lightning Service Provider)</strong> — Proveedor de canales y liquidez para wallets de consumidor. ACINQ, Voltage, Olympus, Megalith.</li>
+        <li><strong>Splicing</strong> — Agregar o retirar fondos de un canal sin cerrarlo. Implementado en LDK, Eclair, c-lightning.</li>
+        <li><strong>Submarine swap</strong> — Intercambio atómico entre Lightning y on-chain (o entre cadenas). Boltz es el proveedor de referencia.</li>
+        <li><strong>Penalty transaction</strong> — Mecanismo que castiga a una contraparte que intenta cerrar un canal con un estado obsoleto. La contraparte pierde su parte de los fondos.</li>
+        <li><strong>Gossip protocol</strong> — Cómo los nodos comparten información sobre canales públicos (capacidad, fees). Habilita el routing.</li>
+      </ul>
+
+      <h2>Trampas conceptuales habituales</h2>
+      <ul>
+        <li><strong>"Lightning es una nueva blockchain"</strong> — Falso. Lightning <em>vive sobre</em> Bitcoin. No hay cadena Lightning separada; cada canal es un par de transacciones Bitcoin con un estado off-chain.</li>
+        <li><strong>"Si Lightning cae, pierdo mis BTC"</strong> — Falso. Tus BTC viven en multisig on-chain. Si Lightning falla, puedes cerrar el canal y recuperar tus fondos en L1.</li>
+        <li><strong>"Una wallet Lightning siempre es autocustodial"</strong> — Falso. Wallet of Satoshi, Strike y Cash App son custodiales. Phoenix, Mutiny y Breez sí son autocustodiales.</li>
+        <li><strong>"Lightning no escala más allá de pequeños pagos"</strong> — Falso. Con splicing y MPP (Multi-Path Payments), pagos de varios BTC son viables.</li>
+        <li><strong>"Las fees on-chain no importan en Lightning"</strong> — Falso. Abrir y cerrar canales son tx on-chain con fees normales. La eficiencia viene de hacer muchos pagos por canal abierto.</li>
+      </ul>
+
+      <h2>Cómo verificar tú mismo el estado de la red Lightning</h2>
+      <p>
+        Tres herramientas gratuitas, sin login:
+      </p>
+      <ul>
+        <li><a href="https://1ml.com" target="_blank" rel="noopener noreferrer">1ml.com ↗</a> — Listado de nodos públicos, canales, capacidad agregada.</li>
+        <li><a href="https://mempool.space/lightning" target="_blank" rel="noopener noreferrer">mempool.space/lightning ↗</a> — Métricas en tiempo real desde un nodo público.</li>
+        <li><a href="https://amboss.space" target="_blank" rel="noopener noreferrer">Amboss ↗</a> — Análisis de nodos, métricas de routing, comunidades.</li>
+      </ul>
+
+      <h2>Tabla de fuentes validadas</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Fuente</th><th>Tipo</th><th>Año</th><th>Dato clave</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Poon &amp; Dryja — Lightning Paper</td><td>Whitepaper</td><td>2016</td><td>Diseño original de la red</td></tr>
+          <tr><td>2</td><td>BOLT specifications (github)</td><td>Especificación</td><td>2024-2026</td><td>Estándar técnico actual</td></tr>
+          <tr><td>3</td><td>Bitcoin Optech</td><td>Newsletter técnico</td><td>2026</td><td>Splicing en producción</td></tr>
+          <tr><td>4</td><td>1ML / Amboss</td><td>Métricas operacionales</td><td>2026</td><td>18.000+ nodos, 5.400 BTC</td></tr>
+          <tr><td>5</td><td>Plaitr — Lightning 2026 review</td><td>Análisis sectorial</td><td>2026</td><td>12M+ tx/mes</td></tr>
+          <tr><td>6</td><td>Cryptonews — Strike Africa</td><td>Periodístico</td><td>2026</td><td>Strike en 85 países</td></tr>
+        </tbody>
+      </table>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/articulos/lightning-network">Artículo corto: Lightning Network</a></li>
@@ -236,6 +290,13 @@ const faqLd = {
         <li><a href="/bitvm">Qué es BitVM</a></li>
         <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
         <li><a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a></li>
+        <li><a href="/mapa-stack-bitcoin">Mapa del stack de Bitcoin</a></li>
+        <li><a href="/anatomia-de-una-transaccion-bitcoin">Anatomía de una transacción</a></li>
+        <li><a href="/que-es-blockchain">Qué es blockchain</a></li>
+        <li><a href="/que-es-un-nodo-bitcoin">Qué es un nodo Bitcoin</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
+        <li><a href="/comparativas/custodia-vs-autocustodia">Custodia vs autocustodia</a></li>
+        <li><a href="/metodologia">Metodología editorial</a></li>
         <li><a href="/glosario">Glosario</a></li>
       </ul>
 

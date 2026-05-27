@@ -191,6 +191,37 @@ const faqLd = {
         <li><strong>Vaults</strong> — Esquemas (con covenants) donde un UTXO solo se puede gastar tras un periodo de gracia, permitiendo revertir un robo si se detecta a tiempo.</li>
       </ul>
 
+      <h2>Glosario semántico interno (entidades clave del modelo UTXO)</h2>
+      <ul>
+        <li><strong>UTXO set</strong> — Conjunto de UTXOs no gastados que mantiene cada nodo. ~10 GB en 2026.</li>
+        <li><strong>Outpoint</strong> — Referencia a un UTXO concreto: <code>txid:vout</code>.</li>
+        <li><strong>vout</strong> — Índice del output dentro de una transacción.</li>
+        <li><strong>scriptPubKey</strong> — Las condiciones para gastar un UTXO ("candado").</li>
+        <li><strong>scriptSig / witness</strong> — Datos que demuestran que cumples las condiciones ("llave").</li>
+        <li><strong>Coin selection</strong> — Algoritmo que decide qué UTXOs combinar al construir una tx.</li>
+        <li><strong>Change address</strong> — Dirección donde vuelve el "cambio" de una tx.</li>
+        <li><strong>Dust</strong> — UTXOs tan pequeños que la fee de gastarlos supera su valor.</li>
+        <li><strong>Consolidation</strong> — Combinar muchos UTXOs pequeños en uno grande para reducir fees futuras.</li>
+        <li><strong>CoinJoin</strong> — Técnica para mezclar UTXOs de varios usuarios y romper trazabilidad.</li>
+        <li><strong>Address reuse</strong> — Práctica desaconsejada: usar la misma dirección para múltiples pagos reduce privacidad.</li>
+        <li><strong>P2WPKH, P2TR</strong> — Tipos de scriptPubKey modernos. Ver <a href="/anatomia-de-una-transaccion-bitcoin">anatomía de una transacción</a>.</li>
+        <li><strong>Multisig</strong> — UTXO que requiere M-de-N firmas. Con MuSig2 y <a href="/taproot">Taproot</a> son baratos y privados.</li>
+      </ul>
+
+      <h2>Tabla de fuentes validadas</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Fuente</th><th>Tipo</th><th>Año</th><th>Dato clave</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Bitcoin Whitepaper § 2 "Transactions"</td><td>Whitepaper</td><td>2008</td><td>Modelo UTXO original</td></tr>
+          <tr><td>2</td><td>Bitcoin Wiki — UTXO</td><td>Referencia</td><td>2024-2026</td><td>Estructura detallada</td></tr>
+          <tr><td>3</td><td>BIP-341 (Taproot)</td><td>Especificación</td><td>2020</td><td>P2TR outputs</td></tr>
+          <tr><td>4</td><td>BIP-141 (SegWit)</td><td>Especificación</td><td>2015</td><td>Witness vs scriptSig</td></tr>
+          <tr><td>5</td><td>Bitcoin Core src/consensus/tx_verify.cpp</td><td>Código fuente</td><td>2026</td><td>Validación implementada</td></tr>
+        </tbody>
+      </table>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/articulos/que-es-utxo">Artículo corto: UTXO</a></li>
@@ -200,6 +231,11 @@ const faqLd = {
         <li><a href="/lightning-network">Qué es Lightning Network</a></li>
         <li><a href="/glosario#utxo">UTXO en el glosario</a></li>
         <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
+        <li><a href="/anatomia-de-una-transaccion-bitcoin">Anatomía de una transacción</a></li>
+        <li><a href="/mapa-stack-bitcoin">Mapa del stack de Bitcoin</a></li>
+        <li><a href="/que-es-blockchain">Qué es blockchain</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
+        <li><a href="/metodologia">Metodología editorial</a></li>
       </ul>
 
       <h2>Fuentes</h2>

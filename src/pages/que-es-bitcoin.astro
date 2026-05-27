@@ -259,6 +259,49 @@ const faqLd = {
         Una de las propiedades únicas de Bitcoin es que <strong>cualquiera</strong> puede auditar el suministro total en menos de un segundo si tiene un nodo. Con Bitcoin Core, el comando <code>gettxoutsetinfo</code> devuelve la cantidad total de BTC en circulación. No hace falta confiar en CoinMarketCap, en un banco central ni en un comunicado: el dato sale de tu propia copia de la cadena. Esa auditabilidad es lo que separa Bitcoin de cualquier sistema monetario previo.
       </p>
 
+      <h2>Glosario semántico interno (entidades clave de Bitcoin)</h2>
+      <ul>
+        <li><strong>Satoshi (sat)</strong> — Unidad mínima de bitcoin. 1 BTC = 100.000.000 sats.</li>
+        <li><strong>Blockchain</strong> — Estructura encadenada de bloques. Ver <a href="/que-es-blockchain">qué es blockchain</a>.</li>
+        <li><strong>UTXO</strong> — Unspent Transaction Output, la unidad real de saldo. Ver <a href="/utxo">UTXO</a>.</li>
+        <li><strong>Proof of Work</strong> — Consenso basado en energía. Ver <a href="/articulos/proof-of-work">PoW</a>.</li>
+        <li><strong>Nodo</strong> — Computadora que verifica el protocolo. Ver <a href="/que-es-un-nodo-bitcoin">nodo</a>.</li>
+        <li><strong>Minero</strong> — Operador que produce bloques competiendo por PoW.</li>
+        <li><strong>Mempool</strong> — Cola local de tx pendientes en cada nodo.</li>
+        <li><strong>Hash (SHA-256)</strong> — Función criptográfica que encadena bloques.</li>
+        <li><strong>Merkle tree</strong> — Estructura que resume todas las tx de un bloque en una raíz.</li>
+        <li><strong>Halving</strong> — Reducción de emisión cada ~210.000 bloques.</li>
+        <li><strong>Difficulty adjustment</strong> — Reajuste cada 2.016 bloques (~14 días).</li>
+        <li><strong>Coinbase tx</strong> — Tx especial que emite BTC nuevos por bloque.</li>
+        <li><strong>Soft fork</strong> — Actualización retrocompatible.</li>
+        <li><strong>BIP</strong> — Bitcoin Improvement Proposal.</li>
+        <li><strong>Seed phrase</strong> — 12 o 24 palabras que regeneran tus claves.</li>
+        <li><strong>Schnorr</strong> — Firmas habilitadas por <a href="/taproot">Taproot</a>.</li>
+        <li><strong>Lightning</strong> — Capa 2 de pagos. Ver <a href="/lightning-network">Lightning</a>.</li>
+        <li><strong>BitVM</strong> — Contratos sin soft fork. Ver <a href="/bitvm">BitVM</a>.</li>
+      </ul>
+
+      <h2>Cómo encaja Bitcoin con el resto del stack</h2>
+      <p>
+        Bitcoin no es una pieza aislada. Es la <strong>base</strong> sobre la que se construye un stack completo. Para entender cómo encajan las piezas, ver el <a href="/mapa-stack-bitcoin">mapa del stack de Bitcoin</a>. Para el detalle de una transacción concreta, ver <a href="/anatomia-de-una-transaccion-bitcoin">anatomía de una transacción</a>.
+      </p>
+
+      <h2>Tabla de fuentes validadas</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Fuente</th><th>Tipo</th><th>Año</th><th>Dato clave</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Bitcoin Whitepaper — S. Nakamoto</td><td>Whitepaper</td><td>2008</td><td>Diseño original</td></tr>
+          <tr><td>2</td><td>Repositorio Bitcoin Core</td><td>Código fuente</td><td>2026</td><td>Implementación de referencia</td></tr>
+          <tr><td>3</td><td>Bitcoin Improvement Proposals</td><td>Especificaciones</td><td>2009-2026</td><td>Todos los cambios formales</td></tr>
+          <tr><td>4</td><td>Bitcoin Optech Newsletter</td><td>Resumen técnico</td><td>2026</td><td>Estado actual del desarrollo</td></tr>
+          <tr><td>5</td><td>Bitnodes</td><td>Métrica operacional</td><td>2026</td><td>24.557 nodos reachable</td></tr>
+          <tr><td>6</td><td>mempool.space</td><td>Observatorio en vivo</td><td>2026</td><td>Estado de la red</td></tr>
+          <tr><td>7</td><td>Lightning paper — Poon &amp; Dryja</td><td>Whitepaper</td><td>2016</td><td>L2 sobre Bitcoin</td></tr>
+        </tbody>
+      </table>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/lightning-network">Qué es Lightning Network</a> — Pagos instantáneos sobre Bitcoin.</li>
@@ -270,6 +313,12 @@ const faqLd = {
         <li><a href="/glosario">Glosario completo de Bitcoin</a></li>
         <li><a href="/comparativas">Comparativas técnicas</a></li>
         <li><a href="/articulos">Todos los artículos</a></li>
+        <li><a href="/anatomia-de-una-transaccion-bitcoin">Anatomía de una transacción</a></li>
+        <li><a href="/mapa-stack-bitcoin">Mapa del stack de Bitcoin</a></li>
+        <li><a href="/que-es-blockchain">Qué es blockchain</a></li>
+        <li><a href="/comparativas/custodia-vs-autocustodia">Custodia vs autocustodia</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
+        <li><a href="/metodologia">Metodología editorial</a></li>
       </ul>
 
       <h2>Fuentes</h2>

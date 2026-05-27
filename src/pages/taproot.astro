@@ -195,6 +195,39 @@ const faqLd = {
         Si vas a recibir un pago Taproot, asegúrate de que el emisor soporte bech32m. La mayoría de wallets ya lo hacen, pero algunos exchanges (sobre todo legacy) aún limitan a SegWit nativo.
       </p>
 
+      <h2>Glosario semántico interno (entidades clave de Taproot)</h2>
+      <ul>
+        <li><strong>BIP-340</strong> — Especificación de firmas Schnorr.</li>
+        <li><strong>BIP-341</strong> — Estructura P2TR y key/script path.</li>
+        <li><strong>BIP-342</strong> — Tapscript, el lenguaje de scripts revisado.</li>
+        <li><strong>Schnorr</strong> — Esquema de firma con linealidad criptográfica.</li>
+        <li><strong>MuSig2</strong> — Protocolo de firma multi-parte basado en Schnorr.</li>
+        <li><strong>FROST</strong> — Threshold signatures (M-de-N) sobre Schnorr en investigación activa.</li>
+        <li><strong>Key path</strong> — Ruta de gasto cooperativa: una firma agregada indistinguible.</li>
+        <li><strong>Script path</strong> — Ruta alternativa que revela un script de un árbol Merkle.</li>
+        <li><strong>MAST (Merkle Abstract Syntax Tree)</strong> — Árbol de scripts donde solo se revela el ejecutado.</li>
+        <li><strong>P2TR (Pay-to-Taproot)</strong> — Nuevo tipo de output. Direcciones <code>bc1p…</code>.</li>
+        <li><strong>bech32m</strong> — Codificación de direcciones P2TR (variante de bech32).</li>
+        <li><strong>Tweak</strong> — Operación criptográfica que combina la clave interna con el script tree.</li>
+        <li><strong>Annex</strong> — Campo reservado en P2TR para extensibilidad futura.</li>
+        <li><strong>Speedy Trial</strong> — Mecanismo de activación usado en 2021.</li>
+      </ul>
+
+      <h2>Tabla de fuentes validadas</h2>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Fuente</th><th>Tipo</th><th>Año</th><th>Dato clave</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>BIP-340 (Schnorr)</td><td>Especificación</td><td>2020</td><td>Definición formal</td></tr>
+          <tr><td>2</td><td>BIP-341 (Taproot)</td><td>Especificación</td><td>2020</td><td>P2TR y key/script path</td></tr>
+          <tr><td>3</td><td>BIP-342 (Tapscript)</td><td>Especificación</td><td>2020</td><td>OP_CHECKSIGADD</td></tr>
+          <tr><td>4</td><td>MuSig2 paper — Nick &amp; Ruffing</td><td>Paper IACR</td><td>2020</td><td>Multi-firma 2-round</td></tr>
+          <tr><td>5</td><td>Bitcoin Optech — Taproot topic</td><td>Newsletter</td><td>2021-2026</td><td>Estado de adopción</td></tr>
+          <tr><td>6</td><td>Bitcoin Core release 0.21.1</td><td>Software</td><td>2021</td><td>Activación en bloque 709.632</td></tr>
+        </tbody>
+      </table>
+
       <h2>Recursos relacionados</h2>
       <ul>
         <li><a href="/articulos/taproot">Artículo corto: Taproot</a></li>
@@ -203,6 +236,11 @@ const faqLd = {
         <li><a href="/lightning-network">Qué es Lightning Network</a></li>
         <li><a href="/articulos/covenants">Covenants y OP_CAT</a></li>
         <li><a href="/glosario#taproot">Taproot en el glosario</a></li>
+        <li><a href="/anatomia-de-una-transaccion-bitcoin">Anatomía de una transacción</a></li>
+        <li><a href="/mapa-stack-bitcoin">Mapa del stack de Bitcoin</a></li>
+        <li><a href="/que-es-blockchain">Qué es blockchain</a></li>
+        <li><a href="/comparativas/bitvm-vs-smart-contracts">BitVM vs smart contracts</a></li>
+        <li><a href="/metodologia">Metodología editorial</a></li>
       </ul>
 
       <h2>Fuentes</h2>
