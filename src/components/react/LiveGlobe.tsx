@@ -465,6 +465,7 @@ export default function LiveGlobe() {
   const rafRef = useRef<number | null>(null);
   const [contextEpoch, setContextEpoch] = useState(0);
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
+  const [globeVisible, setGlobeVisible] = useState(false);
   const [size, setSize] = useState({ w: 480, h: 480 });
   const [countries, setCountries] = useState<any[]>([]);
   const [arcs, setArcs] = useState<Arc[]>([]);
@@ -491,6 +492,25 @@ export default function LiveGlobe() {
       alive = false;
     };
   }, []);
+
+  // Smooth fade-in once the globe chunk has actually mounted and rendered
+  // at least one canvas frame. Without this, cold loads of the home flash
+  // an empty disc for a few hundred ms while react-globe.gl downloads,
+  // then the globe pops in abruptly.
+  useEffect(() => {
+    if (!GlobeCmp) {
+      setGlobeVisible(false);
+      return;
+    }
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setGlobeVisible(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [GlobeCmp]);
 
   // Load countries GeoJSON bundled with the site
   useEffect(() => {
@@ -789,6 +809,9 @@ export default function LiveGlobe() {
     <div ref={containerRef} className="relative w-full h-full flex flex-col items-center justify-center">
       <div className="relative" style={{ width: size.w, height: size.h }}>
         {GlobeCmp ? (
+          <div
+            className={`absolute inset-0 transition-opacity duration-500 ease-out ${globeVisible ? 'opacity-100' : 'opacity-0'}`}
+          >
           <GlobeCmp
             ref={globeRef}
             width={size.w}
@@ -829,8 +852,12 @@ export default function LiveGlobe() {
             arcsTransitionDuration={0}
             enablePointerInteraction
           />
+          </div>
         ) : (
-          <div className="absolute inset-0 rounded-full bg-bg-card border border-line animate-pulse-slow" />
+          // Transparent placeholder — reserves the layout space while the
+          // react-globe.gl chunk downloads (~hundred KB) without flashing
+          // a coloured disc that would be jarring in light mode.
+          <div className="absolute inset-0" aria-hidden="true" />
         )}
       </div>
 
