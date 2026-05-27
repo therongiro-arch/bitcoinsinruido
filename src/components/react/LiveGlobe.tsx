@@ -262,12 +262,45 @@ function buildEarthAlphaTexture(features: any[]): THREE.Texture {
   return tex;
 }
 
-// Ocean shell tuning — very pale, almost-imperceptible blue. Bump the
-// opacity a touch if you want it more visible in light mode.
-const OCEAN_COLOR = '#bdd9ed';
-const OCEAN_OPACITY = 0.14;
+// Ocean shell tuning — theme-aware so the blue stays perceptible without
+// being loud in either mode.
+//
+// Dark mode: page bg is near-black, so a pale tint at low opacity reads
+// clearly (the dark background "amplifies" subtle colours).
+//
+// Light mode: page bg is off-white, which dilutes any pale colour. We
+// compensate with a more saturated blue + higher opacity so it doesn't
+// disappear into the page.
+const OCEAN_STYLE_DARK = { color: '#bdd9ed', opacity: 0.14 } as const;
+const OCEAN_STYLE_LIGHT = { color: '#5491c8', opacity: 0.28 } as const;
 
-function buildEarth(features: any[]): {
+function oceanStyleFor(dark: boolean): { color: string; opacity: number } {
+  return dark ? OCEAN_STYLE_DARK : OCEAN_STYLE_LIGHT;
+}
+
+// Reactively tracks the `.dark` class on <html>. Updates when the user
+// toggles the theme so we can re-tint the ocean shell without reloading.
+function useIsDarkMode(): boolean {
+  const [dark, setDark] = useState<boolean>(() => {
+    if (typeof document === 'undefined') return false;
+    return document.documentElement.classList.contains('dark');
+  });
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const update = () => setDark(root.classList.contains('dark'));
+    update();
+    const obs = new MutationObserver(update);
+    obs.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => obs.disconnect();
+  }, []);
+  return dark;
+}
+
+function buildEarth(
+  features: any[],
+  dark: boolean,
+): {
   land: THREE.Mesh;
   ocean: THREE.Mesh;
   dispose: () => void;
@@ -308,10 +341,11 @@ function buildEarth(features: any[]): {
   // transparent so it reads as a tint rather than a solid colour, and
   // doesn't break the "floating continents" feel.
   const oceanGeo = new THREE.SphereGeometry(99.5, 64, 64);
+  const { color: oceanColor, opacity: oceanOpacity } = oceanStyleFor(dark);
   const oceanMat = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(OCEAN_COLOR),
+    color: new THREE.Color(oceanColor),
     transparent: true,
-    opacity: OCEAN_OPACITY,
+    opacity: oceanOpacity,
     side: THREE.FrontSide,
     depthWrite: false,
   });
@@ -438,6 +472,14 @@ export default function LiveGlobe() {
   const lastSeenEventRef = useRef<string | null>(null);
   const { events, inspected, attributed, mempoolConnected } = useAttributedTxStream();
   const reduced = useMemo(reducedMotion, []);
+  const dark = useIsDarkMode();
+  // Stable ref so the buildEarth effect can read the latest theme without
+  // having `dark` in its deps (we don't want to rebuild the alpha texture
+  // every time the user toggles the theme).
+  const darkRef = useRef(dark);
+  useEffect(() => {
+    darkRef.current = dark;
+  }, [dark]);
 
   // Load globe component
   useEffect(() => {
@@ -477,7 +519,7 @@ export default function LiveGlobe() {
     if (!scene) return;
     if (earthRef.current) return; // already built
 
-    const earth = buildEarth(countries);
+    const earth = buildEarth(countries, darkRef.current);
     scene.add(earth.ocean);
     scene.add(earth.land);
     earthRef.current = earth;
@@ -494,6 +536,17 @@ export default function LiveGlobe() {
       }
     };
   }, [GlobeCmp, countries, contextEpoch]);
+
+  // Re-tint the ocean shell when the theme toggles. Mutates the existing
+  // material rather than rebuilding the earth — alpha texture is expensive
+  // and doesn't need to be regenerated for a colour change.
+  useEffect(() => {
+    if (!earthRef.current) return;
+    const mat = earthRef.current.ocean.material as THREE.MeshBasicMaterial;
+    const { color, opacity } = oceanStyleFor(dark);
+    mat.color.set(color);
+    mat.opacity = opacity;
+  }, [dark, countries, contextEpoch]);
 
   // Responsive sizing
   useEffect(() => {
