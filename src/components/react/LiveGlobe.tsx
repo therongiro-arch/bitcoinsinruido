@@ -262,16 +262,22 @@ function buildEarthAlphaTexture(features: any[]): THREE.Texture {
   return tex;
 }
 
+// Ocean shell tuning — very pale, almost-imperceptible blue. Bump the
+// opacity a touch if you want it more visible in light mode.
+const OCEAN_COLOR = '#bdd9ed';
+const OCEAN_OPACITY = 0.14;
+
 function buildEarth(features: any[]): {
-  mesh: THREE.Mesh;
+  land: THREE.Mesh;
+  ocean: THREE.Mesh;
   dispose: () => void;
 } {
   // Same radius as react-globe.gl's default (100) so accumulation points,
   // arcs and rings still snap to the surface correctly.
-  const geo = new THREE.SphereGeometry(100, 96, 96);
+  const landGeo = new THREE.SphereGeometry(100, 96, 96);
   const alphaTex = buildEarthAlphaTexture(features);
 
-  const mat = new THREE.MeshStandardMaterial({
+  const landMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color('#f7931a'),
     alphaMap: alphaTex,
     transparent: true,
@@ -288,19 +294,41 @@ function buildEarth(features: any[]): {
     envMapIntensity: 0,
   });
 
-  const mesh = new THREE.Mesh(geo, mat);
+  const land = new THREE.Mesh(landGeo, landMat);
   // three-globe uses theta = (90 - lng) * π/180 to place markers, which puts
   // Greenwich at world +Z. The default three.js SphereGeometry UV mapping puts
   // the centre of an equirectangular texture (Greenwich) at world +X. So
   // markers and continents are 90° apart around Y unless we rotate the mesh
   // by −π/2. Verified mathematically against three-globe v2.41 source.
-  mesh.rotation.y = -Math.PI / 2;
+  land.rotation.y = -Math.PI / 2;
+
+  // Ocean shell: a slightly smaller sphere just inside the land mesh.
+  // Because the land mesh's alphaTest hard-clips ocean pixels, the blue
+  // here only shows through over real ocean areas. Kept extremely pale +
+  // transparent so it reads as a tint rather than a solid colour, and
+  // doesn't break the "floating continents" feel.
+  const oceanGeo = new THREE.SphereGeometry(99.5, 64, 64);
+  const oceanMat = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(OCEAN_COLOR),
+    transparent: true,
+    opacity: OCEAN_OPACITY,
+    side: THREE.FrontSide,
+    depthWrite: false,
+  });
+  const ocean = new THREE.Mesh(oceanGeo, oceanMat);
+  // Render the ocean before the land so blending stays stable when the
+  // camera moves and we don't get z-fighting with the coin or the arcs.
+  ocean.renderOrder = -1;
+
   return {
-    mesh,
+    land,
+    ocean,
     dispose: () => {
-      geo.dispose();
-      mat.dispose();
+      landGeo.dispose();
+      landMat.dispose();
       alphaTex.dispose();
+      oceanGeo.dispose();
+      oceanMat.dispose();
     },
   };
 }
@@ -399,7 +427,7 @@ export default function LiveGlobe() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const globeRef = useRef<any>(null);
   const coinRef = useRef<{ pivot: THREE.Group; coin: THREE.Mesh; dispose: () => void } | null>(null);
-  const earthRef = useRef<{ mesh: THREE.Mesh; dispose: () => void } | null>(null);
+  const earthRef = useRef<{ land: THREE.Mesh; ocean: THREE.Mesh; dispose: () => void } | null>(null);
   const rafRef = useRef<number | null>(null);
   const [contextEpoch, setContextEpoch] = useState(0);
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
@@ -450,13 +478,17 @@ export default function LiveGlobe() {
     if (earthRef.current) return; // already built
 
     const earth = buildEarth(countries);
-    scene.add(earth.mesh);
+    scene.add(earth.ocean);
+    scene.add(earth.land);
     earthRef.current = earth;
 
     return () => {
       const sceneNow: THREE.Scene | undefined = globeRef.current?.scene?.();
       if (earthRef.current) {
-        if (sceneNow) sceneNow.remove(earthRef.current.mesh);
+        if (sceneNow) {
+          sceneNow.remove(earthRef.current.land);
+          sceneNow.remove(earthRef.current.ocean);
+        }
         earthRef.current.dispose();
         earthRef.current = null;
       }
