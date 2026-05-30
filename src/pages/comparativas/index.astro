@@ -45,6 +45,31 @@ const items = [
       </p>
     </header>
 
+    <div class="prose-bsr max-w-2xl mb-12">
+      <p>
+        Entender Bitcoin también es entender en qué se diferencia de lo que se le
+        suele comparar: otras cadenas, las redes de pago tradicionales y los modelos
+        de custodia. En esta sección reunimos comparativas <strong>técnicas y frías</strong>,
+        sin marketing ni predicciones de precio, para que puedas juzgar cada tecnología
+        por lo que realmente hace.
+      </p>
+      <p>
+        Cada comparativa sigue el mismo criterio: definir qué resuelve cada opción,
+        contrastar propiedades verificables (seguridad, descentralización, coste,
+        finalidad, custodia, resistencia a la censura) y cerrar con una conclusión
+        honesta sobre cuándo conviene cada una. No buscamos declarar un "ganador"
+        universal, sino aclarar <strong>qué herramienta encaja en qué caso de uso</strong>.
+      </p>
+      <p>
+        Si estás empezando, te recomendamos leer antes la guía pilar
+        <a href="/que-es-bitcoin/">Qué es Bitcoin y cómo funciona</a>; muchas de
+        estas comparativas se apoyan en conceptos como
+        <a href="/articulos/proof-of-work/">Proof of Work</a>,
+        <a href="/lightning-network/">Lightning Network</a> o la diferencia entre
+        <a href="/comparativas/layer-1-vs-layer-2/">capa base y capa 2</a>.
+      </p>
+    </div>
+
     <div class="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((it) => (
         <a href={it.href} class="block rounded-lg border border-line p-6 hover:border-btc/60 hover:bg-bg-elev/40 transition">
@@ -52,6 +77,26 @@ const items = [
           <p class="text-sm text-ink-muted">{it.desc}</p>
         </a>
       ))}
+    </div>
+
+    <div class="prose-bsr max-w-2xl mt-12">
+      <h2>Cómo leemos estas comparativas</h2>
+      <p>
+        Comparar tecnologías es útil solo si se hace con honestidad: cada una nació
+        para resolver un problema distinto. Bitcoin prioriza ser dinero
+        descentralizado, escaso y resistente a la censura, y sacrifica a propósito
+        otras capacidades en su capa base. Ethereum prioriza la programabilidad.
+        Visa prioriza la velocidad y la comodidad bajo un modelo de confianza
+        centralizado. Ninguna es "mejor" en abstracto: lo son para objetivos
+        diferentes.
+      </p>
+      <p>
+        Por eso, en cada análisis evitamos los titulares fáciles y nos centramos en
+        propiedades comprobables. Si echas en falta una comparativa concreta, lo más
+        probable es que el concepto esté ya cubierto en el
+        <a href="/glosario/">glosario</a> o en los
+        <a href="/articulos/">artículos</a>.
+      </p>
     </div>
   </section>
 </BaseLayout>
