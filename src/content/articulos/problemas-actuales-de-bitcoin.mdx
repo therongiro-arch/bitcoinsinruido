@@ -1,0 +1,101 @@
+---
+title: "Problemas actuales de Bitcoin y posibles soluciones (2026)"
+description: "Escalabilidad, comisiones, privacidad, concentración del minado, financiación de la seguridad y riesgo cuántico: los problemas reales de Bitcoin y las soluciones en marcha."
+publishedAt: 2026-05-30
+capa: futuro
+tags: [escalabilidad, privacidad, mineria, futuro]
+draft: false
+keywords:
+  - problemas de Bitcoin
+  - desventajas de Bitcoin
+  - retos de Bitcoin
+  - soluciones a los problemas de Bitcoin
+  - escalabilidad Bitcoin
+  - riesgo cuántico Bitcoin
+faqs:
+  - question: "¿Cuáles son los principales problemas de Bitcoin hoy?"
+    answer: "La escalabilidad de la capa base, las comisiones variables en momentos de congestión, la privacidad limitada (la cadena es pública), cierta concentración del minado, la futura financiación de la seguridad cuando baje el subsidio, y el riesgo cuántico a largo plazo. Todos tienen soluciones en marcha."
+  - question: "¿Bitcoin puede escalar?"
+    answer: "La capa base no escala a millones de pagos por segundo, y es intencional: prioriza descentralización y seguridad. La escalabilidad se construye en capas superiores como Lightning Network, que permite un volumen de pagos órdenes de magnitud mayor heredando la seguridad de Bitcoin."
+  - question: "¿Es Bitcoin anónimo?"
+    answer: "No, es pseudónimo. Todas las transacciones son públicas y las direcciones pueden analizarse. La privacidad mejora con Taproot, CoinJoin y los pagos en Lightning, pero el anonimato total requiere disciplina y herramientas específicas."
+  - question: "¿Qué pasará con la seguridad cuando se acaben las recompensas?"
+    answer: "A medida que el subsidio por bloque baja con cada halving, las comisiones de las transacciones deben sustituirlo como incentivo para los mineros. Es un reto de diseño económico a largo plazo, y se aborda fomentando un mercado de comisiones sano y mayor actividad en la capa base."
+related:
+  - lightning-network
+  - bip360-resistencia-cuantica
+  - taproot
+  - bitvm-y-citrea
+---
+
+## Resumen rápido
+
+**Bitcoin no es perfecto, y conocer sus límites es parte de entenderlo.** Sus problemas reales son: la capa base no escala a pagos masivos, las comisiones suben en momentos de congestión, la privacidad es limitada porque la cadena es pública, hay cierta concentración del minado, queda por resolver cómo se financiará la seguridad cuando baje el subsidio, y existe un riesgo cuántico a largo plazo. La buena noticia: **cada uno tiene soluciones en marcha**, la mayoría sin tocar la capa base.
+
+Este artículo pertenece al silo sobre el [futuro de Bitcoin](/futuro-bitcoin).
+
+## 1. Escalabilidad: la capa base no escala (y es a propósito)
+
+**El problema.** La capa base de Bitcoin procesa un número limitado de transacciones por bloque, y los bloques salen cada diez minutos. No puede competir, on-chain, con los millones de operaciones por segundo de una red de tarjetas.
+
+**Por qué es así.** No es un fallo: es una decisión. Mantener los bloques pequeños permite que cualquiera pueda correr un [nodo](/articulos/nodos-los-guardianes) con hardware modesto, lo que preserva la [descentralización](/articulos/descentralizacion-bitcoin). Si la capa base procesara millones de transacciones, solo grandes centros de datos podrían validarla, y Bitcoin dejaría de ser descentralizado.
+
+**La solución.** Escalar **en capas**. La capa base hace lo mínimo (liquidación final y seguridad) y las capas superiores hacen el resto: [Lightning Network](/lightning-network) para pagos instantáneos y masivos, [Taproot Assets](/articulos/taproot-assets) para activos, y rollups como [Citrea](/articulos/bitvm-y-citrea) para contratos. Lo desarrollamos en [Escalabilidad de Bitcoin](/escalabilidad-bitcoin).
+
+## 2. Comisiones variables en la congestión
+
+**El problema.** Cuando hay mucha demanda de espacio en los bloques, las comisiones de las transacciones on-chain suben, y pueden encarecerse de forma notable en picos puntuales.
+
+**La solución.** Sacar los pagos pequeños y frecuentes **fuera de la cadena**, a Lightning, donde cuestan fracciones de céntimo. La capa base queda para liquidaciones grandes o poco frecuentes, donde la comisión es proporcionalmente irrelevante. A medida que más actividad se mueve a las L2, la presión sobre la capa base se gestiona mejor.
+
+## 3. Privacidad: la cadena es pública
+
+**El problema.** Bitcoin **no es anónimo, es pseudónimo**. Todas las transacciones son públicas y permanentes, y las direcciones pueden analizarse para intentar vincularlas a personas. Para muchos usos, esto es una desventaja frente a la privacidad del efectivo.
+
+**La solución.** Varias mejoras avanzan en paralelo: [Taproot](/taproot) hace que distintos tipos de gasto se parezcan entre sí, mejorando la privacidad estructural; técnicas como **CoinJoin** mezclan transacciones; y los pagos en [Lightning](/lightning-network) no quedan registrados individualmente en la cadena. La privacidad perfecta sigue requiriendo disciplina, pero las herramientas mejoran.
+
+## 4. Concentración del minado
+
+**El problema.** Aunque el [minado](/articulos/mineria-de-bitcoin) está repartido por el mundo, una parte se concentra en grandes operadores y en *pools* que agrupan poder de cómputo. Una concentración excesiva podría, en teoría, debilitar la resistencia a la censura.
+
+**La solución.** Protocolos como **Stratum V2** devuelven a cada minero individual el control sobre qué transacciones incluye, en lugar de dejarlo en manos de la pool. Además, la búsqueda constante de energía barata empuja el minado hacia muchas regiones distintas, lo que tiende a distribuirlo geográficamente.
+
+## 5. La financiación de la seguridad a largo plazo
+
+**El problema.** Hoy los mineros se financian sobre todo con el **subsidio del bloque** (los bitcoins nuevos). Pero con cada [halving](/articulos/halving-bitcoin) ese subsidio cae a la mitad, y hacia 2140 llegará a cero. ¿Quién pagará entonces la seguridad de la red?
+
+**La solución.** Las **comisiones de las transacciones** deben crecer hasta sustituir al subsidio. Esto requiere una capa base con suficiente actividad de alto valor (liquidaciones grandes, apertura de canales, anclaje de L2) que genere un mercado de comisiones sano. Es uno de los retos de diseño económico más debatidos, y aún tiene décadas por delante para resolverse, pero se vigila de cerca.
+
+## 6. El riesgo cuántico
+
+**El problema.** Un ordenador cuántico suficientemente potente —que hoy no existe— podría, en el futuro, romper la criptografía de firma que protege algunas direcciones de Bitcoin, especialmente aquellas cuya clave pública ya se ha expuesto.
+
+**La solución.** La comunidad se prepara **con años de antelación**. La propuesta [BIP-360](/articulos/bip360-resistencia-cuantica) plantea una migración hacia criptografía resistente a la computación cuántica. Conviene recordar que las funciones [hash](/articulos/que-es-el-hash-bitcoin) (como SHA-256) son mucho más resistentes a lo cuántico que las firmas, así que el problema está acotado y se aborda de forma ordenada.
+
+## Tabla resumen
+
+| Problema | Solución en marcha |
+|---|---|
+| Escalabilidad de la capa base | Capas 2: Lightning, rollups |
+| Comisiones en congestión | Mover pagos pequeños a Lightning |
+| Privacidad limitada | Taproot, CoinJoin, Lightning |
+| Concentración del minado | Stratum V2, dispersión geográfica |
+| Financiación futura de la seguridad | Mercado de comisiones sano |
+| Riesgo cuántico | BIP-360 y criptografía postcuántica |
+
+## La forma correcta de leer esta lista
+
+Ninguno de estos problemas es un secreto ni una amenaza inminente que invalide a Bitcoin. Son **retos conocidos, públicos y en desarrollo activo**, discutidos abiertamente por la comunidad técnica en foros como bitcoin-dev y el Bitcoin Optech Newsletter.
+
+La filosofía de fondo es siempre la misma: **la capa base se cambia muy despacio y solo por consenso; la mayoría de las soluciones se construyen encima**, sin poner en riesgo lo que ya funciona. Esa es, precisamente, la razón por la que Bitcoin ha sobrevivido más de quince años sin comprometer su seguridad.
+
+> Un sistema maduro no es el que no tiene problemas, sino el que conoce los suyos y los aborda a la vista de todos. Bitcoin pertenece a esa categoría.
+
+## Contenido relacionado
+
+- [El futuro de Bitcoin](/futuro-bitcoin) — Guía pillar del silo.
+- [Qué es Lightning Network](/lightning-network) — La respuesta a la escalabilidad.
+- [Escalabilidad de Bitcoin](/escalabilidad-bitcoin) — Cómo escala en capas.
+- [BIP-360 y resistencia cuántica](/articulos/bip360-resistencia-cuantica)
+- [BitVM y Citrea](/articulos/bitvm-y-citrea) — Contratos sin tocar la capa base.
+- [Glosario de Bitcoin](/glosario)

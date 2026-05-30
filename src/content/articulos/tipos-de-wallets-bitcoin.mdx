@@ -1,0 +1,126 @@
+---
+title: "Tipos de wallets de Bitcoin: fría, caliente y hardware (comparativa)"
+description: "Wallets calientes, frías, de hardware, de software y de papel: qué son, sus ventajas y desventajas, y cuál elegir según cuánto bitcoin manejes y para qué lo uses."
+publishedAt: 2026-05-30
+capa: uso
+tags: [wallet, hardware-wallet, cold-storage, seguridad]
+draft: false
+keywords:
+  - tipos de wallets Bitcoin
+  - wallet fría vs caliente
+  - hardware wallet
+  - cold storage Bitcoin
+  - wallet de papel
+  - mejor wallet Bitcoin
+faqs:
+  - question: "¿Cuáles son los tipos de wallets de Bitcoin?"
+    answer: "Se clasifican según su conexión a internet en calientes (online: móvil, escritorio, web) y frías (offline: hardware, papel). También por quién controla las claves: custodiales (un tercero) o de autocustodia (tú). Las wallets hardware son el estándar para guardar cantidades importantes con seguridad."
+  - question: "¿Qué es una wallet fría y una caliente?"
+    answer: "Una wallet caliente está conectada a internet (cómoda para el día a día, algo más expuesta). Una wallet fría mantiene las claves desconectadas (más segura para guardar a largo plazo). Las wallets hardware son el tipo de wallet fría más usado."
+  - question: "¿Cuál es la wallet más segura?"
+    answer: "Para guardar cantidades importantes, una wallet hardware (fría) de autocustodia, y para sumas elevadas, una configuración multisig. La seguridad máxima combina mantener las claves offline con buenas prácticas de protección de la seed phrase."
+  - question: "¿Puedo tener varias wallets a la vez?"
+    answer: "Sí, y es recomendable. Una práctica común es usar una wallet caliente con poco saldo para gastos cotidianos (como el efectivo de la cartera) y una wallet hardware fría para guardar la mayor parte de los fondos (como una caja fuerte)."
+related:
+  - como-usar-bitcoin-seguro
+  - que-es-una-wallet-bitcoin
+  - como-proteger-tus-bitcoin
+  - que-es-una-clave-privada
+---
+
+## Resumen rápido
+
+**Las wallets de Bitcoin se clasifican según dos ejes: cuánto exponen tus claves a internet y quién las controla.** Por conexión, hay **calientes** (online, cómodas para gastar) y **frías** (offline, seguras para guardar). Por control, hay **custodiales** (las claves las tiene un tercero) y **de autocustodia** (las claves las tienes tú). La elección depende de cuánto manejes: para gastos pequeños, una wallet caliente; para guardar valor importante, una wallet hardware fría. Muchos usuarios combinan ambas.
+
+Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro). Si aún no tienes claro qué es una wallet, lee primero [Qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin).
+
+## Los dos ejes para clasificar wallets
+
+Antes de ver los tipos, ten claros los dos criterios que de verdad importan:
+
+- **Conexión a internet:** ¿las claves tocan un dispositivo conectado (caliente) o se mantienen desconectadas (fría)? Esto determina la exposición a hackeos remotos.
+- **Control de las claves:** ¿las controlas tú (autocustodia) o un tercero (custodial)? Esto determina de quién dependes.
+
+La combinación ideal para guardar valor: **autocustodia + fría**. Para gastar a diario: **autocustodia + caliente**, con poco saldo.
+
+## Wallets calientes (hot wallets)
+
+Una **wallet caliente** mantiene tus claves en un dispositivo **conectado a internet**: tu móvil, tu ordenador o el navegador.
+
+| | |
+|---|---|
+| **Ventajas** | Cómodas, rápidas, gratis, ideales para pagos frecuentes y Lightning |
+| **Desventajas** | Más expuestas: si el dispositivo se infecta con malware, las claves corren riesgo |
+| **Para qué** | Gastos cotidianos, cantidades pequeñas, aprender |
+
+### Tipos de wallet caliente
+
+- **Móvil:** apps en el teléfono. Las más prácticas para el día a día y para [Lightning](/lightning-network).
+- **Escritorio:** programas en el ordenador. Más potentes, buenas para gestionar UTXOs.
+- **Web/navegador:** funcionan desde una página. Las más cómodas pero, en general, las menos recomendables para guardar (mayor superficie de ataque).
+
+Regla práctica: una wallet caliente es como el **efectivo que llevas en el bolsillo**. Útil y a mano, pero no guardas ahí todo tu patrimonio.
+
+## Wallets frías (cold storage)
+
+Una **wallet fría** mantiene las claves **desconectadas de internet**. Como las claves nunca tocan un dispositivo online, son inmunes a hackeos remotos.
+
+| | |
+|---|---|
+| **Ventajas** | Máxima seguridad frente a ataques remotos |
+| **Desventajas** | Menos cómodas para gastar a menudo |
+| **Para qué** | Guardar valor a medio y largo plazo, cantidades importantes |
+
+La forma más común y recomendable de wallet fría es la **wallet hardware**.
+
+## Wallets hardware (el estándar de seguridad)
+
+Una **wallet hardware** es un dispositivo físico dedicado, parecido a una memoria USB, diseñado para una sola cosa: **guardar tus claves privadas aisladas y firmar transacciones sin exponerlas**.
+
+Cómo funciona: cuando quieres enviar bitcoin, la transacción se prepara en tu ordenador o móvil, pero **se firma dentro del dispositivo**, donde vive la clave privada. La clave **nunca sale** del aparato ni toca internet. Confirmas físicamente en el botón del dispositivo.
+
+| | |
+|---|---|
+| **Ventajas** | Claves aisladas de internet; firma segura; resistentes a malware |
+| **Desventajas** | Cuestan dinero; algo menos inmediatas para pagos rápidos |
+| **Para qué** | Guardar cualquier cantidad que no quieras arriesgar |
+
+Hay varios fabricantes reconocidos en el mercado (de marcas como Trezor, Ledger, Coldcard o BitBox, entre otras). Al comprar una, hazlo **siempre directamente al fabricante o a un distribuidor oficial**, nunca de segunda mano ni de vendedores no verificados: un dispositivo manipulado es una vía de robo.
+
+## Wallets de papel (paper wallets)
+
+Una **wallet de papel** consiste en imprimir o anotar las claves en papel. Fue popular en los primeros años, pero hoy **se desaconseja para principiantes**: es fácil cometer errores al generarla o al gastar desde ella, el papel se deteriora y, sobre todo, una wallet hardware hace el mismo trabajo de forma más segura y manejable. Mención histórica más que recomendación actual.
+
+## Tabla comparativa
+
+| Tipo | Conexión | Seguridad | Comodidad | Uso recomendado |
+|---|---|---|---|---|
+| **Móvil (caliente)** | Online | Media | Alta | Gastos diarios, Lightning |
+| **Escritorio (caliente)** | Online | Media | Media-alta | Gestión, uso frecuente |
+| **Web (caliente)** | Online | Baja-media | Alta | Solo importes muy pequeños |
+| **Hardware (fría)** | Offline | Alta | Media | Guardar valor, cantidades grandes |
+| **Papel (fría)** | Offline | Variable | Baja | Desaconsejada hoy |
+| **Custodial (exchange)** | Online | Depende del tercero | Alta | Solo puerta de entrada, temporal |
+
+## La estrategia recomendada: combinar
+
+No tienes que elegir una sola. La práctica más sensata es **separar por función**, igual que separas el efectivo del bolsillo de los ahorros del banco:
+
+- **Wallet caliente (móvil), con poco saldo:** para pagos del día a día, propinas, Lightning. Si la comprometen, pierdes poco.
+- **Wallet hardware (fría), con la mayor parte:** para guardar valor. La usas pocas veces, cuando mueves cantidades.
+- **Para sumas muy importantes:** una configuración **multisig** (varias llaves necesarias para gastar), de modo que perder o que te roben una sola llave no comprometa los fondos. Ver [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin).
+
+> La pregunta correcta no es "¿cuál es la mejor wallet?", sino "¿la mejor wallet *para qué*?". Para gastar, una caliente; para guardar, una fría. Casi todo el mundo necesita las dos.
+
+## Y recuerda: la seed es lo que importa
+
+Sea cual sea el tipo de wallet, **lo que de verdad proteges es la frase semilla**. Una wallet hardware no sirve de nada si guardas la seed en una foto del móvil. La seguridad real está en cómo custodias esas 12 o 24 palabras. Lo desarrollamos en [Qué es una clave privada](/articulos/que-es-una-clave-privada) y [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin).
+
+## Contenido relacionado
+
+- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro) — Guía pillar del silo.
+- [Qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin)
+- [Qué es una clave privada](/articulos/que-es-una-clave-privada)
+- [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin)
+- [Custodia vs autocustodia](/comparativas/custodia-vs-autocustodia)
+- [Glosario de Bitcoin](/glosario)

@@ -25,6 +25,7 @@ export interface Props {
   keywords?: string[];
   faqs?: FaqItem[];
   related?: string[];
+  canonical?: string;
 }
 
 const {
@@ -41,10 +42,11 @@ const {
   keywords = [],
   faqs = [],
   related = [],
+  canonical,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://bitcoinsinruidos.com';
-const url = `${siteUrl}/articulos/${slug}`;
+const url = canonical ?? `${siteUrl}/articulos/${slug}`;
 const ogImage = cover ? (cover.startsWith('http') ? cover : `${siteUrl}${cover}`) : `${siteUrl}/og-default.svg`;
 
 const seoTitle = `${title} | Bitcoin Sin Ruido`;
@@ -128,6 +130,7 @@ const allKeywords = [...new Set([...keywords, ...tags])];
   description={description}
   image={cover}
   keywords={allKeywords}
+  canonical={url}
 >
   <Fragment slot="head">
     <meta property="article:published_time" content={publishedAt.toISOString()} />
