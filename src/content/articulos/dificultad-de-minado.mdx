@@ -1,0 +1,106 @@
+---
+title: "Qué es la dificultad de minado en Bitcoin (y por qué se ajusta)"
+description: "La dificultad de minado regula cuánto cuesta encontrar un bloque para mantener el ritmo de uno cada diez minutos. Cómo y cuándo se ajusta cada 2.016 bloques, explicado fácil."
+publishedAt: 2026-05-30
+capa: protocolo
+tags: [dificultad, mineria, hashrate, proof-of-work]
+draft: false
+keywords:
+  - dificultad de minado Bitcoin
+  - ajuste de dificultad
+  - difficulty adjustment
+  - por qué un bloque cada 10 minutos
+  - dificultad Bitcoin explicada
+  - target Bitcoin
+faqs:
+  - question: "¿Qué es la dificultad de minado?"
+    answer: "Es un parámetro que regula cuánto cuesta encontrar un bloque válido. Sube o baja automáticamente para que, en promedio, se siga minando un bloque cada diez minutos, sin importar cuánto poder de minado haya en la red."
+  - question: "¿Cada cuánto se ajusta la dificultad?"
+    answer: "Cada 2.016 bloques, lo que equivale aproximadamente a dos semanas. La red compara cuánto se tardó realmente en minar esos 2.016 bloques con las dos semanas teóricas, y ajusta la dificultad al alza o a la baja en consecuencia."
+  - question: "¿Por qué Bitcoin mantiene un bloque cada diez minutos?"
+    answer: "Porque es un intervalo lo bastante largo para que los bloques se propaguen por toda la red antes del siguiente, reduciendo conflictos, y lo bastante corto para que las transacciones se confirmen en un tiempo razonable. El ajuste de dificultad mantiene ese ritmo estable."
+  - question: "¿Qué pasa con la dificultad si los mineros se van?"
+    answer: "Si cae el poder de minado, los bloques empiezan a tardar más de diez minutos. En el siguiente ajuste, la dificultad baja para volver a acelerar el ritmo. Así la red se autorregula: nunca depende de que haya una cantidad fija de mineros."
+related:
+  - mineria-de-bitcoin
+  - proof-of-work
+  - que-es-un-bloque-bitcoin
+  - halving-bitcoin
+---
+
+## Resumen rápido
+
+**La dificultad de minado es el parámetro que regula cuánto cuesta encontrar un bloque, para que la red mantenga un ritmo constante de uno cada diez minutos.** Si entra más poder de minado y los bloques empiezan a salir demasiado rápido, la dificultad sube. Si los mineros se van y los bloques tardan más, la dificultad baja. El ajuste es automático y ocurre cada **2.016 bloques** (unas dos semanas). Es uno de los mecanismos más elegantes de Bitcoin: hace que la red se autorregule sin que nadie tenga que intervenir.
+
+Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia).
+
+## El problema que resuelve
+
+Recordemos cómo funciona el [minado](/articulos/mineria-de-bitcoin): los mineros prueban miles de billones de combinaciones por segundo buscando un [hash](/articulos/que-es-el-hash-bitcoin) válido. Cuantas más máquinas haya compitiendo, más rápido se encontrará un hash válido.
+
+Aquí surge un problema. El poder de minado total (el *hashrate*) **no para de cambiar**: entran y salen mineros, mejora el hardware, cambia el precio de la electricidad. Si la dificultad fuera fija, pasaría algo indeseable:
+
+- Con **mucho** poder de minado, los bloques saldrían cada pocos segundos, emitiendo bitcoins demasiado rápido y saturando la red.
+- Con **poco** poder de minado, los bloques tardarían horas y la red se volvería inutilizable.
+
+Bitcoin necesita un ritmo **estable y predecible**. La solución es la dificultad ajustable.
+
+## Cómo funciona el ajuste de dificultad
+
+La idea es simple: **la red mide cuánto tarda en realidad y corrige**.
+
+1. Bitcoin quiere un bloque cada **10 minutos**. Eso significa que 2.016 bloques deberían tardar exactamente **dos semanas** (2.016 × 10 minutos = 20.160 minutos ≈ 14 días).
+
+2. Cada **2.016 bloques**, cada [nodo](/articulos/nodos-los-guardianes) calcula cuánto se tardó *realmente* en minarlos.
+
+3. **Compara y ajusta:**
+   - Si se tardó **menos** de dos semanas (entró mucho poder de minado), la dificultad **sube**: ahora cuesta más encontrar un bloque.
+   - Si se tardó **más** de dos semanas (se fue poder de minado), la dificultad **baja**: ahora cuesta menos.
+
+4. El nuevo nivel de dificultad rige los siguientes 2.016 bloques, hasta el próximo ajuste.
+
+Para evitar cambios bruscos, el protocolo limita cada ajuste a un **factor máximo de 4x** (no puede subir ni bajar más de cuatro veces de golpe).
+
+> La dificultad es como el termostato de Bitcoin: si la red "se calienta" y produce bloques demasiado rápido, sube; si "se enfría", baja. El objetivo siempre es el mismo: un bloque cada diez minutos.
+
+## Qué es el "target" técnicamente
+
+En términos técnicos, la dificultad se expresa como un **objetivo** (*target*): un número, y el hash de un bloque válido debe ser **menor** que él. 
+
+- Un target **más bajo** = más difícil (hay menos hashes válidos posibles, hay que probar más).
+- Un target **más alto** = más fácil.
+
+Cuando decimos "la dificultad sube", lo que ocurre por debajo es que el target baja, exigiendo un hash con más ceros al principio. Es el mismo concepto visto desde dos ángulos.
+
+## Por qué diez minutos (y no uno o sesenta)
+
+El intervalo de diez minutos es un equilibrio deliberado:
+
+- **Lo bastante largo** para que cada bloque recién minado se propague por toda la red mundial *antes* de que aparezca el siguiente. Si los bloques salieran cada pocos segundos, muchos mineros estarían trabajando con información desactualizada y se producirían conflictos constantes (bloques "huérfanos").
+- **Lo bastante corto** para que las transacciones se confirmen en un tiempo aceptable. Diez minutos para la primera confirmación, y aproximadamente una hora para seis confirmaciones (el estándar de irreversibilidad práctica).
+
+No es un número mágico, pero ha demostrado ser un compromiso sólido durante más de quince años.
+
+## La dificultad como termómetro de seguridad
+
+El ajuste de dificultad tiene un efecto secundario valioso: la dificultad actual es, indirectamente, **una medida de cuánta seguridad protege la red**. Una dificultad alta significa que hay una enorme cantidad de poder de cómputo respaldando la cadena, lo que encarece cualquier intento de ataque.
+
+Y cuando un evento externo reduce el poder de minado de golpe —por ejemplo, una región que prohíbe el minado y obliga a apagar máquinas— la red no se rompe: simplemente, en el siguiente ajuste, la dificultad baja y el ritmo se recupera. Bitcoin sobrevivió exactamente a eso cuando China expulsó a los mineros en 2021: hubo bloques más lentos durante unos días, la dificultad cayó, y la red siguió funcionando con normalidad.
+
+## Relación con el halving
+
+Conviene no confundir dos cosas que cambian con el tiempo pero hacen cosas distintas:
+
+- La **dificultad** regula *cuánto cuesta* encontrar un bloque (se ajusta cada dos semanas, sube y baja).
+- El **[halving](/articulos/halving-bitcoin)** regula *cuántos bitcoins* da cada bloque (se reduce a la mitad cada cuatro años, solo baja).
+
+Ambos son automáticos y forman parte de las reglas que hacen de Bitcoin un sistema **predecible**: cualquiera puede calcular hoy cuántos bitcoins existirán dentro de diez años, y a qué ritmo se minarán.
+
+## Contenido relacionado
+
+- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia) — Guía pillar del silo.
+- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin) — El proceso que la dificultad regula.
+- [Qué es Proof of Work](/articulos/proof-of-work)
+- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin)
+- [Qué es el halving](/articulos/halving-bitcoin) — El otro gran ajuste automático.
+- [Glosario de Bitcoin](/glosario)

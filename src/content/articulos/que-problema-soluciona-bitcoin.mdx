@@ -1,0 +1,108 @@
+---
+title: "Qué problema soluciona Bitcoin (explicado simple)"
+description: "Bitcoin resuelve el problema del doble gasto sin intermediarios, la dependencia de terceros de confianza, la inflación por emisión y la censura financiera. Explicado paso a paso."
+publishedAt: 2026-05-30
+capa: protocolo
+tags: [bitcoin, doble-gasto, descentralizacion, dinero]
+draft: false
+keywords:
+  - qué problema soluciona Bitcoin
+  - problema del doble gasto
+  - para qué sirve Bitcoin
+  - dinero sin intermediarios
+  - censura financiera
+  - por qué se creó Bitcoin
+faqs:
+  - question: "¿Qué problema resuelve Bitcoin en una frase?"
+    answer: "Permite enviar valor por internet sin necesidad de un intermediario de confianza (un banco), resolviendo el problema del doble gasto mediante una red distribuida que verifica cada transacción."
+  - question: "¿Qué es el problema del doble gasto?"
+    answer: "Es la dificultad de impedir que el mismo dinero digital se gaste dos veces. Como un archivo se puede copiar, hace falta un sistema que garantice que una moneda solo se gaste una vez. Antes de Bitcoin eso requería un servidor central; Bitcoin lo resuelve con consenso distribuido."
+  - question: "¿Por qué se necesitaba algo como Bitcoin?"
+    answer: "Porque todo el dinero digital previo dependía de un tercero de confianza (banco o procesador) que podía censurar pagos, congelar cuentas, cobrar comisiones o emitir más dinero. Bitcoin elimina esa dependencia."
+  - question: "¿Bitcoin soluciona la inflación?"
+    answer: "Bitcoin no controla los precios de una economía, pero sí elimina la inflación monetaria por emisión: su suministro está fijado en 21 millones y nadie puede crear más. Eso lo hace resistente a la devaluación por impresión de dinero."
+related:
+  - los-21-millones
+  - proof-of-work
+  - nodos-los-guardianes
+  - historia-de-bitcoin
+---
+
+## Resumen rápido
+
+**Bitcoin resuelve un problema que llevaba décadas abierto: cómo enviar dinero digital de una persona a otra sin necesidad de un intermediario de confianza.** Antes de Bitcoin, todo pago electrónico dependía de un banco o procesador que llevara la cuenta, podía censurar pagos y podía emitir más dinero. Bitcoin sustituye esa autoridad central por una red distribuida que verifica cada transacción, garantizando que nadie gaste el mismo dinero dos veces sin pedir permiso a nadie.
+
+Si quieres el contexto completo del protocolo, empieza por la guía pillar [Qué es Bitcoin y cómo funciona](/que-es-bitcoin).
+
+## El problema central: el doble gasto
+
+Imagina que el dinero es un archivo en tu ordenador. El problema es evidente: **un archivo se puede copiar**. Si te envío una foto, yo me quedo con una copia. Con el dinero eso no puede pasar: si te pago 10 euros, esos 10 euros tienen que dejar de ser míos.
+
+A esto se le llama el **problema del doble gasto**: cómo impedir que la misma unidad digital se gaste dos veces. Durante décadas, la única solución conocida fue poner a un **intermediario de confianza** en el medio —un banco— que llevara un libro de cuentas y dijera "este dinero ya no es tuyo, ahora es suyo".
+
+Bitcoin fue **la primera solución funcional al doble gasto sin intermediario**. Lo consigue con tres piezas:
+
+- Un **libro de cuentas público** (la blockchain) que registra cada transacción.
+- Una red de [nodos](/articulos/nodos-los-guardianes) que guardan copias del libro y verifican cada movimiento contra las reglas.
+- Un mecanismo de [Proof of Work](/articulos/proof-of-work) que hace **costoso y prácticamente imposible reescribir** el historial.
+
+El resultado: cuando recibes bitcoin, la red entera ha verificado que ese dinero no se gastó en otro sitio. Sin banco.
+
+## El problema de fondo: depender de un tercero de confianza
+
+El doble gasto es el problema técnico. Pero detrás hay un problema más amplio: **toda la infraestructura del dinero digital descansaba en confiar en un tercero**. Y confiar en un tercero tiene costes concretos:
+
+### 1. Censura y exclusión
+
+Un banco o procesador puede **bloquear un pago, congelar una cuenta o cerrar el acceso** a una persona por motivos comerciales, políticos o regulatorios. Para gran parte de la población mundial sin acceso a banca, el sistema simplemente **no está disponible**. Bitcoin no pregunta quién eres: una transacción válida que paga su comisión se incluye, da igual la jurisdicción.
+
+### 2. Permiso previo
+
+En el sistema tradicional necesitas **autorización** para participar: abrir una cuenta, ser aprobado, cumplir requisitos. Bitcoin es *permissionless*: cualquiera con una clave puede recibir y enviar sin pedir permiso a nadie.
+
+### 3. Comisiones y fricción
+
+Las transferencias internacionales y las remesas pueden costar entre un 5 % y un 10 % y tardar días. Esa fricción no es una ley de la física: es el coste de mantener una cadena de intermediarios. Las capas de pago sobre Bitcoin, como [Lightning Network](/lightning-network), reducen ese coste a fracciones de céntimo.
+
+## El problema monetario: la emisión sin límite
+
+Hay un tercer problema que Bitcoin aborda, distinto de los anteriores: **la emisión de dinero**.
+
+El dinero tradicional (fiat) puede crearse en cantidades crecientes. Eso tiene usos legítimos, pero también significa que el poder adquisitivo de lo que ahorras **puede diluirse** cuando se emite más. En países con inflación alta o controles de capital, esto no es un debate académico: es la diferencia entre conservar el ahorro o verlo evaporarse.
+
+Bitcoin responde con una regla simple e inviolable: **un suministro máximo de [21 millones de unidades](/articulos/los-21-millones)**, con una emisión decreciente y predecible. Nadie —ni un banco central, ni los desarrolladores, ni los mineros— puede crear más. La escasez no es una promesa de marketing: está escrita en el código y la verifican miles de nodos en cada bloque.
+
+> Bitcoin no es solo "dinero por internet". Es un sistema en el que las reglas no las puede cambiar quien tiene el poder, sino que las aplican todos los participantes a la vez.
+
+## Lo que Bitcoin NO promete resolver
+
+Para que la información sea honesta, conviene marcar los límites:
+
+- **No elimina la volatilidad de precio.** El valor de bitcoin frente a las monedas tradicionales fluctúa con fuerza, sobre todo a corto plazo.
+- **No es anónimo.** Es *pseudónimo*: la cadena es pública y las direcciones pueden analizarse.
+- **No te protege de tus propios errores.** Si pierdes tus claves o caes en una estafa, no hay servicio de atención al cliente que revierta la operación. Esa responsabilidad es el reverso de la autocustodia.
+- **La capa base no escala a millones de pagos por segundo.** Por diseño. La escalabilidad vive en las capas superiores.
+
+## Un ejemplo concreto
+
+Pensemos en una persona en un país con controles de capital que quiere recibir dinero de un familiar en el extranjero.
+
+- **Con el sistema tradicional:** depende de que un banco intermediario procese la transferencia, puede tardar días, pagar un 7 % en comisiones y, en el peor caso, ver la operación bloqueada o el dinero retenido.
+- **Con Bitcoin:** el familiar envía un pago por Lightning, llega en segundos, cuesta céntimos y nadie puede impedirlo ni congelarlo. Quien recibe controla los fondos desde el primer momento.
+
+Ese es, resumido, el problema que Bitcoin resuelve: **devolver a las personas la capacidad de mover y guardar valor sin pedir permiso**.
+
+## Por qué importa
+
+El problema que Bitcoin ataca no es nuevo ni técnico en el fondo: es **quién tiene el control sobre tu dinero**. Durante toda la historia, ese control estuvo en manos de quien emitía la moneda y de quien custodiaba las cuentas. Bitcoin propone una alternativa donde el control vuelve al usuario, a cambio de asumir su responsabilidad.
+
+No tiene por qué sustituir a todo lo demás. Pero por primera vez existe la **opción** de un dinero que nadie puede inflar, censurar ni confiscar a distancia. Para entender por qué esa opción tiene valor para tanta gente, sigue con [Por qué Bitcoin tiene valor](/articulos/por-que-bitcoin-tiene-valor).
+
+## Contenido relacionado
+
+- [Qué es Bitcoin y cómo funciona](/que-es-bitcoin) — Guía pillar.
+- [Por qué Bitcoin tiene valor](/articulos/por-que-bitcoin-tiene-valor) — La continuación lógica.
+- [Por qué hay solo 21 millones](/articulos/los-21-millones) — El límite de emisión.
+- [Diferencia entre Bitcoin y dinero tradicional](/articulos/bitcoin-vs-dinero-tradicional)
+- [Qué son los nodos](/articulos/nodos-los-guardianes) — Quién verifica las reglas.
+- [Glosario de Bitcoin](/glosario)

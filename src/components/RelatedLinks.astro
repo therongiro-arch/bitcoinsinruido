@@ -10,7 +10,7 @@ export interface Props {
 const { slugs, currentSlug, title = 'Relacionado' } = Astro.props;
 
 const all = await getCollection('articulos', ({ data }) => !data.draft);
-const map = new Map(all.map((e) => [e.slug, e]));
+const map = new Map<string, (typeof all)[number]>(all.map((e) => [e.slug, e]));
 
 const items = slugs
   .filter((s) => s !== currentSlug)

@@ -11,7 +11,12 @@ export default defineConfig({
     mdx(),
     tailwind({ applyBaseStyles: false }),
     sitemap({
-      filter: (page) => !page.includes('/404'),
+      // Excluir 404 y las variantes canonicalizadas (anti-canibalización):
+      // sus señales SEO se consolidan en los pilares raíz /lightning-network y /taproot.
+      filter: (page) =>
+        !page.includes('/404') &&
+        !page.includes('/articulos/lightning-network') &&
+        !page.includes('/articulos/taproot'),
     }),
   ],
   build: {

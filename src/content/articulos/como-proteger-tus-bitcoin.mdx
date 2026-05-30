@@ -1,0 +1,130 @@
+---
+title: "Cómo proteger tus Bitcoin correctamente (guía de seguridad)"
+description: "Protege tus Bitcoin paso a paso: cómo guardar la seed phrase, usar wallets hardware, configurar multisig, planificar la herencia y defenderte de las amenazas reales."
+publishedAt: 2026-05-30
+capa: uso
+tags: [seguridad, seed, multisig, hardware-wallet]
+draft: false
+keywords:
+  - cómo proteger tus Bitcoin
+  - seguridad Bitcoin
+  - proteger seed phrase
+  - multisig Bitcoin
+  - guardar Bitcoin seguro
+  - backup seed phrase
+faqs:
+  - question: "¿Cómo protejo mis Bitcoin de la forma más segura?"
+    answer: "Controla tus propias claves (autocustodia), guarda la frase semilla fuera de internet (en papel o metal), usa una wallet hardware para cantidades importantes, considera multisig para sumas elevadas y mantén buenos hábitos: nunca compartir la seed y verificar siempre las direcciones."
+  - question: "¿Dónde debo guardar mi frase semilla?"
+    answer: "Fuera de internet, en soporte físico: papel de calidad o, mejor, una placa de metal resistente al fuego y al agua. Guárdala en un lugar seguro y privado, idealmente con más de una copia en ubicaciones separadas. Nunca en digital."
+  - question: "¿Qué es multisig y cuándo usarlo?"
+    answer: "Multisig (multifirma) requiere varias claves para autorizar un gasto, por ejemplo 2 de 3. Así, perder o que te roben una sola llave no compromete los fondos. Es recomendable para proteger cantidades importantes."
+  - question: "¿Qué pasa con mis Bitcoin si fallezco?"
+    answer: "Si nadie puede acceder a tu seed, tus bitcoins se pierden para siempre. Por eso conviene un plan de herencia: instrucciones seguras para que personas de confianza puedan recuperar los fondos, sin exponer la seed en vida."
+related:
+  - como-usar-bitcoin-seguro
+  - que-es-una-clave-privada
+  - tipos-de-wallets-bitcoin
+  - errores-comunes-bitcoin
+---
+
+## Resumen rápido
+
+**Proteger tus Bitcoin se reduce a tres pilares: controlar tus claves, guardar bien tu frase semilla y escalar la seguridad según cuánto manejes.** Para empezar, basta con autocustodia y una seed guardada en papel fuera de internet. Para cantidades importantes, se añaden una wallet hardware, copias en metal y, para sumas elevadas, multisig y un plan de herencia. La seguridad en Bitcoin no es un producto que compras, sino un conjunto de hábitos que adoptas.
+
+Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+
+## El principio que ordena todo: proteges la seed
+
+En Bitcoin, "proteger tus monedas" significa, en realidad, **proteger tu [frase semilla](/articulos/que-es-una-clave-privada)** (y las claves que de ella se derivan). Quien tenga esas 12 o 24 palabras controla los fondos; quien las pierda, los pierde. Todo lo demás —wallets, dispositivos, apps— es reemplazable. La seed no.
+
+Por eso esta guía gira en torno a una idea: **mantener la seed en secreto, a salvo de pérdidas, y accesible solo para ti** (y, llegado el caso, para quien tú decidas).
+
+## Nivel 1: lo básico (para cualquiera)
+
+Estos hábitos son innegociables, manejes la cantidad que manejes.
+
+### Controla tus claves (autocustodia)
+
+No dejes tus bitcoins en un exchange. Retíralos a una [wallet de autocustodia](/articulos/que-es-una-wallet-bitcoin) donde solo tú tengas las claves. El exchange es la puerta de entrada, no el destino.
+
+### Guarda la seed fuera de internet
+
+- **Anótala a mano** en papel, comprobando cada palabra y su orden.
+- **Nunca en digital:** ni foto, ni captura, ni nota del móvil, ni email, ni nube. El malware busca exactamente eso.
+- Guárdala en un **lugar seguro y privado**.
+
+### Verifica la copia
+
+Comprueba que tu seed anotada es correcta restaurando la wallet (o recreándola desde la seed) con una cantidad pequeña. Mejor descubrir un error de copia ahora que cuando necesites recuperar todo.
+
+### Hábitos de uso
+
+- **Nunca compartas la seed.** Nadie legítimo la pide.
+- **Verifica siempre las direcciones** antes de enviar ([las transacciones son irreversibles](/articulos/como-enviar-y-recibir-bitcoin)).
+- **Descarga software solo de fuentes oficiales.**
+- **Desconfía del dinero fácil.** Ver el catálogo en [Errores comunes](/articulos/errores-comunes-bitcoin).
+
+## Nivel 2: cantidades importantes
+
+Cuando lo que guardas deja de ser "dinero para aprender", sube el nivel.
+
+### Usa una wallet hardware
+
+Una [wallet hardware](/articulos/tipos-de-wallets-bitcoin) mantiene la clave privada **aislada de internet**: la transacción se firma dentro del dispositivo y la clave nunca toca un equipo conectado. Esto neutraliza el malware y los hackeos remotos.
+
+- Cómprala **directamente al fabricante** o a un distribuidor oficial.
+- Nunca uses una de **segunda mano** ni una que venga con una seed "ya generada": configúrala tú desde cero.
+- Apunta tú la seed que el dispositivo genere; no aceptes una preimpresa.
+
+### Copias en metal
+
+El papel se quema, se moja y se degrada. Para proteger la seed frente a accidentes domésticos, pásala a una **placa de metal** resistente al fuego y al agua. Haz **más de una copia** y guárdalas en **ubicaciones separadas** (por ejemplo, dos lugares físicos distintos), de modo que un único incidente no destruya todas tus copias.
+
+### Considera una passphrase
+
+Algunas wallets permiten añadir una **passphrase** (a veces llamada "palabra 25"): una palabra o frase adicional que se suma a la seed. Aporta una capa extra de protección, pero **si la olvidas, pierdes el acceso igual que con la seed**. Úsala solo si entiendes bien su funcionamiento y la respaldas con el mismo cuidado.
+
+## Nivel 3: sumas elevadas (multisig y herencia)
+
+### Multisig (multifirma)
+
+Una configuración **multisig** requiere **varias llaves para autorizar un gasto**; por ejemplo, "2 de 3": existen tres llaves y se necesitan dos cualesquiera para mover fondos. Ventajas:
+
+- Que te **roben una sola llave no compromete** los fondos.
+- **Perder una llave no es catastrófico** (puedes recuperar con las otras).
+- Elimina el **punto único de fallo** de una sola seed.
+
+Las llaves pueden repartirse entre varios dispositivos y ubicaciones. Es el estándar de oro para proteger patrimonios importantes, a cambio de más complejidad de gestión.
+
+### Plan de herencia
+
+Un riesgo poco comentado: **si solo tú conoces la seed y te ocurre algo, tus bitcoins se pierden para siempre**. Para evitarlo, diseña un plan que permita a personas de confianza recuperar los fondos **sin exponer la seed mientras vives**. Las soluciones van desde instrucciones selladas hasta esquemas multisig donde un familiar custodia una de las llaves. Lo importante es **dejarlo previsto**.
+
+## Las amenazas reales (y la defensa)
+
+| Amenaza | Defensa |
+|---|---|
+| Malware que roba seeds en digital | Seed solo offline, en papel/metal |
+| Phishing (webs/apps falsas) | Verificar URLs; fuentes oficiales |
+| Falso soporte que pide la seed | Nunca compartirla; nadie legítimo la pide |
+| Malware del portapapeles | Verificar la dirección antes de enviar |
+| Robo o pérdida de un dispositivo | La seed permite restaurar; multisig protege |
+| Incendio/inundación | Copias en metal en lugares separados |
+| Fallecimiento sin acceso | Plan de herencia |
+| Quiebra de un exchange | Autocustodia |
+
+## Un consejo final sobre el equilibrio
+
+La seguridad perfecta que no puedes usar no sirve, y la comodidad total que te expone, tampoco. El objetivo es **ajustar la protección a lo que manejas**: no necesitas multisig para los diez euros con los que aprendes, pero sí para tus ahorros. Empieza por el Nivel 1, que ya elimina la mayoría de los riesgos, y sube de nivel a medida que crece lo que custodias.
+
+> Proteger tus bitcoins no consiste en comprar el dispositivo más caro, sino en cuidar un secreto —tu seed— con la seriedad de quien sabe que es, literalmente, su dinero. La tecnología ayuda; el hábito decide.
+
+## Contenido relacionado
+
+- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro) — Guía pillar del silo.
+- [Qué es una clave privada](/articulos/que-es-una-clave-privada)
+- [Tipos de wallets (fría, caliente, hardware)](/articulos/tipos-de-wallets-bitcoin)
+- [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin)
+- [Cómo enviar y recibir Bitcoin](/articulos/como-enviar-y-recibir-bitcoin)
+- [Glosario de Bitcoin](/glosario)

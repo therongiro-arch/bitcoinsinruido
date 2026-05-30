@@ -1,0 +1,109 @@
+---
+title: "Qué es el hash y cómo funciona en Bitcoin (SHA-256 explicado fácil)"
+description: "Un hash es una huella digital única de un dato. En Bitcoin, la función SHA-256 encadena bloques, asegura el Proof of Work y verifica transacciones. Explicado con ejemplos sencillos."
+publishedAt: 2026-05-30
+capa: protocolo
+tags: [hash, sha256, criptografia, proof-of-work]
+draft: false
+keywords:
+  - qué es el hash
+  - SHA-256 Bitcoin
+  - función hash
+  - hash en Bitcoin
+  - cómo funciona el hash
+  - huella digital criptográfica
+faqs:
+  - question: "¿Qué es un hash en Bitcoin?"
+    answer: "Es el resultado de aplicar una función matemática (SHA-256) a un dato, que produce una huella digital de longitud fija. La misma entrada siempre da el mismo hash, pero el más mínimo cambio en la entrada produce un hash completamente distinto, y no se puede revertir para obtener el dato original."
+  - question: "¿Qué es SHA-256?"
+    answer: "Es la función hash criptográfica que usa Bitcoin. Toma cualquier dato y devuelve un valor de 256 bits (64 caracteres hexadecimales). Es determinista, rápida de calcular, imposible de revertir en la práctica y muy sensible a cualquier cambio en la entrada."
+  - question: "¿Para qué se usa el hash en Bitcoin?"
+    answer: "Para tres cosas clave: encadenar bloques (cada bloque incluye el hash del anterior), asegurar el Proof of Work (los mineros buscan un hash que cumpla una condición) y resumir transacciones en el merkle root. El hash es la pieza criptográfica que sostiene la integridad de toda la cadena."
+  - question: "¿Se puede revertir un hash?"
+    answer: "No en la práctica. Las funciones hash son de un solo sentido: es fácil calcular el hash de un dato, pero computacionalmente inviable hacer el camino inverso (obtener el dato a partir del hash) o encontrar dos datos distintos con el mismo hash. En eso se basa buena parte de la seguridad de Bitcoin."
+related:
+  - proof-of-work
+  - que-es-un-bloque-bitcoin
+  - mineria-de-bitcoin
+  - nodos-los-guardianes
+---
+
+## Resumen rápido
+
+**Un hash es la huella digital de un dato: una cadena de caracteres de longitud fija que identifica de forma única cualquier información.** Bitcoin usa la función **SHA-256**, que toma cualquier dato y devuelve siempre un resultado de 64 caracteres. Tiene tres propiedades clave: el mismo dato siempre da el mismo hash, el más mínimo cambio produce un hash totalmente distinto, y es imposible revertirlo. Sobre estas propiedades se apoyan el encadenado de bloques, el [Proof of Work](/articulos/proof-of-work) y la verificación de transacciones.
+
+Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia).
+
+## Qué es un hash, con una analogía
+
+Imagina una máquina que tritura cualquier cosa que le metas —una palabra, un libro entero, una foto— y siempre escupe un código de la misma longitud, como una huella dactilar. Eso es una **función hash**.
+
+Esa huella tiene reglas curiosas:
+
+- Si metes **exactamente lo mismo**, sale **exactamente la misma huella**, siempre.
+- Si cambias **una sola letra** de lo que metes, la huella sale **completamente distinta**, irreconocible.
+- A partir de la huella, **no puedes reconstruir** lo que metiste.
+
+En Bitcoin, esa máquina se llama **SHA-256** (Secure Hash Algorithm de 256 bits), un estándar criptográfico diseñado originalmente por la NSA y de uso público desde 2001.
+
+## Un ejemplo concreto
+
+Veamos qué le pasa al hash SHA-256 cuando cambiamos una sola letra del texto de entrada:
+
+| Entrada | Hash SHA-256 (resumido) |
+|---|---|
+| `Bitcoin` | `b4056df6691f8dc72e56302ddad345d65fea...` |
+| `bitcoin` | `6b88c087247aa2f07ee1c5956b8e1a9f4c7f...` |
+
+Solo cambiamos la `B` mayúscula por minúscula, y el resultado **no se parece en nada**. Esta propiedad, llamada **efecto avalancha**, es lo que hace al hash tan útil para detectar manipulaciones: cualquier alteración, por minúscula que sea, salta a la vista.
+
+(Los hashes reales tienen 64 caracteres; aquí los recortamos por espacio.)
+
+## Las propiedades que hacen útil al hash
+
+### 1. Es determinista
+
+La misma entrada produce siempre el mismo hash. Esto permite **verificar**: si te doy un dato y su hash, puedes recalcular el hash tú mismo y comprobar que coinciden. Si coinciden, el dato no ha sido alterado.
+
+### 2. Es de un solo sentido (irreversible)
+
+Calcular el hash de un dato es instantáneo. Hacer el camino inverso —obtener el dato a partir del hash— es **computacionalmente imposible**. No hay fórmula; la única vía sería probar todas las entradas posibles, lo que llevaría más tiempo que la edad del universo.
+
+### 3. Es resistente a colisiones
+
+Es prácticamente imposible encontrar dos datos distintos que produzcan el mismo hash. Esto garantiza que cada huella identifica de forma única a su dato.
+
+### 4. Tiene longitud fija
+
+Da igual que metas una letra o una biblioteca: el hash SHA-256 siempre mide 256 bits (64 caracteres hexadecimales). Esto lo hace manejable y predecible.
+
+## Para qué usa Bitcoin el hash
+
+El hash no es un detalle técnico secundario: es **el material con el que está construida la cadena**. Aparece en tres lugares fundamentales.
+
+### 1. Encadenar los bloques
+
+Cada [bloque](/articulos/que-es-un-bloque-bitcoin) contiene en su cabecera el **hash del bloque anterior**. Eso es lo que convierte una pila de bloques en una *cadena* enlazada. Como el hash depende de todo el contenido del bloque, alterar un bloque antiguo cambiaría su hash, lo que rompería el enlace con el siguiente, y con el siguiente... delatando la manipulación de inmediato. Esto es lo que hace la blockchain **inmutable**.
+
+### 2. Asegurar el Proof of Work
+
+El [minado](/articulos/mineria-de-bitcoin) consiste en buscar un hash de la cabecera del bloque que sea **menor que un objetivo** (el *target*). Como no se puede calcular ese hash directamente, los mineros prueban miles de billones de combinaciones por segundo hasta dar con una que funcione. Esa búsqueda por fuerza bruta es el [Proof of Work](/articulos/proof-of-work): el "trabajo" es, literalmente, calcular hashes hasta encontrar uno válido.
+
+### 3. Resumir transacciones (merkle root)
+
+Todas las transacciones de un bloque se combinan, mediante hashes encadenados en un árbol de Merkle, en un único hash llamado **merkle root**. Eso permite verificar que una transacción está incluida sin descargar el bloque entero, y detecta cualquier alteración de las transacciones.
+
+> El hash es a Bitcoin lo que el cemento a un edificio: no se ve desde fuera, pero sin él todo se viene abajo. Encadena los bloques, asegura el minado y sella las transacciones.
+
+## ¿Y la computación cuántica?
+
+Una pregunta frecuente es si un ordenador cuántico podría "romper" SHA-256. La respuesta corta: **el hashing es de las partes más resistentes de Bitcoin**. La computación cuántica afectaría más a las firmas (la criptografía de clave pública) que a las funciones hash, que solo se verían debilitadas de forma moderada y manejable. Aun así, la comunidad se prepara con años de antelación; puedes ver el detalle en [BIP-360 y resistencia cuántica](/articulos/bip360-resistencia-cuantica).
+
+## Contenido relacionado
+
+- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia) — Guía pillar del silo.
+- [Qué es Proof of Work](/articulos/proof-of-work) — Donde el hash hace el "trabajo".
+- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin) — Cómo el hash encadena la cadena.
+- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin)
+- [BIP-360 y resistencia cuántica](/articulos/bip360-resistencia-cuantica)
+- [Glosario de Bitcoin](/glosario)

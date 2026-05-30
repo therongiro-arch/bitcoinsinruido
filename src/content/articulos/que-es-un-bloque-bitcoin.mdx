@@ -1,0 +1,108 @@
+---
+title: "Qué es un bloque en Bitcoin y cómo se crea (explicado fácil)"
+description: "Un bloque de Bitcoin es un paquete de transacciones validadas que se encadena al anterior. Qué contiene su cabecera, qué es el merkle root y cómo se crea un bloque paso a paso."
+publishedAt: 2026-05-30
+capa: protocolo
+tags: [bloque, blockchain, mineria, hash]
+draft: false
+keywords:
+  - qué es un bloque en Bitcoin
+  - cómo se crea un bloque
+  - cabecera de bloque Bitcoin
+  - merkle root
+  - estructura de un bloque
+  - bloque génesis
+faqs:
+  - question: "¿Qué es un bloque en Bitcoin?"
+    answer: "Es un paquete de transacciones validadas, junto con una cabecera que lo enlaza criptográficamente al bloque anterior. Cada bloque forma un eslabón de la cadena (blockchain). Se crea aproximadamente uno cada diez minutos."
+  - question: "¿Cuántas transacciones caben en un bloque?"
+    answer: "Depende del tamaño de cada transacción, pero un bloque típico contiene entre 1.500 y 3.000 transacciones. El límite no es por número, sino por peso: hasta 4 millones de unidades de peso (weight units), introducido con SegWit."
+  - question: "¿Cada cuánto se crea un bloque?"
+    answer: "En promedio, cada diez minutos. La red ajusta automáticamente la dificultad del minado cada 2.016 bloques para mantener ese ritmo, aunque suba o baje el poder de minado total."
+  - question: "¿Qué es el merkle root de un bloque?"
+    answer: "Es un único hash que resume todas las transacciones del bloque mediante un árbol de Merkle. Permite verificar que una transacción está incluida sin descargar el bloque entero, y detecta cualquier alteración: cambiar una sola transacción cambia el merkle root."
+related:
+  - proof-of-work
+  - mineria-de-bitcoin
+  - que-es-el-hash-bitcoin
+  - nodos-los-guardianes
+---
+
+## Resumen rápido
+
+**Un bloque de Bitcoin es un paquete de transacciones validadas que se encadena criptográficamente al bloque anterior.** Cada bloque tiene dos partes: una **cabecera** (con el resumen del bloque y el enlace al anterior) y la **lista de transacciones**. Se crea aproximadamente uno cada diez minutos mediante minería, y una vez añadido a la cadena es prácticamente imposible de alterar. Los bloques encadenados son lo que forma la *blockchain*.
+
+Este artículo forma parte del silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia). Para el contexto general, ver también [Qué es Bitcoin](/que-es-bitcoin).
+
+## Qué contiene un bloque
+
+Un bloque se divide en dos partes bien diferenciadas:
+
+### 1. La cabecera (block header)
+
+La cabecera son apenas 80 bytes, pero contienen toda la información que enlaza y asegura el bloque. Incluye seis campos:
+
+- **Versión:** indica qué reglas sigue el bloque.
+- **Hash del bloque anterior:** el enlace que encadena este bloque al previo. Es lo que convierte una lista de bloques en una *cadena*.
+- **Merkle root:** un único [hash](/articulos/que-es-el-hash-bitcoin) que resume todas las transacciones del bloque (lo explicamos abajo).
+- **Marca de tiempo (timestamp):** cuándo se minó el bloque, aproximadamente.
+- **Bits / target:** el objetivo de [dificultad](/articulos/dificultad-de-minado) que el bloque debe cumplir.
+- **Nonce:** un número que los mineros van cambiando para encontrar un hash válido.
+
+### 2. La lista de transacciones
+
+El cuerpo del bloque es la lista de transacciones que el minero ha incluido. La primera siempre es especial: la **transacción coinbase**, que crea los bitcoins nuevos (la recompensa del bloque) y recoge las comisiones. Después vienen las transacciones normales de los usuarios, tomadas de la *mempool* (la cola de transacciones pendientes).
+
+Un bloque típico contiene entre **1.500 y 3.000 transacciones**, aunque depende del tamaño de cada una. El límite real no es por número, sino por **peso**: hasta 4 millones de *unidades de peso*, un límite introducido con SegWit en 2017.
+
+## Qué es el merkle root (y por qué es ingenioso)
+
+Meter el hash de cada transacción en la cabecera sería inviable. En su lugar, Bitcoin usa un **árbol de Merkle**: se emparejan los hashes de las transacciones, se combinan, se vuelven a emparejar, y así sucesivamente hasta obtener un único hash final, el **merkle root**.
+
+Esto tiene dos ventajas enormes:
+
+- **Detecta cualquier cambio.** Si alguien altera una sola transacción, su hash cambia, y ese cambio se propaga hasta el merkle root. Como el merkle root está en la cabecera (y la cabecera está protegida por el minado), **no se puede tocar nada sin que se note**.
+- **Permite verificación ligera.** Una wallet puede comprobar que una transacción está incluida en un bloque sin descargar el bloque entero, solo con una pequeña "prueba de Merkle". Es la base de los clientes ligeros (SPV).
+
+## Cómo se crea un bloque, paso a paso
+
+Veamos el proceso completo, desde que envías una transacción hasta que queda grabada en un bloque:
+
+1. **Llega una transacción.** Un usuario firma y propaga una transacción a la red. Cada [nodo](/articulos/nodos-los-guardianes) la verifica y la guarda en su *mempool* (la cola de pendientes).
+
+2. **El minero arma un bloque candidato.** Un minero selecciona transacciones de la mempool —normalmente priorizando las que pagan más comisión por byte— y las agrupa. Añade la transacción coinbase con su recompensa y calcula el merkle root.
+
+3. **Empieza la competición (Proof of Work).** El minero arma la cabecera y prueba miles de millones de valores del *nonce*, calculando el [hash](/articulos/que-es-el-hash-bitcoin) de la cabecera cada vez, buscando uno que esté **por debajo del objetivo de dificultad**. Esto es el [Proof of Work](/articulos/proof-of-work): no hay atajo, solo prueba y error a gran escala.
+
+4. **Alguien encuentra un hash válido.** El primer minero que da con un nonce que produce un hash válido **anuncia el bloque** a toda la red.
+
+5. **Los nodos verifican.** Cada nodo comprueba que el bloque cumple todas las reglas: que el Proof of Work es válido, que no hay doble gasto, que la recompensa es la correcta, que todas las firmas son válidas. Si algo falla, **el bloque se rechaza**.
+
+6. **El bloque se encadena.** Si es válido, cada nodo lo añade a su copia de la cadena. La transacción del usuario tiene ya **1 confirmación**. Con cada bloque nuevo que se apila encima, se vuelve más irreversible. Con 6 confirmaciones (~60 minutos) se considera prácticamente definitiva.
+
+> Un bloque es a la vez un contenedor de transacciones y un sello de tiempo: demuestra que esas transacciones existían en ese momento y las congela en el historial.
+
+## Por qué los bloques son tan difíciles de alterar
+
+La cabecera de cada bloque contiene el **hash del bloque anterior**. Esto significa que los bloques están encadenados: el bloque 800.001 apunta al 800.000, que apunta al 799.999, y así hasta el bloque génesis.
+
+Si alguien quisiera cambiar una transacción de un bloque antiguo, tendría que:
+
+1. Recalcular el merkle root de ese bloque.
+2. Rehacer su Proof of Work.
+3. Y rehacer el Proof of Work de **todos los bloques posteriores**, porque cada uno depende del hash del anterior.
+
+Y todo eso **más rápido que el resto de la red junta**, que mientras tanto sigue añadiendo bloques nuevos. En la práctica, es inviable. Por eso se dice que la blockchain es **inmutable**: no porque sea mágicamente imposible cambiarla, sino porque cambiarla cuesta más energía de la que nadie puede reunir.
+
+## El bloque génesis
+
+El primer bloque de la historia, el **bloque 0** o *bloque génesis*, lo minó Satoshi Nakamoto el 3 de enero de 2009. Es el único bloque que no apunta a ninguno anterior, y contiene un mensaje incrustado famoso. Puedes leer la historia completa en [Historia de Bitcoin](/articulos/historia-de-bitcoin).
+
+## Contenido relacionado
+
+- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia) — Guía pillar del silo.
+- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin) — Cómo se compite por crear bloques.
+- [Qué es el hash en Bitcoin](/articulos/que-es-el-hash-bitcoin) — La pieza que encadena los bloques.
+- [Qué es Proof of Work](/articulos/proof-of-work) — El consenso detrás del minado.
+- [Qué son los nodos](/articulos/nodos-los-guardianes) — Quién verifica cada bloque.
+- [Glosario de Bitcoin](/glosario)
