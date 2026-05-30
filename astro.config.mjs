@@ -6,6 +6,10 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://bitcoinsinruidos.com',
+  // Cloudflare Pages sirve las páginas (formato directorio) con barra final.
+  // Forzar 'always' alinea rutas, canonical, hreflang y sitemap con la URL
+  // real 200, evitando redirecciones 308 y los conflictos hreflang/canonical.
+  trailingSlash: 'always',
   integrations: [
     react(),
     mdx(),

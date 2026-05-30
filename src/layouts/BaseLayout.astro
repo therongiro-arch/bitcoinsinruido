@@ -25,7 +25,11 @@ const {
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://bitcoinsinruidos.com';
-const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'https://bitcoinsinruidos.com').toString();
+const rawCanonical = canonical ?? new URL(Astro.url.pathname, Astro.site ?? 'https://bitcoinsinruidos.com').toString();
+// Cloudflare Pages sirve las URLs con barra final. Normalizamos para que el
+// canonical, los hreflang y og:url apunten siempre a la URL 200 (no a una que
+// redirige), evitando los conflictos hreflang/canonical de la auditoría.
+const canonicalURL = rawCanonical.endsWith('/') ? rawCanonical : `${rawCanonical}/`;
 const ogImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
 
 const organizationLd = {
@@ -117,10 +121,6 @@ const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
     <meta name="author" content="Bitcoin Sin Ruido" />
     <meta http-equiv="content-language" content="es" />
     <link rel="alternate" hreflang="es" href={canonicalURL} />
-    <link rel="alternate" hreflang="es-ES" href={canonicalURL} />
-    <link rel="alternate" hreflang="es-MX" href={canonicalURL} />
-    <link rel="alternate" hreflang="es-AR" href={canonicalURL} />
-    <link rel="alternate" hreflang="es-CO" href={canonicalURL} />
     <link rel="alternate" hreflang="x-default" href={canonicalURL} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

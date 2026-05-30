@@ -1,0 +1,56 @@
+# Bitcoin Sin Ruido
+
+> Referencia técnica en español sobre Bitcoin: protocolo, Lightning, Taproot, BitVM, covenants, escalabilidad y seguridad. Explicado de forma divulgativa, para principiantes, sin hype ni predicciones de precio.
+
+Bitcoin Sin Ruido explica cómo funciona Bitcoin a nivel técnico. El contenido está organizado en silos temáticos: base (qué es y por qué importa), tecnología (protocolo y minería), escalabilidad y futuro, y uso práctico y seguridad. Todas las afirmaciones se basan en fuentes contrastadas (whitepaper, BIPs, Bitcoin Optech) y se evita el precio y la especulación.
+
+## Guías pilar
+- [Qué es Bitcoin y cómo funciona](https://bitcoinsinruidos.com/que-es-bitcoin/): guía completa para principiantes.
+- [Cómo funciona la tecnología de Bitcoin](https://bitcoinsinruidos.com/articulos/bitcoin-como-tecnologia/)
+- [Futuro de Bitcoin](https://bitcoinsinruidos.com/futuro-bitcoin/): escalabilidad, tecnología y adopción.
+- [Cómo usar Bitcoin de forma segura](https://bitcoinsinruidos.com/articulos/como-usar-bitcoin-seguro/)
+
+## Base
+- [Historia de Bitcoin](https://bitcoinsinruidos.com/articulos/historia-de-bitcoin/)
+- [Qué problema soluciona Bitcoin](https://bitcoinsinruidos.com/articulos/que-problema-soluciona-bitcoin/)
+- [Por qué Bitcoin tiene valor](https://bitcoinsinruidos.com/articulos/por-que-bitcoin-tiene-valor/)
+- [Qué significa descentralización](https://bitcoinsinruidos.com/articulos/descentralizacion-bitcoin/)
+- [Bitcoin vs dinero tradicional](https://bitcoinsinruidos.com/articulos/bitcoin-vs-dinero-tradicional/)
+- [Qué es la blockchain](https://bitcoinsinruidos.com/que-es-blockchain/)
+- [Cómo funciona Bitcoin paso a paso](https://bitcoinsinruidos.com/como-funciona-bitcoin/)
+
+## Tecnología
+- [Qué es un bloque](https://bitcoinsinruidos.com/articulos/que-es-un-bloque-bitcoin/)
+- [Qué es la minería](https://bitcoinsinruidos.com/articulos/mineria-de-bitcoin/)
+- [Qué es el hash (SHA-256)](https://bitcoinsinruidos.com/articulos/que-es-el-hash-bitcoin/)
+- [Qué es la dificultad de minado](https://bitcoinsinruidos.com/articulos/dificultad-de-minado/)
+- [Qué es el halving](https://bitcoinsinruidos.com/articulos/halving-bitcoin/)
+- [Proof of Work](https://bitcoinsinruidos.com/articulos/proof-of-work/)
+- [Qué son los nodos](https://bitcoinsinruidos.com/que-es-un-nodo-bitcoin/)
+- [Qué es un UTXO](https://bitcoinsinruidos.com/utxo/)
+- [Por qué hay 21 millones](https://bitcoinsinruidos.com/articulos/los-21-millones/)
+
+## Escalabilidad y futuro
+- [Qué es Lightning Network](https://bitcoinsinruidos.com/lightning-network/)
+- [Ventajas y desventajas de Lightning](https://bitcoinsinruidos.com/articulos/ventajas-desventajas-lightning-network/)
+- [Qué es Taproot](https://bitcoinsinruidos.com/taproot/)
+- [Escalabilidad de Bitcoin](https://bitcoinsinruidos.com/escalabilidad-bitcoin/)
+- [Problemas actuales de Bitcoin y soluciones](https://bitcoinsinruidos.com/articulos/problemas-actuales-de-bitcoin/)
+- [BitVM y Citrea](https://bitcoinsinruidos.com/articulos/bitvm-y-citrea/)
+- [Covenants](https://bitcoinsinruidos.com/articulos/covenants/)
+- [BIP-360 y resistencia cuántica](https://bitcoinsinruidos.com/articulos/bip360-resistencia-cuantica/)
+
+## Uso práctico y seguridad
+- [Qué es una wallet de Bitcoin](https://bitcoinsinruidos.com/articulos/que-es-una-wallet-bitcoin/)
+- [Tipos de wallets](https://bitcoinsinruidos.com/articulos/tipos-de-wallets-bitcoin/)
+- [Cómo enviar y recibir Bitcoin](https://bitcoinsinruidos.com/articulos/como-enviar-y-recibir-bitcoin/)
+- [Qué es una clave privada](https://bitcoinsinruidos.com/articulos/que-es-una-clave-privada/)
+- [Errores comunes al usar Bitcoin](https://bitcoinsinruidos.com/articulos/errores-comunes-bitcoin/)
+- [Cómo proteger tus Bitcoin](https://bitcoinsinruidos.com/articulos/como-proteger-tus-bitcoin/)
+
+## Recursos
+- [Todos los artículos](https://bitcoinsinruidos.com/articulos/)
+- [Glosario de Bitcoin](https://bitcoinsinruidos.com/glosario/)
+- [Comparativas técnicas](https://bitcoinsinruidos.com/comparativas/)
+- [Metodología editorial](https://bitcoinsinruidos.com/metodologia/)
+- [Sobre Bitcoin Sin Ruido](https://bitcoinsinruidos.com/sobre/)
