@@ -1,5 +1,7 @@
 # Redirecciones 301 — Bitcoin Sin Ruido
 # Consolidación de canibalización SEO: una URL canónica por keyword.
+# Destino con barra final para evitar cadena 301 -> 308.
 
-# Par 1: "qué es bitcoin" — pillar única en /que-es-bitcoin
-/bitcoin-explicado   /que-es-bitcoin   301
+# Par 1: "qué es bitcoin" — pillar única en /que-es-bitcoin/
+/bitcoin-explicado    /que-es-bitcoin/   301
+/bitcoin-explicado/   /que-es-bitcoin/   301
