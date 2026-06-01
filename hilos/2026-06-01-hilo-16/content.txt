@@ -1,0 +1,76 @@
+HILO SEMANAL — Semana 23 — Proof of Work
+Generado: 2026-06-01 09:03 UTC
+==================================================
+
+TWEET 1/11 (149/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 23
+
+Estado de la red Bitcoin:
+📦 Bloque: #951,955
+⚡ Fee rapido: 4 sat/vB
+💪 Hashrate: 1007.7 EH/s
+
+Esta semana: Proof of Work 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #407"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (113/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: PROOF OF WORK
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (114/280 chars)
+────────────────────────────────────────
+Mucha gente critica el consumo energetico de Bitcoin.
+Pocos entienden por que ese consumo ES exactamente el punto.
+
+TWEET 5/11 (164/280 chars)
+────────────────────────────────────────
+Para anadir un bloque, un minero debe encontrar un numero que produzca un hash con caracteristicas especificas.
+Es costoso a proposito.
+Sin costo, no hay seguridad.
+
+TWEET 6/11 (160/280 chars)
+────────────────────────────────────────
+Reescribir una transaccion de hace 6 bloques requeriria mas hashrate que toda la red combinada durante 6 bloques seguidos.
+Costo fisico = barrera infranqueable.
+
+TWEET 7/11 (145/280 chars)
+────────────────────────────────────────
+La red Bitcoin supera 600 EH/s.
+Un ataque del 51% requeriria hardware por miles de millones + electricidad masiva + seria detectable al instante.
+
+TWEET 8/11 (158/280 chars)
+────────────────────────────────────────
+Proof of Stake no tiene este costo fisico.
+La seguridad viene de tokens, que pueden imprimirse, comprarse o confiscarse.
+PoW ancla la seguridad al mundo real.
+
+TWEET 9/11 (138/280 chars)
+────────────────────────────────────────
+Bitcoin usa ~0.5% de la energia mundial.
+El sistema bancario tradicional usa mucho mas.
+Y Bitcoin puede usar energia residual o renovable.
+
+TWEET 10/11 (175/280 chars)
+────────────────────────────────────────
+La energia gastada en PoW no desaparece.
+Se convierte en la garantia mas solida de la historia: el historial de Bitcoin no puede reescribirse sin un costo fisico catastrofico.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
