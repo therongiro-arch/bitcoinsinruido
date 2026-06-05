@@ -53,6 +53,8 @@ const sources = [
         <li><a href="/news">BitcoinNews</a></li>
         <li><a href="/sobre">Sobre</a></li>
         <li><a href="/rss.xml">RSS</a></li>
+        <li><a href="/privacidad" class="hover:text-btc">Privacidad</a></li>
+        <li><a href="/eliminar-datos" class="hover:text-btc">Eliminar datos</a></li>
       </ul>
     </div>
 
@@ -68,8 +70,15 @@ const sources = [
     </div>
   </div>
 
-  <div class="container-wide mt-10 pt-6 border-t border-line/60 flex flex-col sm:flex-row justify-between gap-2 text-xs">
+  <div class="container-wide mt-10 pt-6 border-t border-line/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
     <p>© {year} Bitcoin Sin Ruido. Contenido bajo CC BY-NC-SA 4.0.</p>
+    <nav aria-label="Enlaces legales" class="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <a href="/privacidad" class="hover:text-btc">Privacidad</a>
+      <span class="text-ink-dim/40" aria-hidden="true">·</span>
+      <a href="/eliminar-datos" class="hover:text-btc">Eliminar datos</a>
+      <span class="text-ink-dim/40" aria-hidden="true">·</span>
+      <a href="/metodologia" class="hover:text-btc">Metodología</a>
+    </nav>
     <p class="font-mono text-ink-dim">Sin precio. Sin hype. Solo protocolo.</p>
   </div>
 </footer>
