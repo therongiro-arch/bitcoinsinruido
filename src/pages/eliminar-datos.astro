@@ -1,0 +1,222 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Eliminación de datos en Bitcoin Sin Ruido: guía paso a paso';
+const description = 'Cómo borrar cualquier dato relacionado con tu visita a Bitcoin Sin Ruido: newsletter, preferencias guardadas en tu navegador y datos en servicios de terceros.';
+const url = 'https://bitcoinsinruidos.com/eliminar-datos';
+const datePublished = '2026-05-28';
+const dateModified = '2026-05-28';
+
+const pageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  url,
+  name: title,
+  description,
+  inLanguage: 'es',
+  datePublished,
+  dateModified,
+  isPartOf: { '@id': 'https://bitcoinsinruidos.com/#website' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: { '@type': 'Thing', name: 'Eliminación de datos personales' },
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Eliminar datos', item: url },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={[
+    'eliminar datos Bitcoin Sin Ruido',
+    'borrar suscripción newsletter BSR',
+    'derecho al olvido bitcoinsinruidos.com',
+    'borrar localStorage navegador',
+  ]}
+>
+  <Fragment slot="head">
+    <JsonLd data={pageLd} />
+    <JsonLd data={breadcrumbLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Eliminar datos' }]} />
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">LEGAL</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+      <p class="mt-3 text-sm text-ink-dim font-mono">
+        Última actualización: 28 de mayo de 2026
+      </p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Punto de partida</h2>
+      <p>
+        Bitcoin Sin Ruido <strong>no tiene cuentas de usuario, no almacena emails
+        directamente y no guarda datos sobre ti en ningún servidor propio</strong>.
+        En la práctica esto significa que no hay un botón "borrar mi cuenta"
+        porque no existe esa cuenta. Lo que sí puede haber es:
+      </p>
+      <ul>
+        <li>Una suscripción al <strong>newsletter</strong> en Paragraph (servicio externo).</li>
+        <li>La preferencia de tema guardada en tu <strong>navegador</strong> (<code>localStorage</code>).</li>
+        <li>Mensajes que nos hayas escrito por <strong>X</strong> (alojados en X).</li>
+      </ul>
+      <p>
+        Más abajo tienes el paso a paso para borrar cada cosa, en orden de
+        más a menos común. Si te queda alguna duda al final, escríbenos.
+      </p>
+
+      <h2>1. Darte de baja del newsletter</h2>
+      <p>
+        El newsletter lo gestiona <a href="https://paragraph.com/@bitcoinsinruido" target="_blank" rel="noopener noreferrer">Paragraph</a>.
+        Tu email está en sus servidores, no en los nuestros. Hay dos vías:
+      </p>
+      <h3>Opción A — Desde cualquier email del newsletter</h3>
+      <ol>
+        <li>Abre el último email que hayas recibido de Bitcoin Sin Ruido.</li>
+        <li>Baja al pie. Busca el enlace <strong>Unsubscribe</strong> o <strong>Darte de baja</strong>.</li>
+        <li>Pulsa. Quedas dado de baja inmediatamente.</li>
+      </ol>
+      <h3>Opción B — Desde tu cuenta de Paragraph</h3>
+      <ol>
+        <li>Inicia sesión en <a href="https://paragraph.com" target="_blank" rel="noopener noreferrer">paragraph.com</a> con el mismo email con el que te suscribiste.</li>
+        <li>Ve a <strong>Settings → Subscriptions</strong>.</li>
+        <li>Busca "Bitcoin Sin Ruido" y pulsa <strong>Unsubscribe</strong>.</li>
+      </ol>
+      <p>
+        Si además quieres que Paragraph borre <em>todos</em> tus datos (no solo
+        la suscripción), tienes que dirigir esa solicitud a Paragraph
+        directamente; su <a href="https://paragraph.com/privacy" target="_blank" rel="noopener noreferrer">política de privacidad</a>
+        explica el procedimiento.
+      </p>
+
+      <h2>2. Borrar lo que tu navegador guarda</h2>
+      <p>
+        Cuando pulsas el toggle de tema (sol / luna), guardamos
+        <code>localStorage.theme = "dark"</code> o <code>"light"</code> en tu
+        propio navegador. Eso nunca sale de tu equipo. Para borrarlo:
+      </p>
+
+      <h3>Chrome / Edge / Brave</h3>
+      <ol>
+        <li>Pulsa <kbd>F12</kbd> (o <kbd>Ctrl+Shift+I</kbd>) en <a href="/">bitcoinsinruidos.com</a> para abrir DevTools.</li>
+        <li>Pestaña <strong>Application → Storage → Local Storage → https://bitcoinsinruidos.com</strong>.</li>
+        <li>Click derecho sobre la fila <code>theme</code> → <strong>Delete</strong>.</li>
+      </ol>
+
+      <h3>Firefox</h3>
+      <ol>
+        <li>Pulsa <kbd>F12</kbd> en bitcoinsinruidos.com.</li>
+        <li>Pestaña <strong>Almacenamiento → Almacenamiento local → https://bitcoinsinruidos.com</strong>.</li>
+        <li>Click derecho sobre <code>theme</code> → <strong>Eliminar</strong>.</li>
+      </ol>
+
+      <h3>Safari</h3>
+      <ol>
+        <li>Activa el menú <strong>Desarrollar</strong> en Safari → Preferencias → Avanzado.</li>
+        <li>Menú <strong>Desarrollar → Mostrar inspector web</strong>.</li>
+        <li>Pestaña <strong>Almacenamiento → Almacenamiento local</strong>.</li>
+        <li>Borra la entrada <code>theme</code>.</li>
+      </ol>
+
+      <h3>Atajo universal: borrar datos del sitio</h3>
+      <p>
+        Casi cualquier navegador permite borrar de un golpe todo lo que un
+        sitio guarda. En Chrome: barra de direcciones → click en el candado
+        (o el icono de configuración) a la izquierda de la URL →
+        <strong>Configuración del sitio → Eliminar datos</strong>. En Firefox:
+        candado → <strong>Borrar cookies y datos del sitio</strong>.
+      </p>
+
+      <h2>3. Borrar mensajes que nos hayas enviado por X</h2>
+      <p>
+        Si nos escribiste un mensaje directo a
+        <a href="https://x.com/BitcoinSinRuido" target="_blank" rel="noopener noreferrer">@BitcoinSinRuido</a>,
+        ese mensaje vive en los servidores de X. Para borrarlo:
+      </p>
+      <ol>
+        <li>Abre la conversación en X.</li>
+        <li>Pulsa sobre tu mensaje hasta que aparezca el menú contextual.</li>
+        <li>Selecciona <strong>Borrar para mí</strong> (Twitter solo permite borrar de tu lado; en nuestra bandeja el mensaje seguirá visible hasta que también lo borremos nosotros).</li>
+        <li>Si quieres que también lo borremos por nuestra parte, pídelo en un nuevo DM y lo hacemos cuanto antes.</li>
+      </ol>
+
+      <h2>4. Ejercer cualquier otro derecho (acceso, rectificación, oposición…)</h2>
+      <p>
+        Más allá del borrado, tienes los derechos completos que reconoce el
+        <strong>RGPD</strong> y las leyes equivalentes en LATAM (acceso,
+        rectificación, oposición, limitación, portabilidad). Detalle en la
+        <a href="/privacidad">política de privacidad</a>.
+      </p>
+      <p>
+        Para cualquiera de ellos, escríbenos por DM a
+        <a href="https://x.com/BitcoinSinRuido" target="_blank" rel="noopener noreferrer">@BitcoinSinRuido</a>
+        indicando:
+      </p>
+      <ul>
+        <li>Qué derecho quieres ejercer ("Solicito el acceso a mis datos", "Solicito la supresión de mi suscripción", etc.).</li>
+        <li>Algún dato que nos permita verificar de buena fe que eres tú (por ejemplo, el email con el que te suscribiste, si el ejercicio va sobre el newsletter).</li>
+        <li>Si quieres una respuesta por un canal alternativo a X.</li>
+      </ul>
+      <p>
+        Plazo de respuesta orientativo: <strong>menos de 30 días</strong>, conforme
+        al RGPD. Si la petición es manifiestamente excesiva o no podemos
+        identificarte razonablemente, te lo comunicaremos motivadamente.
+      </p>
+
+      <h2>5. ¿Y los datos que ven los terceros que sirven la web?</h2>
+      <p>
+        Cloudflare (hosting), Google Fonts (tipografías), mempool.space (datos
+        del globo) y los exchanges públicos reciben tu IP y user-agent
+        directamente cuando tu navegador los consulta. Esos datos no son
+        nuestros; los gestiona cada proveedor con su propia política. Para
+        borrar / restringir lo que cada uno guarda:
+      </p>
+      <ul>
+        <li>
+          <strong>Cloudflare:</strong>
+          <a href="https://www.cloudflare.com/es-es/trust-hub/privacy-and-data-protection/" target="_blank" rel="noopener noreferrer">Trust Hub de Cloudflare</a>.
+        </li>
+        <li>
+          <strong>Google (Fonts):</strong>
+          <a href="https://myaccount.google.com/privacypolicy" target="_blank" rel="noopener noreferrer">Mi cuenta — Privacidad</a>.
+        </li>
+        <li>
+          <strong>mempool.space:</strong>
+          <a href="https://mempool.space/privacy-policy" target="_blank" rel="noopener noreferrer">Política de mempool.space</a>.
+        </li>
+        <li>
+          <strong>X:</strong>
+          <a href="https://x.com/es/privacy" target="_blank" rel="noopener noreferrer">Política de X</a> y
+          <a href="https://help.x.com/es/safety-and-security/data-deletion" target="_blank" rel="noopener noreferrer">guía de borrado de X</a>.
+        </li>
+      </ul>
+      <p>
+        Si quieres minimizar lo que llega a estos terceros sin esperar a borrar
+        después: navega con una VPN, usa extensiones como <em>uBlock Origin</em>
+        o <em>LocalCDN</em> (sirve Google Fonts localmente), y evita la home
+        si no quieres que tu IP llegue a mempool.space (el resto de la web
+        no la consulta).
+      </p>
+
+      <hr />
+      <p class="text-sm text-ink-dim">
+        Si encuentras un error o algún paso no funciona en tu versión del
+        navegador, escríbenos por DM y lo actualizamos. Esta guía se mantiene
+        viva.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

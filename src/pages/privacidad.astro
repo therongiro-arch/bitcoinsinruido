@@ -1,0 +1,278 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const title = 'Política de privacidad de Bitcoin Sin Ruido';
+const description = 'Qué datos recoge Bitcoin Sin Ruido, qué terceros intervienen, base legal, derechos del usuario y cómo ejercerlos. Política redactada conforme a RGPD y leyes de protección de datos en LATAM.';
+const url = 'https://bitcoinsinruidos.com/privacidad';
+const datePublished = '2026-05-28';
+const dateModified = '2026-05-28';
+
+const pageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'PrivacyPolicy',
+  url,
+  name: title,
+  description,
+  inLanguage: 'es',
+  datePublished,
+  dateModified,
+  isPartOf: { '@id': 'https://bitcoinsinruidos.com/#website' },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+};
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Privacidad', item: url },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={[
+    'política de privacidad Bitcoin Sin Ruido',
+    'RGPD Bitcoin Sin Ruido',
+    'protección de datos BSR',
+    'privacidad bitcoinsinruidos.com',
+  ]}
+>
+  <Fragment slot="head">
+    <JsonLd data={pageLd} />
+    <JsonLd data={breadcrumbLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Privacidad' }]} />
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">LEGAL</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+      <p class="mt-3 text-sm text-ink-dim font-mono">
+        Última actualización: 28 de mayo de 2026
+      </p>
+    </header>
+
+    <div class="prose-bsr">
+      <h2>Resumen rápido</h2>
+      <p>
+        Bitcoin Sin Ruido es una web de contenido técnico. <strong>No tiene cuentas
+        de usuario, no recoge emails directamente, no usa Google Analytics ni
+        píxeles publicitarios, no instala cookies de seguimiento.</strong> Lo único
+        que se guarda en tu navegador es tu preferencia de tema (claro / oscuro)
+        en <code>localStorage</code>, y solo si pulsas el toggle.
+      </p>
+      <p>
+        Los datos que pueden quedar registrados son los inevitables de cualquier
+        web: tu IP y user-agent llegan a <strong>Cloudflare</strong> (nuestro hosting)
+        y a los servicios públicos que el navegador consulta para mostrar la
+        página (Google Fonts, mempool.space, exchanges públicos). No hay ningún
+        sistema en Bitcoin Sin Ruido que asocie esos accesos con una identidad.
+      </p>
+
+      <h2>Responsable del tratamiento</h2>
+      <p>
+        Responsable: <strong>Bitcoin Sin Ruido</strong> (publicación editorial
+        independiente, sin personalidad jurídica registrada como empresa).
+      </p>
+      <p>
+        Contacto para asuntos de privacidad: mensaje directo en X a
+        <a href="https://x.com/BitcoinSinRuido" target="_blank" rel="noopener noreferrer">@BitcoinSinRuido</a>.
+        Tiempo de respuesta orientativo: menos de 30 días, conforme a los
+        plazos del RGPD.
+      </p>
+
+      <h2>Qué datos se tratan</h2>
+
+      <h3>1. Datos que tú decides darnos</h3>
+      <ul>
+        <li>
+          <strong>Suscripción al newsletter:</strong> el botón "Newsletter" de
+          la cabecera enlaza a nuestra publicación en
+          <a href="https://paragraph.com/@bitcoinsinruido" target="_blank" rel="noopener noreferrer">Paragraph</a>.
+          La suscripción se gestiona <em>íntegramente en Paragraph</em>: tu email
+          nunca llega a los servidores de Bitcoin Sin Ruido. La política
+          aplicable es la
+          <a href="https://paragraph.com/privacy" target="_blank" rel="noopener noreferrer">política de privacidad de Paragraph</a>.
+        </li>
+        <li>
+          <strong>Contacto:</strong> si nos escribes un mensaje directo en X,
+          el contenido del mensaje queda almacenado en X según
+          <a href="https://x.com/es/privacy" target="_blank" rel="noopener noreferrer">su política de privacidad</a>.
+          No replicamos esos mensajes fuera de X.
+        </li>
+      </ul>
+
+      <h3>2. Datos técnicos de navegación</h3>
+      <p>
+        Cuando visitas cualquier página, el navegador envía automáticamente a
+        los servidores que sirven los recursos su dirección IP, user-agent,
+        referer y página solicitada. Esos datos los procesan los siguientes
+        servicios, cada uno con su propia política:
+      </p>
+      <ul>
+        <li>
+          <strong>Cloudflare</strong> (hosting de la web y los workers): logs
+          HTTP estándar usados para entrega de contenido, protección
+          anti-DDoS y métricas agregadas. Ver
+          <a href="https://www.cloudflare.com/es-es/privacypolicy/" target="_blank" rel="noopener noreferrer">política de Cloudflare</a>.
+        </li>
+        <li>
+          <strong>Google Fonts</strong> (tipografías Inter y JetBrains Mono):
+          al cargar los archivos de fuentes, tu IP llega a Google. Ver
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">política de Google</a>.
+        </li>
+        <li>
+          <strong>mempool.space</strong>: al ver la home con el globo activo,
+          tu navegador consulta <code>/api/mempool/recent</code> y
+          <code>/api/tx/{`{txid}`}</code> de mempool.space para mostrar las
+          transacciones reales. Ver
+          <a href="https://mempool.space/privacy-policy" target="_blank" rel="noopener noreferrer">política de mempool.space</a>.
+        </li>
+        <li>
+          <strong>Exchanges públicos</strong> (Binance, Coinbase, Kraken,
+          Bitstamp, Bitso): WebSockets a sus feeds públicos de precio. Cada
+          uno con su propia política.
+        </li>
+      </ul>
+      <p>
+        Bitcoin Sin Ruido no envía a estos terceros ningún identificador
+        adicional sobre ti. Solo te conectas tú directamente, igual que con
+        cualquier otra web.
+      </p>
+
+      <h3>3. Almacenamiento local en tu navegador</h3>
+      <ul>
+        <li>
+          <strong><code>localStorage.theme</code></strong>: si pulsas el toggle
+          de tema (sol / luna), guardamos <code>"dark"</code> o
+          <code>"light"</code> en el almacenamiento local de tu navegador para
+          recordar tu preferencia. Este valor <em>no se envía</em> a ningún
+          servidor. Lo puedes borrar en cualquier momento desde las
+          herramientas del navegador.
+        </li>
+      </ul>
+      <p>
+        No usamos cookies de sesión, ni cookies de terceros, ni píxeles de
+        seguimiento, ni Local Shared Objects de Flash.
+      </p>
+
+      <h2>Finalidades y base legal</h2>
+      <ul>
+        <li>
+          <strong>Entrega del contenido y seguridad de la web</strong> (interés
+          legítimo del responsable): servir la web, protegerla de ataques,
+          medir agregadamente el rendimiento.
+        </li>
+        <li>
+          <strong>Suscripción al newsletter</strong> (consentimiento del
+          interesado): solo si tú decides suscribirte en Paragraph, donde
+          aceptas su política.
+        </li>
+        <li>
+          <strong>Comunicación contigo</strong> (consentimiento del
+          interesado): solo si nos escribes voluntariamente vía X.
+        </li>
+      </ul>
+
+      <h2>Quién recibe tus datos</h2>
+      <p>
+        No vendemos ni compartimos datos con terceros. Los servicios listados
+        arriba (Cloudflare, Google Fonts, mempool.space, exchanges, Paragraph,
+        X) reciben los datos estrictamente técnicos necesarios para que la
+        web funcione, cada uno actuando bajo su propio rol y política.
+      </p>
+      <p>
+        Algunos de estos servicios están ubicados fuera del Espacio Económico
+        Europeo (Cloudflare y Google operan principalmente desde EE.UU.). Esas
+        transferencias internacionales se sostienen en las cláusulas
+        contractuales tipo de la Comisión Europea o equivalente legal del
+        proveedor.
+      </p>
+
+      <h2>Plazos de conservación</h2>
+      <ul>
+        <li>
+          <strong>Logs de Cloudflare:</strong> retención estándar de Cloudflare,
+          normalmente unos días a semanas para los logs HTTP, controlado por
+          su política, no por nosotros.
+        </li>
+        <li>
+          <strong><code>localStorage.theme</code>:</strong> permanece en tu
+          navegador hasta que tú lo borras o el navegador lo limpia.
+        </li>
+        <li>
+          <strong>Suscripción al newsletter:</strong> mientras estés suscrito en
+          Paragraph. Puedes darte de baja en cualquier momento con el enlace
+          al pie de cualquier email.
+        </li>
+      </ul>
+
+      <h2>Tus derechos</h2>
+      <p>
+        Como interesado tienes los derechos reconocidos en el
+        <strong>RGPD</strong> (UE), <strong>LFPDPPP</strong> (México),
+        <strong>Ley 25.326</strong> (Argentina), <strong>Ley 21.719</strong>
+        (Chile), <strong>Ley 1581</strong> (Colombia) y demás leyes de
+        protección de datos aplicables en tu jurisdicción:
+      </p>
+      <ul>
+        <li><strong>Acceso:</strong> saber qué datos tuyos tratamos.</li>
+        <li><strong>Rectificación:</strong> corregir datos inexactos.</li>
+        <li><strong>Supresión ("derecho al olvido"):</strong> pedir el borrado.</li>
+        <li><strong>Oposición:</strong> oponerte al tratamiento basado en interés legítimo.</li>
+        <li><strong>Limitación:</strong> restringir el uso de tus datos.</li>
+        <li><strong>Portabilidad:</strong> recibir tus datos en formato estructurado.</li>
+        <li><strong>Reclamación:</strong> presentar reclamación ante la autoridad de control de tu país (AEPD en España, INAI en México, AAIP en Argentina, etc.).</li>
+      </ul>
+      <p>
+        Para ejercer cualquiera de ellos, escríbenos por DM a
+        <a href="https://x.com/BitcoinSinRuido" target="_blank" rel="noopener noreferrer">@BitcoinSinRuido</a>
+        indicando qué derecho quieres ejercer y aportando algún dato que nos
+        permita verificar tu identidad de buena fe (por ejemplo, el email con
+        el que te suscribiste al newsletter si el ejercicio es sobre eso).
+        Tienes también la guía paso a paso en
+        <a href="/eliminar-datos">eliminar datos</a>.
+      </p>
+
+      <h2>Menores</h2>
+      <p>
+        Bitcoin Sin Ruido es contenido editorial técnico, no dirigido a
+        menores de 14 años. No solicitamos datos a menores. Si crees que un
+        menor a tu cargo nos ha facilitado datos sin tu consentimiento, escríbenos
+        y los eliminaremos.
+      </p>
+
+      <h2>Cambios en esta política</h2>
+      <p>
+        Si actualizamos la política reflejaremos la fecha de la última
+        revisión arriba. Los cambios menores (correcciones de estilo, nuevos
+        terceros añadidos por una mejora técnica) se publican directamente.
+        Los cambios materiales se anunciarán adicionalmente en el newsletter y
+        en X.
+      </p>
+
+      <h2>Código abierto</h2>
+      <p>
+        El código completo de la web es público en
+        <a href="https://github.com/therongiro-arch/bitcoinsinruido" target="_blank" rel="noopener noreferrer">GitHub</a>.
+        Si dudas de qué hacemos con tus datos, puedes auditarlo tú mismo: no
+        hay nada oculto detrás del HTML.
+      </p>
+
+      <hr />
+      <p class="text-sm text-ink-dim">
+        Esta política está redactada conforme al Reglamento (UE) 2016/679 (RGPD)
+        y las principales leyes de protección de datos personales vigentes en
+        LATAM. No sustituye al asesoramiento jurídico individualizado; si tienes
+        un caso específico, consulta con un profesional.
+      </p>
+    </div>
+  </article>
+</BaseLayout>
