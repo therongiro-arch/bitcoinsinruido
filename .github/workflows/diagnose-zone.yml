@@ -6,45 +6,65 @@ on:
 jobs:
   diagnose-zone:
     runs-on: ubuntu-latest
-    env:
-      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      ZONE_NAME: bitcoinsinruidos.com
     steps:
-      - name: Run diagnostics
+      - name: Direct probes to specific anycast IPs (no API needed)
         run: |
-          set -e
-
-          echo "=== Resolve zone id ==="
-          ZONE_ID=$(curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME" | jq -r '.result[0].id // "NONE"')
-          echo "Zone ID: $ZONE_ID"
-
-          echo ""
-          echo "=== Zone security settings ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/settings" | jq -r '.result[] | select(.id | IN("security_level","ssl","always_use_https","challenge_ttl","browser_check","ip_geolocation","tls_1_3","min_tls_version","waf","http2","http3")) | "  \(.id): \(.value)"'
-
-          echo ""
-          echo "=== Legacy firewall rules ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/firewall/rules" | jq -r '.result // [] | if length == 0 then "  (none)" else .[] | "  paused=\(.paused) action=\(.action) desc=\(.description // "n/a")\n    expr: \(.filter.expression // "n/a")" end'
-
-          echo ""
-          echo "=== WAF custom rules (Rulesets) ==="
-          ENTRY=$(curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_firewall_custom/entrypoint" | jq -r '.result.id // "NONE"')
-          echo "Entrypoint: $ENTRY"
-          if [ "$ENTRY" != "NONE" ] && [ "$ENTRY" != "null" ] && [ -n "$ENTRY" ]; then
-            curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/$ENTRY" | jq -r '.result.rules // [] | if length == 0 then "  (no custom rules)" else .[] | "  enabled=\(.enabled // true) action=\(.action) desc=\(.description // "n/a")\n    expr: \(.expression)" end'
-          fi
-
-          echo ""
-          echo "=== Page rules ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/pagerules" | jq -r '.result // [] | if length == 0 then "  (none)" else .[] | "  status=\(.status) priority=\(.priority)\n    targets: \(.targets)\n    actions: \(.actions)" end'
-
-          echo ""
-          echo "=== Direct probes to specific anycast IPs ==="
-          for IP in 188.114.96.5 188.114.97.5 172.67.169.241 104.21.63.48; do
-            RESULT=$(curl -sI -o /dev/null --resolve "bitcoinsinruidos.com:443:$IP" --connect-timeout 10 -w "%{http_code}|%{time_total}" "https://bitcoinsinruidos.com/" 2>/dev/null || echo "FAIL|0")
-            echo "  $IP -> $RESULT"
+          set +e
+          echo "=== EU anycast IPs (188.114.96.5 / 97.5) ==="
+          for IP in 188.114.96.5 188.114.97.5; do
+            echo "--- $IP ---"
+            curl -sI -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+              --resolve "bitcoinsinruidos.com:443:$IP" \
+              --connect-timeout 15 \
+              "https://bitcoinsinruidos.com/" 2>&1 | head -15
+            echo ""
           done
 
           echo ""
-          echo "=== Active DNS records ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?per_page=20" | jq -r '.result[] | "  \(.type) \(.name) -> \(.content) (proxied=\(.proxied))"'
+          echo "=== US anycast IPs (172.67.169.241 / 104.21.63.48) ==="
+          for IP in 172.67.169.241 104.21.63.48; do
+            echo "--- $IP ---"
+            curl -sI -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+              --resolve "bitcoinsinruidos.com:443:$IP" \
+              --connect-timeout 15 \
+              "https://bitcoinsinruidos.com/" 2>&1 | head -15
+            echo ""
+          done
+
+          echo ""
+          echo "=== Test via Cloudflare WARP (Spain location) ==="
+          # Get a body sample to see if there's a challenge page
+          curl -s --max-time 15 \
+            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
+            --resolve "bitcoinsinruidos.com:443:188.114.96.5" \
+            "https://bitcoinsinruidos.com/" 2>&1 | head -50
+
+      - name: Inspect WAF rules and zone security (needs Zone:Read)
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set +e
+          ZONE_ID=$(curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones?name=bitcoinsinruidos.com" \
+            | jq -r '.result[0].id // "NONE"')
+          echo "Zone ID: $ZONE_ID"
+
+          echo ""
+          echo "=== Token permissions check ==="
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/user/tokens/verify" | jq .
+
+          echo ""
+          echo "=== Firewall rules ==="
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/firewall/rules" | jq .
+
+          echo ""
+          echo "=== WAF custom rules ==="
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_firewall_custom/entrypoint" | jq .
+
+          echo ""
+          echo "=== Zone security settings ==="
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/settings" | jq '.result[]? | select(.id | test("security|ssl|tls|under|challenge|waf|http"))' | head -100
