@@ -1,8 +1,4 @@
-name: Diagnose Cloudflare zone (firewall, WAF, regional)
-
-# Deeper dig into the zone: WAF rules, firewall rules, page rules, security
-# level, geographic blocks. Helps explain why a region cannot reach the
-# site even though origin (Pages) is healthy.
+name: Diagnose Cloudflare zone
 
 on:
   workflow_dispatch:
@@ -12,131 +8,43 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ZONE_NAME: bitcoinsinruidos.com
     steps:
-      - name: Resolve zone id
+      - name: Run diagnostics
         run: |
           set -e
-          ZONE_ID=$(curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME" \
-            | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['result'][0]['id']) if d.get('result') else print('NO_ZONE')")
-          echo "ZONE_ID=$ZONE_ID" >> $GITHUB_ENV
-          echo "Resolved zone id: $ZONE_ID"
 
-      - name: Zone settings — security level, challenge ttl, ssl, etc.
-        run: |
-          echo "=== Zone settings (security relevant) ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/settings" \
-            | python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-keys = ['security_level', 'ssl', 'always_use_https', 'challenge_ttl', 'browser_check', 'ip_geolocation', 'opportunistic_encryption', 'tls_1_3', 'min_tls_version', 'waf', 'under_attack', 'origin_max_http_version', 'http2', 'http3']
-if data.get('success'):
-    for s in data['result']:
-        if s['id'] in keys:
-            print(f\"  {s['id']:30s} = {s['value']}\")
-else:
-    print(json.dumps(data, indent=2))
-"
+          echo "=== Resolve zone id ==="
+          ZONE_ID=$(curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME" | jq -r '.result[0].id // "NONE"')
+          echo "Zone ID: $ZONE_ID"
 
-      - name: Firewall rules (legacy v4 filter-based)
-        run: |
-          echo "=== Legacy firewall_rules ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/firewall/rules" \
-            | python3 -c "
-import json, sys
-d = json.load(sys.stdin)
-if d.get('success') and d['result']:
-    for r in d['result']:
-        print(f\"  paused={r.get('paused')}  action={r.get('action')}  desc={r.get('description')!r}\")
-        print(f\"    filter: {r.get('filter',{}).get('expression')}\")
-elif d.get('success'):
-    print('  (none)')
-else:
-    print(json.dumps(d, indent=2))
-"
+          echo ""
+          echo "=== Zone security settings ==="
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/settings" | jq -r '.result[] | select(.id | IN("security_level","ssl","always_use_https","challenge_ttl","browser_check","ip_geolocation","tls_1_3","min_tls_version","waf","http2","http3")) | "  \(.id): \(.value)"'
 
-      - name: WAF custom rules (Rulesets API)
-        run: |
-          echo "=== WAF custom rulesets ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets" \
-            | python3 -c "
-import json, sys
-d = json.load(sys.stdin)
-if d.get('success'):
-    for r in d['result']:
-        if r.get('phase') in ('http_request_firewall_custom', 'http_request_dynamic_redirect', 'http_request_main'):
-            print(f\"  ruleset: {r['name']!r}  phase={r['phase']}  source={r.get('source')}\")
-            print(f\"    id={r['id']}\")
-"
+          echo ""
+          echo "=== Legacy firewall rules ==="
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/firewall/rules" | jq -r '.result // [] | if length == 0 then "  (none)" else .[] | "  paused=\(.paused) action=\(.action) desc=\(.description // "n/a")\n    expr: \(.filter.expression // "n/a")" end'
 
-      - name: Detailed WAF custom rules (if any)
-        run: |
-          set -e
-          RULESET_ID=$(curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_firewall_custom/entrypoint" \
-            | python3 -c "import json,sys;d=json.load(sys.stdin);print(d.get('result',{}).get('id','NONE'))" 2>/dev/null || echo "NONE")
-          echo "Entrypoint ruleset id: $RULESET_ID"
-          if [ "$RULESET_ID" != "NONE" ] && [ -n "$RULESET_ID" ]; then
-            echo "=== Rules inside it ==="
-            curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-              "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/$RULESET_ID" \
-              | python3 -c "
-import json, sys
-d = json.load(sys.stdin)
-if d.get('success') and d['result'].get('rules'):
-    for r in d['result']['rules']:
-        print(f\"  enabled={r.get('enabled', True)}  action={r.get('action')}  desc={r.get('description')!r}\")
-        print(f\"    expr: {r.get('expression')}\")
-else:
-    print('  (no custom rules)')
-"
+          echo ""
+          echo "=== WAF custom rules (Rulesets) ==="
+          ENTRY=$(curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_firewall_custom/entrypoint" | jq -r '.result.id // "NONE"')
+          echo "Entrypoint: $ENTRY"
+          if [ "$ENTRY" != "NONE" ] && [ "$ENTRY" != "null" ] && [ -n "$ENTRY" ]; then
+            curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/$ENTRY" | jq -r '.result.rules // [] | if length == 0 then "  (no custom rules)" else .[] | "  enabled=\(.enabled // true) action=\(.action) desc=\(.description // "n/a")\n    expr: \(.expression)" end'
           fi
 
-      - name: Page rules
-        run: |
+          echo ""
           echo "=== Page rules ==="
-          curl -s -H "Authorization: Bearer $CF_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/pagerules" \
-            | python3 -c "
-import json, sys
-d = json.load(sys.stdin)
-if d.get('success') and d['result']:
-    for r in d['result']:
-        print(f\"  status={r.get('status')}  priority={r.get('priority')}\")
-        for t in r.get('targets',[]):
-            print(f\"    target: {t}\")
-        for a in r.get('actions',[]):
-            print(f\"    action: {a}\")
-elif d.get('success'):
-    print('  (none)')
-else:
-    print(json.dumps(d, indent=2))
-"
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/pagerules" | jq -r '.result // [] | if length == 0 then "  (none)" else .[] | "  status=\(.status) priority=\(.priority)\n    targets: \(.targets)\n    actions: \(.actions)" end'
 
-      - name: Probe from European Cloudflare IPs by Host header
-        run: |
           echo ""
-          echo "=== Direct probe to EU anycast IPs forcing SNI ==="
-          for IP in 188.114.96.5 188.114.97.5; do
-            echo "--- $IP ---"
-            curl -sI -o /dev/null \
-              --resolve "bitcoinsinruidos.com:443:$IP" \
-              --connect-timeout 10 \
-              -w "$IP  HTTPS %{http_code} en %{time_total}s\n" \
-              "https://bitcoinsinruidos.com/" || echo "  TIMEOUT/CONNECTION FAILED"
+          echo "=== Direct probes to specific anycast IPs ==="
+          for IP in 188.114.96.5 188.114.97.5 172.67.169.241 104.21.63.48; do
+            RESULT=$(curl -sI -o /dev/null --resolve "bitcoinsinruidos.com:443:$IP" --connect-timeout 10 -w "%{http_code}|%{time_total}" "https://bitcoinsinruidos.com/" 2>/dev/null || echo "FAIL|0")
+            echo "  $IP -> $RESULT"
           done
+
           echo ""
-          echo "=== Direct probe to US anycast IPs ==="
-          for IP in 172.67.169.241 104.21.63.48; do
-            echo "--- $IP ---"
-            curl -sI -o /dev/null \
-              --resolve "bitcoinsinruidos.com:443:$IP" \
-              --connect-timeout 10 \
-              -w "$IP  HTTPS %{http_code} en %{time_total}s\n" \
-              "https://bitcoinsinruidos.com/" || echo "  TIMEOUT/CONNECTION FAILED"
-          done
+          echo "=== Active DNS records ==="
+          curl -s -H "Authorization: Bearer $CF_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?per_page=20" | jq -r '.result[] | "  \(.type) \(.name) -> \(.content) (proxied=\(.proxied))"'
