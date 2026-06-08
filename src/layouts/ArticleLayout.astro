@@ -4,6 +4,7 @@ import ArticleMeta from '../components/ArticleMeta.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Faq from '../components/Faq.astro';
 import RelatedLinks from '../components/RelatedLinks.astro';
+import ShareButtons from '../components/ShareButtons.astro';
 import JsonLd from '../components/JsonLd.astro';
 
 export interface FaqItem {
@@ -161,6 +162,10 @@ const allKeywords = [...new Set([...keywords, ...tags])];
 
     <div class="prose-bsr">
       <slot />
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-line">
+      <ShareButtons url={url} title={title} description={description} />
     </div>
 
     <Faq items={faqs} />
