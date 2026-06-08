@@ -23,6 +23,12 @@ vite.config.ts.timestamp-*
 .env.local
 .env.*.local
 
+# --- Credenciales (nunca al repo) ---
+.secrets/
+**/.gsc-credentials/
+*service-account*.json
+*credentials*.json
+
 # --- Cloudflare Wrangler ---
 .wrangler/
 workers/*/node_modules/
