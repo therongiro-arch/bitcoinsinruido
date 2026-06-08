@@ -26,6 +26,7 @@ ROOT = Path(__file__).parent
 ARTICLES_DIR = ROOT / "src" / "content" / "articulos"
 OUT_DIR = ROOT / "public" / "og"
 OUT_DEFAULT = ROOT / "public" / "og-default.png"
+BUNDLED_INTER = ROOT / "assets" / "fonts" / "Inter-Bold.ttf"
 
 W, H = 1200, 630
 
@@ -58,6 +59,7 @@ CAPA_COLORS = {
 # ---------------------------------------------------------------------------
 
 FONT_PATHS_BOLD = [
+    str(BUNDLED_INTER),  # bundled Inter Bold — has proper ₿ glyph
     "/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/share/fonts/TTF/DejaVuSans-Bold.ttf",
@@ -173,77 +175,87 @@ def wrap_text(
 # ---------------------------------------------------------------------------
 
 def draw_background(img: Image.Image) -> None:
-    """Solid dark BG + subtle dot grid + orange accent stripe at top."""
+    """Solid dark BG + decorative PCB-style circuit traces + brand stripe.
+
+    The circuit pattern lives on the left and right sides of the card,
+    out of the way of the title text in the centre. Faint gold lines
+    with junction dots evoke the Bitcoin-as-protocol aesthetic without
+    competing with the typography.
+    """
     draw = ImageDraw.Draw(img)
-    # Subtle dot grid (low contrast) to give it texture.
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     o = ImageDraw.Draw(overlay)
+
+    # Very faint global dot grid for paper-like texture.
     for x in range(40, W, 60):
         for y in range(40, H, 60):
-            o.ellipse([x - 1, y - 1, x + 1, y + 1], fill=(255, 255, 255, 12))
+            o.ellipse([x - 1, y - 1, x + 1, y + 1], fill=(255, 255, 255, 10))
+
+    # PCB-style circuit traces on the left and right sides. Symmetric
+    # decoration that suggests "protocol", "chip", "infrastructure"
+    # without distracting from the title.
+    trace_color = (*ORANGE, 80)  # dim orange, partly transparent
+    dot_color = (*ORANGE, 140)
+    trace_w = 3
+
+    def draw_trace_cluster(start_x: int, direction: int) -> None:
+        """Draw a fan of traces flowing horizontally from start_x.
+        `direction`=+1 flows to the right, -1 to the left.
+        """
+        ys = [195, 235, 275, 365, 405, 445]
+        for y in ys:
+            # Main horizontal trace
+            length = 180 + (abs(hash(y)) % 60)
+            end_x = start_x + direction * length
+            # Sometimes the trace ends in a right-angle bend
+            bend = (hash(y) % 3) == 0
+            if bend:
+                mid_x = start_x + direction * (length - 40)
+                bend_y = y + ((hash(y) >> 4) % 30 - 15)
+                o.line([(start_x, y), (mid_x, y)], fill=trace_color, width=trace_w)
+                o.line([(mid_x, y), (mid_x, bend_y)], fill=trace_color, width=trace_w)
+                o.line([(mid_x, bend_y), (end_x, bend_y)], fill=trace_color, width=trace_w)
+                # Junction dot at the bend
+                o.ellipse([mid_x - 5, y - 5, mid_x + 5, y + 5], fill=dot_color)
+            else:
+                o.line([(start_x, y), (end_x, y)], fill=trace_color, width=trace_w)
+            # Endpoint pad
+            o.ellipse([end_x - 6, y - 6, end_x + 6, y + 6], fill=dot_color)
+            # Inner hole on the pad
+            o.ellipse([end_x - 3, y - 3, end_x + 3, y + 3], fill=(*BG, 220))
+
+    draw_trace_cluster(start_x=W, direction=-1)  # right side flows left
+    # Soft glow under the right-side traces.
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    g = ImageDraw.Draw(glow)
+    for y in [195, 235, 275, 365, 405, 445]:
+        g.ellipse([W - 80, y - 22, W - 20, y + 22], fill=(*ORANGE, 18))
+    overlay = Image.alpha_composite(glow, overlay)
+
     img.paste(overlay, (0, 0), overlay)
     # Top accent stripe (full-bleed, brand orange).
     draw.rectangle([0, 0, W, 8], fill=ORANGE)
 
 
 def draw_btc_badge(draw: ImageDraw.ImageDraw, cx: int, cy: int, r: int) -> None:
-    """Orange circle + Bitcoin ₿ symbol composed by hand.
+    """Orange circle + Bitcoin ₿ symbol rendered with Inter Bold.
 
-    System fonts render U+20BF (₿) inconsistently — DejaVu and Arial
-    Bold produce either a barely-visible stroke or a dollar-sign-style
-    line through the letter. We compose the official Bitcoin glyph by
-    hand so it reads identically on every platform: a bold 'B' with
-    *two separate short vertical strokes* aligned with the B's left
-    vertical bar — one extending above the top, another below the
-    bottom of the letter. Matches the Bitcoin Project logo.
+    Inter Bold (bundled in assets/fonts) has a faithful ₿ glyph — same
+    proportions and stroke style as the official Bitcoin logo. We use
+    the actual U+20BF character so the symbol always renders with the
+    correct shape regardless of OS.
     """
     # 1. Orange circle background.
     draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=ORANGE)
 
-    # 2. Render the 'B' letter, slightly shifted right so the vertical
-    #    stubs sit at the left vertical bar of the letter.
-    f = get_font(int(r * 1.55), "bold")
-    bbox = draw.textbbox((0, 0), "B", font=f)
+    # 2. Render U+20BF (Bitcoin currency symbol) centred on the badge.
+    f = get_font(int(r * 1.65), "bold")
+    bbox = draw.textbbox((0, 0), "₿", font=f)
     tw = bbox[2] - bbox[0]
     th = bbox[3] - bbox[1]
-    shift_x = int(r * 0.10)
-    text_x = cx - tw / 2 - bbox[0] + shift_x
-    text_y = cy - th / 2 - bbox[1] - 1
-    draw.text((text_x, text_y), "B", font=f, fill=BG)
-
-    # 3. Two SHORT vertical stubs at the same x-position, aligned with
-    #    the B's left vertical bar. One extends above the upper bowl,
-    #    one below the lower bowl. They do NOT touch the letter.
-    stroke_w = max(3, int(r * 0.13))
-    stroke_len = int(r * 0.28)
-    bar_x = cx - int(r * 0.23)
-
-    # Approximate top and bottom of the rendered letter (these depend on
-    # the font but for any reasonable bold sans they sit at ~±0.55r from
-    # the badge centre).
-    letter_top = cy - int(r * 0.55)
-    letter_bot = cy + int(r * 0.55)
-
-    # Top stub — from just above the letter, going UP.
-    draw.rectangle(
-        [
-            bar_x - stroke_w // 2,
-            letter_top - stroke_len,
-            bar_x + stroke_w // 2,
-            letter_top,
-        ],
-        fill=BG,
-    )
-    # Bottom stub — from just below the letter, going DOWN.
-    draw.rectangle(
-        [
-            bar_x - stroke_w // 2,
-            letter_bot,
-            bar_x + stroke_w // 2,
-            letter_bot + stroke_len,
-        ],
-        fill=BG,
-    )
+    text_x = cx - tw / 2 - bbox[0]
+    text_y = cy - th / 2 - bbox[1] - 2
+    draw.text((text_x, text_y), "₿", font=f, fill=BG)
 
 
 def draw_brand_header(img: Image.Image) -> None:
