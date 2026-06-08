@@ -186,17 +186,47 @@ def draw_background(img: Image.Image) -> None:
     draw.rectangle([0, 0, W, 8], fill=ORANGE)
 
 
-def draw_brand_header(img: Image.Image) -> None:
-    """₿ chip + 'Bitcoin Sin Ruido' word-mark + tagline, top-left."""
-    draw = ImageDraw.Draw(img)
-    # ₿ circular badge.
-    cx, cy, r = PAD_X + 28, PAD_Y + 28, 28
+def draw_btc_badge(draw: ImageDraw.ImageDraw, cx: int, cy: int, r: int) -> None:
+    """Orange circle + Bitcoin ₿ symbol composed by hand.
+
+    System fonts render U+20BF (₿) inconsistently — DejaVu and Arial Bold
+    produce a barely-visible stroke. We draw the symbol manually so it
+    reads the same on Windows, macOS and the Ubuntu CI runner: a bold
+    'B' with a single vertical stroke extending above and below it
+    (matches the brand favicon and the original Bitcoin logo).
+    """
+    # 1. Orange circle background.
     draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=ORANGE)
-    f_btc = get_font(38, "bold")
-    bbox = draw.textbbox((0, 0), "₿", font=f_btc)
+
+    # 2. Render the 'B' letter, slightly shifted right so the vertical
+    #    stroke has room on the left side of the badge.
+    f = get_font(int(r * 1.6), "bold")
+    bbox = draw.textbbox((0, 0), "B", font=f)
     tw = bbox[2] - bbox[0]
     th = bbox[3] - bbox[1]
-    draw.text((cx - tw / 2 - bbox[0], cy - th / 2 - bbox[1] - 2), "₿", font=f_btc, fill=BG)
+    shift_x = int(r * 0.08)
+    text_x = cx - tw / 2 - bbox[0] + shift_x
+    text_y = cy - th / 2 - bbox[1] - 1
+    draw.text((text_x, text_y), "B", font=f, fill=BG)
+
+    # 3. Single vertical stroke that goes through the left vertical bar
+    #    of the 'B' and extends above the top and below the bottom of
+    #    the letter — the visual cue of Bitcoin's currency symbol.
+    stroke_w = max(3, int(r * 0.12))
+    bar_x = cx - int(r * 0.22)
+    bar_y_top = cy - int(r * 0.95)
+    bar_y_bot = cy + int(r * 0.95)
+    draw.rectangle(
+        [bar_x - stroke_w // 2, bar_y_top, bar_x + stroke_w // 2, bar_y_bot],
+        fill=BG,
+    )
+
+
+def draw_brand_header(img: Image.Image) -> None:
+    """₿ badge + 'Bitcoin Sin Ruido' word-mark + tagline, top-left."""
+    draw = ImageDraw.Draw(img)
+    cx, cy, r = PAD_X + 28, PAD_Y + 28, 28
+    draw_btc_badge(draw, cx, cy, r)
     # Word-mark.
     f_brand = get_font(32, "bold")
     draw.text((cx + r + 16, PAD_Y + 8), "Bitcoin Sin Ruido", font=f_brand, fill=INK)
