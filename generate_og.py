@@ -189,35 +189,59 @@ def draw_background(img: Image.Image) -> None:
 def draw_btc_badge(draw: ImageDraw.ImageDraw, cx: int, cy: int, r: int) -> None:
     """Orange circle + Bitcoin ₿ symbol composed by hand.
 
-    System fonts render U+20BF (₿) inconsistently — DejaVu and Arial Bold
-    produce a barely-visible stroke. We draw the symbol manually so it
-    reads the same on Windows, macOS and the Ubuntu CI runner: a bold
-    'B' with a single vertical stroke extending above and below it
-    (matches the brand favicon and the original Bitcoin logo).
+    System fonts render U+20BF (₿) inconsistently — DejaVu and Arial
+    Bold produce either a barely-visible stroke or a dollar-sign-style
+    line through the letter. We compose the official Bitcoin glyph by
+    hand so it reads identically on every platform: a bold 'B' with
+    *two separate short vertical strokes* aligned with the B's left
+    vertical bar — one extending above the top, another below the
+    bottom of the letter. Matches the Bitcoin Project logo.
     """
     # 1. Orange circle background.
     draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=ORANGE)
 
     # 2. Render the 'B' letter, slightly shifted right so the vertical
-    #    stroke has room on the left side of the badge.
-    f = get_font(int(r * 1.6), "bold")
+    #    stubs sit at the left vertical bar of the letter.
+    f = get_font(int(r * 1.55), "bold")
     bbox = draw.textbbox((0, 0), "B", font=f)
     tw = bbox[2] - bbox[0]
     th = bbox[3] - bbox[1]
-    shift_x = int(r * 0.08)
+    shift_x = int(r * 0.10)
     text_x = cx - tw / 2 - bbox[0] + shift_x
     text_y = cy - th / 2 - bbox[1] - 1
     draw.text((text_x, text_y), "B", font=f, fill=BG)
 
-    # 3. Single vertical stroke that goes through the left vertical bar
-    #    of the 'B' and extends above the top and below the bottom of
-    #    the letter — the visual cue of Bitcoin's currency symbol.
-    stroke_w = max(3, int(r * 0.12))
-    bar_x = cx - int(r * 0.22)
-    bar_y_top = cy - int(r * 0.95)
-    bar_y_bot = cy + int(r * 0.95)
+    # 3. Two SHORT vertical stubs at the same x-position, aligned with
+    #    the B's left vertical bar. One extends above the upper bowl,
+    #    one below the lower bowl. They do NOT touch the letter.
+    stroke_w = max(3, int(r * 0.13))
+    stroke_len = int(r * 0.28)
+    bar_x = cx - int(r * 0.23)
+
+    # Approximate top and bottom of the rendered letter (these depend on
+    # the font but for any reasonable bold sans they sit at ~±0.55r from
+    # the badge centre).
+    letter_top = cy - int(r * 0.55)
+    letter_bot = cy + int(r * 0.55)
+
+    # Top stub — from just above the letter, going UP.
     draw.rectangle(
-        [bar_x - stroke_w // 2, bar_y_top, bar_x + stroke_w // 2, bar_y_bot],
+        [
+            bar_x - stroke_w // 2,
+            letter_top - stroke_len,
+            bar_x + stroke_w // 2,
+            letter_top,
+        ],
+        fill=BG,
+    )
+    # Bottom stub — from just below the letter, going DOWN.
+    draw.rectangle(
+        [
+            bar_x - stroke_w // 2,
+            letter_bot,
+            bar_x + stroke_w // 2,
+            letter_bot + stroke_len,
+        ],
         fill=BG,
     )
 
