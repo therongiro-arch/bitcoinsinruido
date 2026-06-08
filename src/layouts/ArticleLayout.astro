@@ -47,7 +47,12 @@ const {
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://bitcoinsinruidos.com';
 const url = canonical ?? `${siteUrl}/articulos/${slug}`;
-const ogImage = cover ? (cover.startsWith('http') ? cover : `${siteUrl}${cover}`) : `${siteUrl}/og-default.svg`;
+// Cada artículo tiene una imagen OG generada en build a /og/{slug}.png.
+// Si el frontmatter trae cover propio (raro), gana esa. ogImagePath es
+// la ruta relativa (la pasamos a BaseLayout, que la convierte a absoluta).
+// ogImage es la URL absoluta usada para el JSON-LD.
+const ogImagePath = cover ?? `/og/${slug}.png`;
+const ogImage = ogImagePath.startsWith('http') ? ogImagePath : `${siteUrl}${ogImagePath}`;
 
 const seoTitle = `${title} | Bitcoin Sin Ruido`;
 
@@ -128,7 +133,7 @@ const allKeywords = [...new Set([...keywords, ...tags])];
 <BaseLayout
   title={seoTitle}
   description={description}
-  image={cover}
+  image={ogImagePath}
   keywords={allKeywords}
   canonical={url}
 >
