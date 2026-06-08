@@ -46,6 +46,16 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Set up Python (for OG image generation)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate Open Graph images
+        run: |
+          pip install --quiet pillow
+          python generate_og.py
+
       - name: Build site
         run: npm run build
         env:
