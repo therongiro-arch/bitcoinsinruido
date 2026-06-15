@@ -1,0 +1,82 @@
+HILO SEMANAL — Semana 25 — Los 21 Millones
+Generado: 2026-06-15 15:19 UTC
+==================================================
+
+TWEET 1/11 (150/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 25
+
+Estado de la red Bitcoin:
+📦 Bloque: #953,799
+⚡ Fee rapido: 6 sat/vB
+💪 Hashrate: 913.8 EH/s
+
+Esta semana: Los 21 Millones 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #409"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (115/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: LOS 21 MILLONES
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (114/280 chars)
+────────────────────────────────────────
+Ningun activo en la historia tiene un suministro tan verificable como Bitcoin.
+¿Como esta garantizado exactamente?
+
+TWEET 5/11 (143/280 chars)
+────────────────────────────────────────
+El suministro esta definido por una serie geometrica:
+Bloques 0-209999: 50 BTC/bloque
+Bloques 210000-419999: 25 BTC
+...
+Cada ~4 anos, la mitad.
+
+TWEET 6/11 (146/280 chars)
+────────────────────────────────────────
+La suma converge matematicamente en:
+50 x 210.000 x (1 + 1/2 + 1/4 + ...) = 21.000.000
+No es una decision de empresa.
+Es una identidad matematica.
+
+TWEET 7/11 (140/280 chars)
+────────────────────────────────────────
+El ultimo Bitcoin se minara ~en el ano 2140.
+Pero el 93% ya fue emitido.
+El 99% estara emitido antes de 2036.
+La escasez ya es efectiva hoy.
+
+TWEET 8/11 (162/280 chars)
+────────────────────────────────────────
+¿Quien controla esto?
+Nadie. Y cualquier nodo puede verificarlo.
+Si un minero intentara crear mas Bitcoin, todos los nodos rechazarian ese bloque automaticamente.
+
+TWEET 9/11 (188/280 chars)
+────────────────────────────────────────
+La politica monetaria de Bitcoin es la unica en la historia que ninguna entidad puede cambiar unilateralmente.
+Fed: puede imprimir. BCE: puede imprimir. Bitcoin: matematicamente imposible.
+
+TWEET 10/11 (168/280 chars)
+────────────────────────────────────────
+El halving no es un evento de precio.
+Es la confirmacion periodica de que el protocolo funciona exactamente como fue disenado.
+Cada 210.000 bloques, la matematica gana.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
