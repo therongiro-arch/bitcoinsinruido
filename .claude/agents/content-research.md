@@ -166,7 +166,16 @@ style, las menciones inline son suficientes.
 ### 4.2 Reglas de redacción
 
 - Tono: **divulgativo y punchy**; lenguaje claro, sin jerga técnica sin explicar
-- Longitud total: entre **500 y 1.000 palabras** (los explainers del repo rondan 400-700; las piezas-tesis pueden estirarse a 1.000)
+- Longitud total por tipo de pieza (el house style actual prioriza **profundidad**):
+  - **Micro-explainer:** 800–1.200 palabras (conceptos puntuales).
+  - **Satélite estándar:** 1.500–2.500 palabras.
+  - **Pieza profunda / pilar / tesis:** **4.000–7.000 palabras**. Es el
+    formato por defecto para artículos importantes desde 2026: cobertura
+    exhaustiva, con secciones de contexto, comparativas, tablas, riesgos
+    honestos, FAQ extensa e interlinking de silo. La profundidad real (no el
+    relleno) es lo que posiciona y genera autoridad temática.
+- En piezas largas, **trocea con muchos H2/H3**, usa tablas comparativas y
+  separa siempre "lo que ya existe" de "lo especulativo".
 - Cada afirmación factual debe tener su fuente, idealmente inline en prosa con paréntesis
 - Negritas para resaltar datos concretos (números, fechas, nombres de proyectos)
 - Prohibido: clickbait, alarmismo, generalizaciones sin datos, opinión del agente
@@ -227,8 +236,9 @@ Una vez generado el archivo `.mdx`:
 - [ ] Mínimo 3 fuentes superan la validación
 - [ ] Tabla de fuentes completada
 - [ ] Las 4 preguntas de impacto respondidas
-- [ ] Artículo entre 500 y 1.000 palabras
+- [ ] Longitud acorde al tipo de pieza (las piezas profundas/pilar: 4.000–7.000 palabras)
 - [ ] Cada afirmación tiene su fuente citada
+- [ ] SEO: frontmatter con `keywords` y `faqs`; interlinking de silo (1 enlace al pilar + 2-3 relacionados); título con keyword al principio
 - [ ] Frontmatter alineado al schema de `src/content/config.ts` (`publishedAt`, `capa`, `draft: true`)
 - [ ] Filename = `slug.mdx` sin prefijo de fecha
 - [ ] `npx astro check` pasa sin errores nuevos
