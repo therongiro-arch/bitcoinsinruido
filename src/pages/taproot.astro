@@ -6,7 +6,7 @@ import JsonLd from '../components/JsonLd.astro';
 
 const title = 'Qué es Taproot y cómo funciona en Bitcoin (Schnorr, MuSig2)';
 const description = 'Qué es Taproot en Bitcoin, cómo funcionan las firmas Schnorr y MuSig2, BIP-341, privacidad estructural y por qué es la base de Lightning, BitVM y Taproot Assets.';
-const url = 'https://bitcoinsinruidos.com/taproot';
+const url = 'https://bitcoinsinruidos.com/taproot/';
 const datePublished = '2026-05-27';
 const dateModified = '2026-05-27';
 
@@ -24,7 +24,7 @@ const articleLd = {
   headline: title, description, url, inLanguage: 'es',
   mainEntityOfPage: { '@type': 'WebPage', '@id': url },
   datePublished, dateModified,
-  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  author: { '@type': 'Person', '@id': 'https://bitcoinsinruidos.com/sobre#editor', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre/' },
   publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
   about: 'Taproot',
 };

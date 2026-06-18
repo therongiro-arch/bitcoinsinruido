@@ -6,7 +6,7 @@ import JsonLd from '../components/JsonLd.astro';
 
 const title = 'Qué es un nodo Bitcoin y cómo funciona (guía 2026)';
 const description = 'Qué es un nodo Bitcoin, qué hace, qué tipos hay, cómo correr uno (Umbrel, Start9, RaspiBlitz, Bitcoin Core) y por qué los nodos —no los mineros— son los verdaderos guardianes.';
-const url = 'https://bitcoinsinruidos.com/que-es-un-nodo-bitcoin';
+const url = 'https://bitcoinsinruidos.com/que-es-un-nodo-bitcoin/';
 const datePublished = '2026-05-27';
 const dateModified = '2026-05-27';
 
@@ -25,7 +25,7 @@ const articleLd = {
   headline: title, description, url, inLanguage: 'es',
   mainEntityOfPage: { '@type': 'WebPage', '@id': url },
   datePublished, dateModified,
-  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre', sameAs: ['https://x.com/BitcoinSinRuido'] },
+  author: { '@type': 'Person', '@id': 'https://bitcoinsinruidos.com/sobre#editor', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre/', sameAs: ['https://x.com/BitcoinSinRuido'] },
   publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
   about: 'Bitcoin node',
 };

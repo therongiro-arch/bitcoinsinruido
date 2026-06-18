@@ -54,3 +54,14 @@ Bitcoin Sin Ruido explica cómo funciona Bitcoin a nivel técnico. El contenido 
 - [Comparativas técnicas](https://bitcoinsinruidos.com/comparativas/)
 - [Metodología editorial](https://bitcoinsinruidos.com/metodologia/)
 - [Sobre Bitcoin Sin Ruido](https://bitcoinsinruidos.com/sobre/)
+
+## Análisis y mapas
+- [Anatomía de una transacción Bitcoin](https://bitcoinsinruidos.com/anatomia-de-una-transaccion-bitcoin/): desglose campo a campo de una transacción real.
+- [Mapa del stack de Bitcoin](https://bitcoinsinruidos.com/mapa-stack-bitcoin/): cómo encajan L1, L2 y las capas de aplicación.
+
+## Comparativas técnicas
+- [Bitcoin vs Ethereum](https://bitcoinsinruidos.com/comparativas/bitcoin-vs-ethereum/)
+- [Lightning vs Visa](https://bitcoinsinruidos.com/comparativas/lightning-vs-visa/)
+- [Layer 1 vs Layer 2](https://bitcoinsinruidos.com/comparativas/layer-1-vs-layer-2/)
+- [Custodia vs autocustodia](https://bitcoinsinruidos.com/comparativas/custodia-vs-autocustodia/)
+- [BitVM vs smart contracts](https://bitcoinsinruidos.com/comparativas/bitvm-vs-smart-contracts/)

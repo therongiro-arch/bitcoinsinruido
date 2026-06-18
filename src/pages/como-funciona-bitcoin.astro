@@ -6,7 +6,7 @@ import JsonLd from '../components/JsonLd.astro';
 
 const title = 'Cómo funciona Bitcoin: el protocolo paso a paso (guía 2026)';
 const description = 'Cómo funciona Bitcoin paso a paso: claves, firmas, transacciones, UTXOs, mempool, bloques, minería, consenso PoW y nodos. Guía técnica completa en español.';
-const url = 'https://bitcoinsinruidos.com/como-funciona-bitcoin';
+const url = 'https://bitcoinsinruidos.com/como-funciona-bitcoin/';
 const datePublished = '2026-05-27';
 const dateModified = '2026-05-27';
 
@@ -25,7 +25,7 @@ const articleLd = {
   headline: title, description, url, inLanguage: 'es',
   mainEntityOfPage: { '@type': 'WebPage', '@id': url },
   datePublished, dateModified,
-  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre', sameAs: ['https://x.com/BitcoinSinRuido'] },
+  author: { '@type': 'Person', '@id': 'https://bitcoinsinruidos.com/sobre#editor', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre/', sameAs: ['https://x.com/BitcoinSinRuido'] },
   publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
   about: 'Bitcoin',
 };

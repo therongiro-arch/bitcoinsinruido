@@ -6,7 +6,7 @@ import JsonLd from '../components/JsonLd.astro';
 
 const title = 'Qué es BitVM y cómo funciona en Bitcoin (contratos sin soft fork)';
 const description = 'Qué es BitVM, cómo permite computación verificable sobre Bitcoin sin modificar el consenso, Citrea, fraud proofs, ZK-rollups y casos reales en 2026.';
-const url = 'https://bitcoinsinruidos.com/bitvm';
+const url = 'https://bitcoinsinruidos.com/bitvm/';
 const datePublished = '2026-05-27';
 const dateModified = '2026-05-27';
 
@@ -24,7 +24,7 @@ const articleLd = {
   headline: title, description, url, inLanguage: 'es',
   mainEntityOfPage: { '@type': 'WebPage', '@id': url },
   datePublished, dateModified,
-  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  author: { '@type': 'Person', '@id': 'https://bitcoinsinruidos.com/sobre#editor', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre/' },
   publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
   about: 'BitVM',
 };

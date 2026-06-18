@@ -47,7 +47,11 @@ const {
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://bitcoinsinruidos.com';
-const url = canonical ?? `${siteUrl}/articulos/${slug}`;
+// Cloudflare sirve con barra final (trailingSlash: 'always'). El JSON-LD debe
+// usar la misma URL 200 que el canonical para que los motores (y los LLMs)
+// atribuyan la entidad sin ambigüedad. El canonical externo (variantes) se
+// respeta tal cual.
+const url = canonical ?? `${siteUrl}/articulos/${slug}/`;
 // Cada artículo tiene una imagen OG generada en build a /og/{slug}.png.
 // Si el frontmatter trae cover propio (raro), gana esa. ogImagePath es
 // la ruta relativa (la pasamos a BaseLayout, que la convierte a absoluta).
@@ -108,7 +112,7 @@ const breadcrumbLd = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
-    { '@type': 'ListItem', position: 2, name: 'Artículos', item: `${siteUrl}/articulos` },
+    { '@type': 'ListItem', position: 2, name: 'Artículos', item: `${siteUrl}/articulos/` },
     { '@type': 'ListItem', position: 3, name: title, item: url },
   ],
 };
