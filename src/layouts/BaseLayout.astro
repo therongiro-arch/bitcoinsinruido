@@ -87,7 +87,7 @@ const websiteLd = {
   publisher: { '@id': `${siteUrl}/#organization` },
   potentialAction: {
     '@type': 'SearchAction',
-    target: `${siteUrl}/articulos?q={search_term_string}`,
+    target: `${siteUrl}/articulos/?q={search_term_string}`,
     'query-input': 'required name=search_term_string',
   },
 };

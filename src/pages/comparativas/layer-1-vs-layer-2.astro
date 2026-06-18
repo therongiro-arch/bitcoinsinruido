@@ -6,7 +6,7 @@ import JsonLd from '../../components/JsonLd.astro';
 
 const title = 'Layer 1 vs Layer 2 en Bitcoin: diferencias y cuándo usar cada capa';
 const description = 'Layer 1 (cadena base) vs Layer 2 (Lightning, BitVM, Taproot Assets, Citrea) en Bitcoin: qué hace cada capa, costos, seguridad y cuándo elegirla.';
-const url = 'https://bitcoinsinruidos.com/comparativas/layer-1-vs-layer-2';
+const url = 'https://bitcoinsinruidos.com/comparativas/layer-1-vs-layer-2/';
 const datePublished = '2026-05-27';
 const dateModified = '2026-05-27';
 
@@ -20,7 +20,7 @@ const faqs = [
 ];
 
 const articleLd = { '@context': 'https://schema.org', '@type': 'Article', headline: title, description, url, inLanguage: 'es', mainEntityOfPage: { '@type': 'WebPage', '@id': url }, datePublished, dateModified, author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' }, publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' } };
-const breadcrumbLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [ { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' }, { '@type': 'ListItem', position: 2, name: 'Comparativas', item: 'https://bitcoinsinruidos.com/comparativas' }, { '@type': 'ListItem', position: 3, name: 'Layer 1 vs Layer 2', item: url } ] };
+const breadcrumbLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [ { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' }, { '@type': 'ListItem', position: 2, name: 'Comparativas', item: 'https://bitcoinsinruidos.com/comparativas/' }, { '@type': 'ListItem', position: 3, name: 'Layer 1 vs Layer 2', item: url } ] };
 const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })) };
 ---
 

@@ -5,7 +5,7 @@ import JsonLd from '../components/JsonLd.astro';
 
 const title = 'Sobre Bitcoin Sin Ruido: misión, enfoque técnico y transparencia';
 const description = 'Quién está detrás de Bitcoin Sin Ruido, cómo se investiga el contenido, qué fuentes se usan y por qué nunca verás predicciones de precio en esta web.';
-const url = 'https://bitcoinsinruidos.com/sobre';
+const url = 'https://bitcoinsinruidos.com/sobre/';
 
 const aboutLd = {
   '@context': 'https://schema.org',
@@ -25,6 +25,47 @@ const breadcrumbLd = {
     { '@type': 'ListItem', position: 2, name: 'Sobre', item: url },
   ],
 };
+
+// Entidad del editor responsable. Su @id se referencia desde Organization
+// (employee), desde el Article de cada pillar y desde ArticleLayout, pero hasta
+// ahora no se definía en ninguna parte: era un nodo colgante en el grafo. Aquí
+// se define con sus señales E-E-A-T (jobTitle, knowsAbout, sameAs, worksFor)
+// para que los motores generativos puedan atribuir autoría y expertise. El @id
+// coincide exactamente con el ancla visible <h2 id="editor"> y con las
+// referencias existentes (/sobre#editor).
+const editorLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': 'https://bitcoinsinruidos.com/sobre#editor',
+  name: 'Bitcoin Sin Ruido',
+  alternateName: 'Editor de Bitcoin Sin Ruido',
+  url,
+  jobTitle: 'Editor técnico — Bitcoin Sin Ruido',
+  description:
+    'Firma editorial responsable de Bitcoin Sin Ruido. Cubre el protocolo de Bitcoin, Lightning Network, BitVM, Taproot, covenants y criptografía postcuántica. Investigación basada en bitcoin-dev, los BIPs y Bitcoin Optech, con verificación de cada cifra antes de publicar.',
+  knowsAbout: [
+    'Bitcoin',
+    'Lightning Network',
+    'BitVM',
+    'Taproot',
+    'Schnorr signatures',
+    'MuSig2',
+    'Covenants',
+    'Proof of Work',
+    'UTXO model',
+    'BIP-360',
+    'Post-quantum cryptography',
+    'Bitcoin scalability',
+  ],
+  knowsLanguage: ['es'],
+  worksFor: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  publishingPrinciples: 'https://bitcoinsinruidos.com/metodologia/',
+  sameAs: [
+    'https://x.com/BitcoinSinRuido',
+    'https://paragraph.com/@bitcoinsinruido',
+    'https://github.com/RonGiro',
+  ],
+};
 ---
 
 <BaseLayout
@@ -34,6 +75,7 @@ const breadcrumbLd = {
 >
   <Fragment slot="head">
     <JsonLd data={aboutLd} />
+    <JsonLd data={editorLd} />
     <JsonLd data={breadcrumbLd} />
   </Fragment>
 

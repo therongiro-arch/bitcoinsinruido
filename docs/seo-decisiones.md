@@ -4,7 +4,7 @@
 > tomadas. Sirve para no repetir errores ya resueltos y para que cualquiera
 > (humano o agente) entienda el porqué de la estructura actual.
 >
-> Última actualización: 2026-06-07.
+> Última actualización: 2026-06-18.
 
 ---
 
@@ -183,3 +183,43 @@ generaban conflictos y "language mismatch" en la auditoría.
 - **Re-auditar en Semrush** tras el recrawl.
 - La difusión (X vía `tweet.yml`) y los backlinks son ahora la palanca
   principal; el SEO técnico ya está resuelto.
+
+---
+
+## 12. Auditoría GEO (2026-06-18)
+
+Auditoría de *Generative Engine Optimization* (visibilidad/citabilidad en
+ChatGPT, Perplexity, Google AI Overviews, Claude, Gemini). El sitio partía de
+una base muy sólida (JSON-LD por página, FAQs en las 34 MDX y en pilares,
+`llms.txt`, `robots.txt` con todos los bots de IA, E-E-A-T editorial). Se
+resolvieron tres incoherencias que afectaban a cómo un motor generativo atribuye
+y desambigua las entidades:
+
+1. **Coherencia canonical ↔ JSON-LD (barra final).** Con `trailingSlash: 'always'`
+   la URL 200 termina en `/`, pero el JSON-LD (`url`, `@id`, `mainEntityOfPage`,
+   `BreadcrumbList.item`) y el `ItemList` del home usaban URLs **sin** barra. Era
+   el mismo arreglo ya aplicado solo a Lightning (commit `d0c90bf`), extendido
+   ahora a las 21 páginas `.astro`, a `ArticleLayout` (34 artículos MDX), a los
+   breadcrumbs de comparativas y al `SearchAction` de `WebSite`. Un LLM que cita
+   debe ver la misma URL en el canonical y en el dato estructurado.
+
+2. **Entidad `Person` del editor (`#editor`) era un nodo colgante.** Se
+   referenciaba desde `Organization.employee`, desde `ArticleLayout` y desde
+   varios pilares (`@id: …/sobre#editor`) pero **no se definía en ninguna parte**.
+   Se añade el `Person` completo en `/sobre/` (jobTitle, `knowsAbout`,
+   `knowsLanguage`, `worksFor` → `#organization`, `sameAs`, `publishingPrinciples`),
+   con `@id` idéntico al ancla visible `<h2 id="editor">`. Cierra el grafo de
+   autoría que sostiene el E-E-A-T para IA.
+
+3. **Autoría unificada en pilares.** Varias páginas usaban `Person` inline sin
+   `@id`, y `escalabilidad`/`futuro` usaban `Organization` como `author`. Todas
+   apuntan ahora al mismo `@id …/sobre#editor`: una sola entidad-autor coherente
+   en todo el sitio.
+
+También se ampió `llms.txt` con las 5 comparativas individuales y las páginas de
+análisis (anatomía de transacción, mapa del stack), que antes solo existían como
+índice.
+
+**No tocado (correcto):** dominio `bitcoinsinruidos.com` consistente, `robots.txt`,
+silos e interlinking, FAQs. **Pendiente menor:** `sobre-bitcoin-sin-ruido.astro`
+usa meta-refresh + `noindex` (funcional; un 301 en `_redirects` sería más limpio).

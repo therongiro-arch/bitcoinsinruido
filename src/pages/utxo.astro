@@ -6,7 +6,7 @@ import JsonLd from '../components/JsonLd.astro';
 
 const title = 'Qué es un UTXO en Bitcoin y cómo funciona (explicado fácil)';
 const description = 'Qué es un UTXO en Bitcoin, en qué se diferencia del modelo de cuentas, cómo se genera cambio, privacidad y ejemplos prácticos. Guía técnica en español.';
-const url = 'https://bitcoinsinruidos.com/utxo';
+const url = 'https://bitcoinsinruidos.com/utxo/';
 const datePublished = '2026-05-27';
 const dateModified = '2026-05-27';
 
@@ -24,7 +24,7 @@ const articleLd = {
   headline: title, description, url, inLanguage: 'es',
   mainEntityOfPage: { '@type': 'WebPage', '@id': url },
   datePublished, dateModified,
-  author: { '@type': 'Person', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre' },
+  author: { '@type': 'Person', '@id': 'https://bitcoinsinruidos.com/sobre#editor', name: 'Bitcoin Sin Ruido', url: 'https://bitcoinsinruidos.com/sobre/' },
   publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
   about: 'UTXO',
 };
