@@ -1,0 +1,87 @@
+HILO SEMANAL — Semana 26 — Nodos
+Generado: 2026-06-22 14:45 UTC
+==================================================
+
+TWEET 1/11 (140/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 26
+
+Estado de la red Bitcoin:
+📦 Bloque: #954,850
+⚡ Fee rapido: 4 sat/vB
+💪 Hashrate: 826.7 EH/s
+
+Esta semana: Nodos 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #410"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (105/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: NODOS
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (103/280 chars)
+────────────────────────────────────────
+La narrativa popular: los mineros controlan Bitcoin.
+Es falsa.
+Los verdaderos guardianes son los nodos.
+
+TWEET 5/11 (171/280 chars)
+────────────────────────────────────────
+Un nodo completo:
+→ Guarda toda la blockchain (~600 GB)
+→ Verifica cada transaccion
+→ Verifica cada bloque
+→ Rechaza automaticamente lo invalido
+Sin pedir permiso a nadie.
+
+TWEET 6/11 (132/280 chars)
+────────────────────────────────────────
+~20.000 nodos activos en el mundo.
+Cada uno independiente.
+Ninguno necesita permiso de otro.
+Ninguno puede ser apagado centralmente.
+
+TWEET 7/11 (162/280 chars)
+────────────────────────────────────────
+Los mineros proponen bloques.
+Los nodos los aceptan o rechazan.
+Si un bloque viola las reglas, todos los nodos lo rechazan.
+El minero pierde trabajo y recompensa.
+
+TWEET 8/11 (164/280 chars)
+────────────────────────────────────────
+En 2017, el UASF (User Activated Soft Fork):
+Los usuarios, con sus nodos, forzaron una activacion que los mineros resistian.
+Los nodos ganaron. Sin un solo disparo.
+
+TWEET 9/11 (144/280 chars)
+────────────────────────────────────────
+Correr un nodo:
+Raspberry Pi + disco de 1 TB = nodo completo.
+Costo: ~80 euros.
+Beneficio: soberania total. Verificas tus propias transacciones.
+
+TWEET 10/11 (143/280 chars)
+────────────────────────────────────────
+Cada nodo hace Bitcoin mas resistente.
+Mas descentralizado.
+Mas dificil de censurar.
+El acto mas poderoso en Bitcoin no es comprar. Es validar.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
