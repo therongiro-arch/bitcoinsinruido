@@ -1,0 +1,239 @@
+---
+title: "Frase semilla (seed phrase): qué es y cómo respaldarla bien"
+description: "La frase semilla de 12 o 24 palabras es la copia de seguridad de todo tu Bitcoin. Qué es, cómo funciona el estándar BIP-39, y cómo guardarla sin perderla ni que te la roben."
+publishedAt: 2026-06-28
+capa: uso
+tags: [seed, frase-semilla, BIP39, seguridad, autocustodia, backup]
+draft: false
+order: 28
+keywords:
+  - frase semilla
+  - seed phrase
+  - qué es la frase semilla
+  - frase de recuperación
+  - 12 palabras Bitcoin
+  - 24 palabras Bitcoin
+  - BIP39
+  - cómo guardar la seed phrase
+  - respaldar wallet Bitcoin
+  - frase semilla en metal
+faqs:
+  - question: "¿Qué es una frase semilla en Bitcoin?"
+    answer: "Es una lista de 12 o 24 palabras que tu wallet genera al crearla y que sirve de copia de seguridad de todas tus claves privadas. Con esas palabras se puede regenerar la wallet completa en cualquier dispositivo compatible. Quien tenga la frase, controla todos los fondos; quien la pierda, pierde el acceso para siempre."
+  - question: "¿Es mejor una frase de 12 o de 24 palabras?"
+    answer: "Las dos son seguras. 12 palabras equivalen a 128 bits de entropía y 24 a 256 bits: ambas cifras son imposibles de adivinar por fuerza bruta con la tecnología actual o previsible. 24 palabras dan un margen mayor y son el estándar de las wallets hardware, pero 12 bien protegidas son perfectamente válidas. Importa mucho más cómo las guardas que cuántas son."
+  - question: "¿Puedo guardar mi frase semilla en el móvil o en la nube?"
+    answer: "No. Una foto, una captura, una nota del móvil, un email o un archivo en la nube son justo lo que busca el malware y lo primero que se filtra en una brecha. La frase semilla debe vivir fuera de internet: en papel y, mejor aún, grabada en metal. Si está en digital, asume que tarde o temprano puede acabar en manos ajenas."
+  - question: "¿Qué es la palabra 25 o passphrase?"
+    answer: "Es una contraseña opcional que se suma a las 12 o 24 palabras y genera una wallet completamente distinta. Añade seguridad y permite ocultar fondos (negación plausible), pero tiene un riesgo serio: si la olvidas, no hay forma de recuperar el dinero, ni siquiera con las 24 palabras. Es una herramienta para usuarios avanzados."
+  - question: "¿Puedo partir la frase en dos mitades y guardarlas por separado?"
+    answer: "No es buena idea. Partir las palabras a la mitad reduce mucho la seguridad: quien encuentre una mitad ya tiene medio trabajo hecho, y la otra mitad es atacable. Si quieres repartir el respaldo en varias piezas, usa un método diseñado para eso, como Shamir (SLIP-39) o una configuración multisig, donde ninguna pieza por separado revela nada."
+related:
+  - que-es-una-clave-privada
+  - como-usar-bitcoin-seguro
+  - como-proteger-tus-bitcoin
+  - tipos-de-wallets-bitcoin
+  - errores-comunes-bitcoin
+  - estafas-en-bitcoin
+---
+
+## Resumen rápido
+
+**La frase semilla (o *seed phrase*) es la copia de seguridad de todo tu Bitcoin: 12 o 24 palabras con las que se regeneran todas tus claves privadas y, por tanto, el acceso a todos tus fondos.** No es una contraseña que puedas cambiar: es el respaldo maestro de tu [wallet](/articulos/que-es-una-wallet-bitcoin). Quien tenga esas palabras controla tu dinero al instante y de forma irreversible; quien las pierda, pierde el acceso para siempre. Por eso, en la práctica, "proteger tu Bitcoin" se reduce en gran parte a **una sola cosa: proteger bien la frase semilla**. Este artículo explica qué es exactamente, cómo funciona por dentro (el estándar BIP-39), cómo respaldarla sin cometer los errores típicos y cómo evitar que te la roben.
+
+Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+
+## Qué es exactamente una frase semilla
+
+Cuando creas una wallet de autocustodia, lo primero que te muestra es una lista de **12 o 24 palabras en un orden concreto**. Algo así:
+
+```
+1. abandon   2. ability   3. able   ...   24. zoo
+```
+
+Esa lista es tu **frase semilla**. También la verás llamada *seed phrase*, *frase de recuperación*, *frase mnemotécnica* o *backup*. Todas son lo mismo.
+
+La idea clave es esta: esa frase **no es un accesorio de tu wallet, es tu wallet**. La aplicación que instalas en el móvil o el dispositivo hardware que tienes en la mano son solo herramientas para usar las claves. Las claves de verdad —y la copia de seguridad que las regenera— están en esas palabras. Si mañana se rompe tu móvil, se pierde tu wallet hardware o desaparece la empresa que hizo la app, **escribes esas 12 o 24 palabras en cualquier otra wallet compatible y recuperas todo: saldo, historial y direcciones**.
+
+Para entender por qué unas palabras pueden contener todo eso, conviene saber qué es una [clave privada](/articulos/que-es-una-clave-privada). En resumen: en Bitcoin, quien controla la clave privada controla los fondos. El problema es que una clave privada en bruto es un número enorme e ilegible, imposible de copiar a mano sin equivocarse. La frase semilla resuelve ese problema: es una forma **legible y respaldable** de ese secreto.
+
+## Cómo nace la frase: de la aleatoriedad a 12 o 24 palabras
+
+Aquí es donde entra el estándar que casi todas las wallets comparten: **BIP-39** (*Bitcoin Improvement Proposal 39*). Entender el proceso, aunque sea por encima, te ayuda a tomarte en serio la frase y a detectar consejos peligrosos.
+
+### Paso 1: el azar
+
+Todo empieza con **entropía**: un número aleatorio generado por tu wallet. Cuanto más impredecible, mejor. Una frase de 12 palabras parte de **128 bits** de aleatoriedad; una de 24, de **256 bits**. Esa aleatoriedad es la raíz de toda tu seguridad: si el número se genera bien, nadie en el mundo puede reproducirlo.
+
+Para que te hagas una idea de la magnitud: 128 bits equivalen a unos **3,4 × 10³⁸** combinaciones posibles —un 3 seguido de 38 cifras—. No existe ni existirá ordenador capaz de probarlas todas. Por eso adivinar una frase semilla ajena es, en la práctica, imposible. No te roban la seed adivinándola: te la roban porque la guardaste mal.
+
+### Paso 2: el checksum (la red de seguridad)
+
+A esa aleatoriedad, BIP-39 le añade un pequeño **checksum**: unos bits de verificación calculados con la función criptográfica SHA-256 (en concreto, los primeros `entropía / 32` bits del hash). Para 12 palabras son 4 bits de checksum; para 24, son 8.
+
+¿Para qué sirve? Para que la frase **se valide a sí misma**. Si al restaurar te equivocas en una palabra o cambias el orden, lo más probable es que la wallet detecte que el checksum no cuadra y te avise con un "frase inválida", en lugar de abrir silenciosamente una wallet vacía equivocada. Es una red de seguridad contra errores de copia —no infalible, pero muy útil.
+
+### Paso 3: de bits a palabras
+
+El conjunto de bits (aleatoriedad + checksum) se trocea en grupos de **11 bits**. Cada grupo de 11 bits representa un número entre 0 y 2047, y ese número apunta a una palabra de una **lista oficial de exactamente 2048 palabras**. Las cuentas cuadran:
+
+- **12 palabras** = 132 bits = 128 de entropía + 4 de checksum.
+- **24 palabras** = 264 bits = 256 de entropía + 8 de checksum.
+
+Esa lista de 2048 palabras tiene detalles pensados para reducir errores humanos: las palabras se eligen para no parecerse entre sí y **bastan sus primeras cuatro letras para identificarlas de forma única**. Por eso algunas wallets hardware solo te piden teclear las primeras letras de cada palabra.
+
+> Lección práctica: tus palabras **no las eliges tú ni te las inventas**. Vienen de un proceso aleatorio estandarizado. Cualquier web o persona que te ofrezca "crear tu frase con palabras que recuerdes fácil" o "mejorar tu seed" está, en el mejor de los casos, destruyendo tu seguridad.
+
+## Una frase, infinitas direcciones: la wallet jerárquica
+
+Quizá te preguntes cómo una sola frase puede controlar muchas direcciones distintas, presentes y futuras. La respuesta es otro estándar asociado, **BIP-32** (wallets jerárquicas deterministas, o *HD wallets*).
+
+A partir de la frase semilla, tu wallet deriva una **clave maestra**, y de ella, en forma de árbol, **todas las claves privadas y direcciones que necesites**: una para cada pago que recibes, sin límite práctico. Todas descienden, matemáticamente, de la misma semilla.
+
+Esto tiene dos consecuencias que conviene grabar:
+
+1. **Un solo respaldo lo cubre todo.** No tienes que hacer copia de cada dirección: con la frase semilla se regeneran todas, incluidas las que aún no has usado. Por eso la copia se hace **una vez**, al crear la wallet.
+2. **La frase es el único punto de fallo… y de poder.** No hay nada "por encima" de ella. No existe un servidor, una empresa ni un soporte que tenga una copia. Eso es justo lo que te da soberanía sobre tu dinero —y lo que pone toda la responsabilidad de tu lado.
+
+## 12 o 24 palabras: ¿cuál elegir?
+
+Es una de las dudas más repetidas. La respuesta honesta: **para la inmensa mayoría de usuarios, da igual en términos de seguridad real.**
+
+- **12 palabras** (128 bits) ya son imposibles de romper por fuerza bruta. Ningún avance previsible —ni siquiera la computación cuántica en su forma más optimista— amenaza esa cifra por este flanco.
+- **24 palabras** (256 bits) ofrecen un margen aún mayor y son el estándar por defecto de las wallets hardware. Si custodias un patrimonio importante y quieres el máximo colchón teórico, son una elección razonable.
+
+Lo que de verdad determina si pierdes o no tus bitcoins **no es el número de palabras, sino cómo las guardas**. Una frase de 24 palabras en una foto del móvil es infinitamente menos segura que una de 12 grabada en metal en un cajón. No te obsesiones con esta decisión: elige lo que tu wallet ofrezca por defecto y dedica la energía al respaldo físico.
+
+## La palabra 25: la passphrase (opcional y de doble filo)
+
+BIP-39 permite añadir, sobre las 12 o 24 palabras, una **passphrase**: una contraseña que tú eliges, a veces llamada "palabra 25" (aunque puede ser cualquier texto, no una palabra de la lista). Técnicamente, la frase y la passphrase se combinan mediante la función **PBKDF2 con HMAC-SHA512 y 2048 iteraciones** para producir la semilla final.
+
+Lo importante en lenguaje claro: **cada passphrase distinta genera una wallet completamente diferente.** Con la misma frase de 24 palabras, la passphrase `casa azul` abre una wallet, `Casa Azul` abre otra distinta, y "sin passphrase" abre una tercera. Todas son válidas.
+
+Esto habilita la **negación plausible**: puedes mantener un saldo pequeño en la wallet "sin passphrase" como señuelo y el grueso en una wallet protegida por passphrase. Si alguien te coacciona o roba solo las 24 palabras, accede al señuelo, y no hay forma criptográfica de demostrar que existe otra wallet detrás.
+
+Pero tiene un **riesgo serio y simétrico**: la passphrase **no se respalda con las 24 palabras**. Si la olvidas o la apuntas mal, **el dinero se pierde igual que si perdieras la frase entera**, sin segundas oportunidades. Una frase semilla con una passphrase olvidada **no es un respaldo completo**.
+
+> Recomendación: la passphrase es una herramienta potente para usuarios avanzados que entienden y aceptan ese riesgo. Si estás empezando, primero domina el respaldo de las 12 o 24 palabras. Añadir una passphrase mal gestionada es una de las formas más habituales de perder fondos creyéndote más seguro.
+
+## Por qué la frase semilla es tu activo más crítico
+
+En el sistema bancario, si olvidas la contraseña, la recuperas; si te roban, el banco congela y revierte. En Bitcoin **no existe ninguna de esas redes**. La frase semilla es la **única y última línea de defensa**, y eso cambia las reglas:
+
+- **Si alguien la consigue, vacía tu wallet al instante** y de forma **irreversible**. No hay transacción que deshacer ni autoridad a la que reclamar.
+- **Si la pierdes, los fondos quedan inaccesibles para siempre.** Están en la cadena, visibles, pero sin la frase nadie —ni tú— puede moverlos.
+- **No hay "recuperar contraseña".** Lo más parecido es mover los fondos a una wallet nueva *antes* de que un atacante actúe, lo que exige que ya sospeches que algo va mal.
+
+Esta es la otra cara de la autocustodia: **eres tu propio banco**, con todo el poder y toda la responsabilidad. La buena noticia es que protegerla bien no es difícil; solo requiere método y tomárselo en serio una vez.
+
+## Cómo respaldar bien tu frase semilla
+
+El objetivo del respaldo es sobrevivir a dos amenazas opuestas a la vez: que **te la roben** (alguien accede a ella) y que **la pierdas** (un incendio, una inundación, un descuido). Un buen respaldo equilibra las dos.
+
+### 1. Mantenla siempre fuera de internet
+
+Esta es la regla número uno, y casi todas las pérdidas por robo vienen de saltársela. **Nunca** guardes la frase en:
+
+- Una **foto** o captura de pantalla (se sincroniza sola a la nube).
+- Una **nota** del móvil, un documento, un email o un mensaje a ti mismo.
+- Un gestor de contraseñas, un archivo cifrado en el ordenador o cualquier **almacenamiento en la nube**.
+
+El malware diseñado para robar criptomonedas busca exactamente estos patrones. Y cualquier servicio en la nube es susceptible de una brecha de datos. **Si tu frase toca un dispositivo conectado a internet, deja de ser segura.**
+
+### 2. Papel para empezar, metal para lo importante
+
+- **Papel:** anótala a mano, con letra clara, comprobando el orden. Es válido para empezar y para cantidades de aprendizaje. Su debilidad es física: el papel se quema, se moja y se degrada.
+- **Metal:** para cualquier cantidad seria, graba la frase en una **placa de acero** resistente al fuego y al agua (las hay en forma de plaquitas con letras estampadas o tornillos). Es la diferencia entre que un incendio doméstico sea un susto o la pérdida total de tu patrimonio en Bitcoin.
+
+### 3. Más de una copia, en lugares separados
+
+Haz **al menos dos copias físicas** y guárdalas en **ubicaciones distintas y seguras** (por ejemplo, una en casa y otra en casa de alguien de máxima confianza o una caja de seguridad). Así, un único desastre localizado —un robo, un incendio— no se lleva a la vez todas tus copias. El equilibrio es el de siempre: más copias reducen el riesgo de *pérdida*, pero aumentan la superficie de *robo*. Dos o tres copias bien escondidas suele ser el punto razonable.
+
+### 4. Verifica el respaldo antes de confiarle dinero
+
+Un error silencioso y demoledor: apuntar mal la frase y no descubrirlo hasta que necesitas restaurar, cuando ya es tarde. Evítalo **probando la copia**:
+
+- En una wallet hardware, puedes borrarla y restaurarla desde tu copia para confirmar que las palabras son correctas, antes de mover cantidades importantes.
+- Como mínimo, **relee y coteja** palabra por palabra y orden contra lo que muestra la wallet en el momento de crearla.
+
+Un respaldo sin verificar no es un respaldo: es una suposición.
+
+## Errores de respaldo que cuestan el dinero
+
+Resumiendo los fallos más habituales (tienes el catálogo ampliado en [errores comunes](/articulos/errores-comunes-bitcoin) y [cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin)):
+
+1. **Guardarla en digital** "solo un momento" (foto para copiarla luego). Ese momento basta.
+2. **Tener una sola copia**, expuesta a un único incendio o pérdida.
+3. **No verificar** el orden ni las palabras.
+4. **Apuntar mal una palabra** parecida a otra (el checksum ayuda, pero no siempre salva).
+5. **Olvidar que existe una passphrase** que añadiste y no respaldaste aparte.
+6. **Partir la frase a la mitad** creyendo que así estás más seguro (ver más abajo).
+7. **Contársela a alguien "por si acaso"**, convirtiendo a esa persona en un punto de fallo y de tentación.
+
+## Repartir el respaldo: hazlo bien (Shamir o multisig), no a la mitad
+
+Una idea intuitiva pero **peligrosa**: partir las 24 palabras en dos mitades y guardar cada una en un sitio, pensando que así nadie con una sola mitad puede robarte. El problema es doble:
+
+- Quien encuentre una mitad ya tiene **la mitad del trabajo hecho** y reduce drásticamente la dificultad de adivinar el resto.
+- Y si **pierdes** una de las mitades, lo pierdes todo, porque necesitas las dos para reconstruir.
+
+Es decir: empeoras la seguridad *y* la resistencia a pérdidas a la vez. Si tu objetivo es repartir el respaldo en varias piezas, usa un método diseñado matemáticamente para ello:
+
+- **Shamir Secret Sharing (SLIP-39):** divide la copia en N partes de las que basta un subconjunto (por ejemplo, 3 de 5) para reconstruirla. La clave es que **una parte por separado no revela absolutamente nada** de la frase, ni siquiera de forma parcial. Algunas wallets hardware lo soportan de fábrica.
+- **Multisig:** en lugar de repartir una frase, usas **varias claves independientes** y exiges varias firmas para gastar (por ejemplo, 2 de 3). Perder o que te roben una sola llave no compromete los fondos. Es el estándar para patrimonios importantes; tienes contexto en [tipos de wallets](/articulos/tipos-de-wallets-bitcoin) y en la guía pilar de [cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+
+## El robo más común: "introduce tu frase para validar/recuperar"
+
+Conviene insistir porque es **la vía número uno de robo de fondos en autocustodia**, muy por encima de cualquier ataque criptográfico. Nadie rompe tu frase semilla: **te convencen de que la escribas tú mismo** donde no debes.
+
+Las formas más frecuentes:
+
+- **Webs de phishing** que imitan a tu wallet o a un exchange y te piden "sincronizar", "validar" o "recuperar" tu cartera introduciendo la seed.
+- **Falso soporte técnico** que te escribe por mensaje privado tras una consulta en redes y, "para ayudarte", acaba pidiéndote las palabras.
+- **Falsos *airdrops* o conexiones de wallet** que, con la excusa de un regalo, piden la frase.
+- **Apps fraudulentas** que, nada más abrirlas, te piden "importar" tu seed.
+
+La regla es **absoluta y sin excepciones**:
+
+> Ningún servicio, soporte, wallet o web legítimos te pedirá jamás tu frase semilla. La frase solo se introduce en **una** circunstancia: cuando **tú** restauras tu propia wallet en un dispositivo de confianza. En cualquier otro contexto en que te la pidan, es un robo. Punto.
+
+Tienes el panorama completo de engaños en [estafas en Bitcoin](/articulos/estafas-en-bitcoin).
+
+## No te olvides de la herencia
+
+Un respaldo perfecto tiene una cara incómoda: si solo tú sabes dónde está y cómo usarla, **tus bitcoins desaparecen contigo**. Si la cantidad es relevante, deja un plan: instrucciones claras y seguras para que una persona de confianza pueda acceder si te ocurre algo, sin que ese plan se convierta a la vez en un agujero de seguridad mientras vives. Es un equilibrio delicado, pero ignorarlo es una de las causas más tristes —y silenciosas— de bitcoins perdidos para siempre.
+
+## Checklist: la frase semilla en 8 reglas
+
+1. **Es tu wallet entera.** Quien la tiene, tiene tu Bitcoin; quien la pierde, lo pierde.
+2. **No te la inventas:** la genera tu wallet por azar (BIP-39). Desconfía de quien te ofrezca "elegirla".
+3. **Anótala a mano**, comprueba el orden, **nunca en digital** (ni foto, ni nube, ni notas).
+4. **Pásala a metal** para cualquier cantidad seria; resiste fuego y agua.
+5. **Haz dos o tres copias** en lugares separados y seguros.
+6. **Verifica** que la copia funciona antes de confiarle fondos importantes.
+7. **No la partas a la mitad**; si repartes, usa Shamir (SLIP-39) o multisig.
+8. **Nadie legítimo te la pide jamás.** Solo la introduces tú, al restaurar tu propia wallet.
+
+## Conclusión
+
+La frase semilla es, a la vez, lo más simple y lo más importante de la autocustodia: doce o veinticuatro palabras que concentran el control total de tu dinero. Entender que **debajo de tu wallet hay una frase que lo regenera todo** es lo que te hace tratarla con el respeto que merece. No es burocracia ni paranoia: es la diferencia entre tener bitcoins de verdad y solo creer que los tienes. Protégela bien una vez, con método, y habrás resuelto la mayor parte de la seguridad en Bitcoin.
+
+Sigue por [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin) para el plan completo por niveles, o vuelve a la guía pilar [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+
+## Fuentes
+
+1. [BIP-39: Mnemonic code for generating deterministic keys (especificación oficial)](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
+2. [BIP-32: Hierarchical Deterministic Wallets (especificación oficial)](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)
+3. [SLIP-39: Shamir's Secret-Sharing for Mnemonic Codes (SatoshiLabs)](https://github.com/satoshilabs/slips/blob/master/slip-0039.md)
+4. [Bitcoin Optech — Recursos técnicos contrastados](https://bitcoinops.org)
+5. [Lista oficial de palabras BIP-39 (wordlists)](https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md)
+
+## Contenido relacionado
+
+- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro) — Guía pilar del silo de seguridad.
+- [Qué es una clave privada](/articulos/que-es-una-clave-privada) — El secreto que respalda la frase.
+- [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin) — Plan de seguridad por niveles.
+- [Tipos de wallets (fría, caliente, hardware)](/articulos/tipos-de-wallets-bitcoin) — Dónde vive tu frase.
+- [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin) — Los descuidos que cuestan fondos.
+- [Estafas en Bitcoin](/articulos/estafas-en-bitcoin) — Cómo intentan que entregues la seed.
+- [Glosario de Bitcoin](/glosario)
