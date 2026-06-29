@@ -1,0 +1,84 @@
+HILO SEMANAL — Semana 27 — BitVM
+Generado: 2026-06-29 13:10 UTC
+==================================================
+
+TWEET 1/11 (140/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 27
+
+Estado de la red Bitcoin:
+📦 Bloque: #955,937
+⚡ Fee rapido: 2 sat/vB
+💪 Hashrate: 857.2 EH/s
+
+Esta semana: BitVM 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #411"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (105/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: BITVM
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (135/280 chars)
+────────────────────────────────────────
+Mientras todos miraban el precio, los desarrolladores construian algo mas importante.
+Contratos inteligentes en Bitcoin. Sin soft fork.
+
+TWEET 5/11 (189/280 chars)
+────────────────────────────────────────
+BitVM es un sistema de ejecucion optimista.
+Permite cualquier computacion verificable sobre Bitcoin sin modificar el protocolo.
+La cadena no ejecuta el codigo. Solo verifica si hubo fraude.
+
+TWEET 6/11 (186/280 chars)
+────────────────────────────────────────
+¿Como funciona?
+1. Dos partes se comprometen a una computacion.
+2. Se ejecuta off-chain.
+3. Si hay disputa, se resuelve on-chain con prueba de fraude.
+4. El que mintio pierde sus fondos.
+
+TWEET 7/11 (188/280 chars)
+────────────────────────────────────────
+Enero 2026: Citrea lanzo el primer ZK-rollup sobre Bitcoin mainnet.
+Agrupa miles de transacciones y las verifica con una prueba matematica compacta.
+Seguridad de Bitcoin. Escala de rollup.
+
+TWEET 8/11 (184/280 chars)
+────────────────────────────────────────
+¿Que abre esto?
+→ Puentes Bitcoin a otras redes con seguridad real
+→ Contratos inteligentes auditables
+→ DeFi sobre Bitcoin sin nueva capa de confianza
+→ Stablecoins ancladas a Bitcoin
+
+TWEET 9/11 (176/280 chars)
+────────────────────────────────────────
+Diferencia con Ethereum:
+Ethereum ejecuta contratos on-chain (costoso, lento).
+BitVM ejecuta off-chain y solo toca la cadena si hay fraude.
+Mas eficiente. Seguridad de Bitcoin.
+
+TWEET 10/11 (168/280 chars)
+────────────────────────────────────────
+BitVM no es magia.
+Transacciones de disputa son caras. La coordinacion es compleja.
+Pero es la prueba de que Bitcoin puede evolucionar sin perder lo que lo hace seguro.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
