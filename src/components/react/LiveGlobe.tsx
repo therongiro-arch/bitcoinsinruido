@@ -503,7 +503,7 @@ export default function LiveGlobe() {
   const [contextEpoch, setContextEpoch] = useState(0);
   const [GlobeCmp, setGlobeCmp] = useState<React.ComponentType<any> | null>(null);
   const [globeVisible, setGlobeVisible] = useState(false);
-  const [size, setSize] = useState({ w: 480, h: 480 });
+  const [size, setSize] = useState({ w: 320, h: 320 });
   const [countries, setCountries] = useState<any[]>([]);
   const [arcs, setArcs] = useState<Arc[]>([]);
   const [lastEvent, setLastEvent] = useState<AttributedSpend | null>(null);
@@ -611,7 +611,9 @@ export default function LiveGlobe() {
     const el = containerRef.current;
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const w = Math.max(280, Math.min(600, entry.contentRect.width));
+        // Floor low enough that very narrow phones (~300px content box) don't
+        // force a canvas wider than the column, which would overflow the grid.
+        const w = Math.max(240, Math.min(600, entry.contentRect.width));
         setSize({ w, h: w });
       }
     });
@@ -657,12 +659,26 @@ export default function LiveGlobe() {
   useEffect(() => {
     if (!GlobeCmp || !globeRef.current) return;
 
+    // Only devices with a real cursor (mouse/trackpad) get manual rotation,
+    // and only while the pointer is hovering the globe. On touch we leave
+    // OrbitControls disabled so a finger drag scrolls the page instead of
+    // being trapped rotating the globe (the globe keeps auto-rotating).
+    const finePointer =
+      typeof window !== 'undefined' &&
+      !!window.matchMedia?.('(hover: hover) and (pointer: fine)').matches;
+
     const controls = globeRef.current.controls?.();
     if (controls) {
       controls.autoRotate = !reduced;
       controls.autoRotateSpeed = AUTO_ROTATE_SPEED;
       controls.enableZoom = false;
       controls.enablePan = false;
+      // Manual drag stays OFF until the cursor enters the globe (see the
+      // pointerenter/leave listeners below). Auto-rotation runs regardless.
+      controls.enableRotate = false;
+      // Disable the control's event handling entirely on touch so it never
+      // intercepts the page scroll gesture.
+      controls.enabled = finePointer;
     }
     globeRef.current.pointOfView?.({ lat: 15, lng: -30, altitude: 2.4 }, 0);
 
@@ -675,6 +691,28 @@ export default function LiveGlobe() {
     }
     const scene: THREE.Scene | undefined = globeRef.current.scene?.();
     if (scene) scene.background = null;
+
+    // Cursor-gated rotation: enable manual drag only while the pointer is over
+    // the globe, and pause the ambient auto-rotation during interaction so the
+    // user keeps full control. On leave we restore auto-rotation.
+    const canvas = renderer?.domElement;
+    const onPointerEnter = () => {
+      if (!controls) return;
+      controls.enableRotate = true;
+      controls.autoRotate = false;
+    };
+    const onPointerLeave = () => {
+      if (!controls) return;
+      controls.enableRotate = false;
+      controls.autoRotate = !reduced;
+    };
+    if (canvas && finePointer) {
+      canvas.addEventListener('pointerenter', onPointerEnter);
+      canvas.addEventListener('pointerleave', onPointerLeave);
+    } else if (canvas) {
+      // Touch: guarantee vertical page scroll passes through the canvas.
+      canvas.style.touchAction = 'pan-y';
+    }
 
     // The globe sphere is hidden by showGlobe={false} in JSX. We don't
     // touch globeMaterial here because in this version of react-globe.gl
@@ -751,6 +789,10 @@ export default function LiveGlobe() {
 
     return () => {
       document.removeEventListener('visibilitychange', onVis);
+      if (canvas) {
+        canvas.removeEventListener('pointerenter', onPointerEnter);
+        canvas.removeEventListener('pointerleave', onPointerLeave);
+      }
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
       const sceneNow: THREE.Scene | undefined = globeRef.current?.scene?.();
@@ -844,7 +886,7 @@ export default function LiveGlobe() {
 
   return (
     <div ref={containerRef} className="relative w-full h-full flex flex-col items-center justify-center">
-      <div className="relative" style={{ width: size.w, height: size.h }}>
+      <div className="relative max-w-full" style={{ width: size.w, height: size.h }}>
         {GlobeCmp ? (
           <div
             className={`absolute inset-0 transition-opacity duration-500 ease-out ${globeVisible ? 'opacity-100' : 'opacity-0'}`}
