@@ -4,8 +4,8 @@ import MiningCounter from './react/MiningCounter.tsx';
 ---
 
 <section class="relative overflow-hidden border-b border-line">
-  <div class="container-wide pt-10 pb-8 sm:pt-16 sm:pb-12 lg:pt-20 lg:pb-16 grid lg:grid-cols-2 gap-8 sm:gap-10 items-center">
-    <div class="order-1">
+  <div class="container-wide pt-10 pb-8 sm:pt-16 sm:pb-12 lg:pt-20 lg:pb-16 grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 items-center">
+    <div class="order-1 min-w-0">
       <p class="chip-btc mb-4 sm:mb-5 font-mono">PROTOCOLO · NO PRECIO · LATAM</p>
       <h1 class="text-display font-semibold tracking-tight text-balance">
         Bitcoin sin <span class="text-btc">ruido</span>.
@@ -23,7 +23,7 @@ import MiningCounter from './react/MiningCounter.tsx';
       </div>
     </div>
 
-    <div class="relative w-full max-w-md mx-auto lg:max-w-none order-2 min-h-[280px] sm:min-h-[380px] lg:min-h-[520px]">
+    <div class="relative w-full max-w-md mx-auto lg:max-w-none order-2 min-w-0 min-h-[280px] sm:min-h-[380px] lg:min-h-[520px]">
       <LiveGlobe client:visible />
     </div>
   </div>
