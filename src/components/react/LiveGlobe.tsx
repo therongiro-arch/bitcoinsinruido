@@ -674,11 +674,18 @@ export default function LiveGlobe() {
       controls.enableZoom = false;
       controls.enablePan = false;
       // Manual drag stays OFF until the cursor enters the globe (see the
-      // pointerenter/leave listeners below). Auto-rotation runs regardless.
+      // pointerenter/leave listeners below).
       controls.enableRotate = false;
-      // Disable the control's event handling entirely on touch so it never
-      // intercepts the page scroll gesture.
-      controls.enabled = finePointer;
+      // IMPORTANT: keep the controls enabled. globe.gl's render loop only
+      // calls `controls.update()` when `controls.enabled` is truthy, and
+      // that update is what advances the auto-rotation. Disabling it freezes
+      // the ambient spin (notably on touch, where there's no hover to re-arm).
+      controls.enabled = true;
+      // On touch, stop a one-finger drag from being captured as rotation so
+      // the gesture scrolls the page instead. Auto-rotation keeps running.
+      if (!finePointer && controls.touches) {
+        controls.touches.ONE = null;
+      }
     }
     globeRef.current.pointOfView?.({ lat: 15, lng: -30, altitude: 2.4 }, 0);
 
