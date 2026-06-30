@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import JsonLd from '../components/JsonLd.astro';
+import MerchantFinder from '../components/react/MerchantFinder.tsx';
+
+const title = 'Comercios que aceptan Bitcoin: mapa en tiempo real (2026)';
+const description =
+  'Encuentra tiendas, restaurantes y cajeros que aceptan Bitcoin cerca de ti. Datos reales de OpenStreetMap, en tiempo real y en todo el mundo. Cómo llegar con un toque.';
+const url = 'https://bitcoinsinruidos.com/comercios-que-aceptan-bitcoin/';
+const datePublished = '2026-06-30';
+const dateModified = '2026-06-30';
+
+const faqs = [
+  {
+    question: '¿Dónde puedo pagar con Bitcoin cerca de mí?',
+    answer:
+      'Usa el buscador de esta página: activa tu ubicación o escribe tu ciudad y verás en el mapa los comercios y cajeros que aceptan Bitcoin a tu alrededor, ordenados por cercanía y con opción de "Cómo llegar".',
+  },
+  {
+    question: '¿De dónde salen estos datos y son reales?',
+    answer:
+      'De OpenStreetMap, la base de datos geográfica abierta mantenida por la comunidad. Se consultan en tiempo real (vía Overpass), así que reflejan lo último mapeado; cada ficha enlaza a su registro en OpenStreetMap para que lo verifiques.',
+  },
+  {
+    question: '¿Cada cuánto se actualizan?',
+    answer:
+      'En tiempo real: cada búsqueda consulta OpenStreetMap en el momento (con una breve caché para ir rápido). Cuando alguien añade o edita un comercio en OpenStreetMap, aparece aquí poco después.',
+  },
+  {
+    question: '¿Cómo sé si un comercio acepta Lightning?',
+    answer:
+      'Las fichas marcan ⚡ cuando el comercio tiene la etiqueta de pago Lightning en OpenStreetMap, y ₿ para pago on-chain. Puedes filtrar por "solo Lightning" para ver únicamente los que aceptan pagos instantáneos.',
+  },
+  {
+    question: '¿Funciona en todos los países?',
+    answer:
+      'Sí. OpenStreetMap es global, así que el buscador funciona en cualquier país. La cantidad de resultados depende de cuánto haya mapeado la comunidad en cada zona: muy completa en ciudades, más escasa en áreas rurales.',
+  },
+  {
+    question: 'Acepto Bitcoin y mi negocio no aparece, ¿qué hago?',
+    answer:
+      'Añádelo a OpenStreetMap con las etiquetas currency:XBT=yes o payment:bitcoin=yes, o mediante la app BTC Map. Aparecerá aquí automáticamente en la siguiente consulta.',
+  },
+];
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url,
+  inLanguage: 'es',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  datePublished,
+  dateModified,
+  author: {
+    '@type': 'Person',
+    '@id': 'https://bitcoinsinruidos.com/sobre#editor',
+    name: 'Bitcoin Sin Ruido',
+    url: 'https://bitcoinsinruidos.com/sobre/',
+    sameAs: ['https://x.com/BitcoinSinRuido', 'https://paragraph.com/@bitcoinsinruido'],
+  },
+  publisher: { '@id': 'https://bitcoinsinruidos.com/#organization' },
+  about: 'Bitcoin',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://bitcoinsinruidos.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Comercios que aceptan Bitcoin', item: url },
+  ],
+};
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Bitcoin Sin Ruido`}
+  description={description}
+  canonical={url}
+  keywords={[
+    'comercios que aceptan bitcoin',
+    'dónde gastar bitcoin',
+    'tiendas que aceptan bitcoin',
+    'mapa de comercios bitcoin',
+    'cajeros bitcoin cerca de mí',
+    'pagar con bitcoin',
+  ]}
+>
+  <Fragment slot="head">
+    <JsonLd data={articleLd} />
+    <JsonLd data={breadcrumbLd} />
+    <JsonLd data={faqLd} />
+  </Fragment>
+
+  <article class="container-reading py-12 sm:py-16 animate-fade-in">
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comercios que aceptan Bitcoin' }]} />
+
+    <header class="mb-10">
+      <p class="chip-btc font-mono mb-3">USO PRÁCTICO</p>
+      <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
+      <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
+    </header>
+
+    <div class="prose-bsr">
+      <p>
+        <strong>Para encontrar comercios que aceptan Bitcoin, activa tu ubicación o escribe tu ciudad
+        en el buscador de abajo:</strong> verás en un mapa las tiendas, restaurantes y cajeros que
+        aceptan Bitcoin cerca de ti, con la opción de llegar en un toque. Los datos provienen de
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>,
+        la base de datos geográfica abierta de la comunidad, y se consultan <strong>en tiempo real</strong>
+        (vía Overpass), así que reflejan lo último que se haya mapeado en cualquier parte del mundo.
+      </p>
+    </div>
+
+    <div class="my-8">
+      <MerchantFinder client:load />
+    </div>
+
+    <div class="prose-bsr">
+      <h2>Cómo funciona el buscador</h2>
+      <ul>
+        <li><strong>Por ubicación o por ciudad</strong> — pulsa "Usar mi ubicación" (tu posición no se almacena) o busca cualquier ciudad o dirección.</li>
+        <li><strong>Comercios y cajeros</strong> — filtra tiendas y restaurantes, cajeros Bitcoin (ATM) o ambos.</li>
+        <li><strong>On-chain y Lightning</strong> — cada ficha marca ₿ para pago on-chain y ⚡ para <a href="/lightning-network">Lightning</a>; puedes ver solo los que aceptan Lightning.</li>
+        <li><strong>Cómo llegar</strong> — abre la ruta en Google Maps (o la app del móvil) con un toque, y "Ver en OSM" enlaza al registro original.</li>
+      </ul>
+
+      <h2>De dónde salen los datos</h2>
+      <p>
+        Toda la información viene de <strong>OpenStreetMap</strong>, el mismo conjunto de datos abierto
+        que usa el proyecto <a href="https://btcmap.org" target="_blank" rel="noopener noreferrer">BTC Map</a>.
+        Un comercio aparece cuando alguien lo etiqueta con <code>currency:XBT=yes</code> o
+        <code>payment:bitcoin=yes</code> (y opcionalmente <code>payment:lightning=yes</code>). No es un
+        directorio cerrado nuestro: es un bien común editable y verificable, y por eso cada resultado
+        enlaza a su registro en OpenStreetMap.
+      </p>
+      <p>
+        <strong>Caveat honesto:</strong> la cobertura existe en todos los países, pero la densidad
+        depende de cuánto haya mapeado la comunidad. En ciudades grandes encontrarás muchos resultados;
+        en zonas rurales, pocos o ninguno. Eso no significa que no haya comercios que acepten Bitcoin
+        allí, sino que aún no están mapeados.
+      </p>
+
+      <h2>Aceptas Bitcoin y tu negocio no aparece</h2>
+      <p>
+        Añádelo tú mismo: la forma más sencilla es la app o la web de
+        <a href="https://btcmap.org/add-location" target="_blank" rel="noopener noreferrer">BTC Map</a>,
+        que escribe directamente en OpenStreetMap. También puedes editarlo a mano en
+        <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer">openstreetmap.org</a>
+        con las etiquetas de pago Bitcoin. En cuanto se guarde, aparecerá aquí en la siguiente búsqueda.
+      </p>
+
+      <h2>Antes de pagar: hazlo de forma segura</h2>
+      <p>
+        Pagar en un comercio físico es una de las mejores formas de empezar a usar Bitcoin de verdad.
+        Si aún no tienes una wallet o quieres repasar buenas prácticas (autocustodia, Lightning para
+        importes pequeños, verificar la dirección), lee la guía
+        <a href="/articulos/como-usar-bitcoin-seguro/">cómo usar Bitcoin de forma segura</a>. Y para
+        entender por qué Lightning es ideal para pagos en tienda, mira
+        <a href="/lightning-network">qué es Lightning Network</a>.
+      </p>
+
+      <h2>Recursos relacionados</h2>
+      <ul>
+        <li><a href="/articulos/como-usar-bitcoin-seguro/">Cómo usar Bitcoin de forma segura</a> — guía práctica para principiantes.</li>
+        <li><a href="/lightning-network">Qué es Lightning Network</a> — pagos instantáneos y baratos para comprar en tienda.</li>
+        <li><a href="/articulos/como-enviar-y-recibir-bitcoin/">Cómo enviar y recibir Bitcoin</a> — el flujo paso a paso.</li>
+        <li><a href="/articulos/tipos-de-wallets-bitcoin/">Tipos de wallets</a> — cuál usar para pagar en comercios.</li>
+        <li><a href="/que-es-bitcoin/">Qué es Bitcoin</a> — la guía pilar.</li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} />
+
+    <footer class="mt-16 pt-8 border-t border-line">
+      <a href="/articulos" class="btn">← Todos los artículos</a>
+    </footer>
+  </article>
+</BaseLayout>

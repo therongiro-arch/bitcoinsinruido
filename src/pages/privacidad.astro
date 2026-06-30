@@ -7,7 +7,7 @@ const title = 'Política de privacidad de Bitcoin Sin Ruido';
 const description = 'Qué datos recoge Bitcoin Sin Ruido, qué terceros intervienen, base legal, derechos del usuario y cómo ejercerlos. Política redactada conforme a RGPD y leyes de protección de datos en LATAM.';
 const url = 'https://bitcoinsinruidos.com/privacidad/';
 const datePublished = '2026-05-28';
-const dateModified = '2026-05-28';
+const dateModified = '2026-06-30';
 
 const pageLd = {
   '@context': 'https://schema.org',
@@ -55,7 +55,7 @@ const breadcrumbLd = {
       <h1 class="text-h1 font-semibold tracking-tight text-balance text-ink">{title}</h1>
       <p class="mt-4 text-lg text-ink-muted text-pretty">{description}</p>
       <p class="mt-3 text-sm text-ink-dim font-mono">
-        Última actualización: 28 de mayo de 2026
+        Última actualización: 30 de junio de 2026
       </p>
     </header>
 
@@ -139,6 +139,17 @@ const breadcrumbLd = {
           <strong>Exchanges públicos</strong> (Binance, Coinbase, Kraken,
           Bitstamp, Bitso): WebSockets a sus feeds públicos de precio. Cada
           uno con su propia política.
+        </li>
+        <li>
+          <strong>Buscador de comercios</strong> (página
+          <a href="/comercios-que-aceptan-bitcoin/">comercios que aceptan Bitcoin</a>):
+          si pulsas "Usar mi ubicación", tu navegador comparte tu posición
+          <em>solo en ese momento</em> con nuestro worker en Cloudflare, que la
+          reenvía a <strong>OpenStreetMap</strong> (Overpass y Nominatim) para
+          buscar comercios cercanos. Tu ubicación <strong>no se almacena</strong>
+          en nuestros servidores; la geolocalización nunca se activa sola, solo
+          al pulsar el botón. Ver
+          <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer">política de la OpenStreetMap Foundation</a>.
         </li>
       </ul>
       <p>

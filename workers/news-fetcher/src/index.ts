@@ -93,6 +93,123 @@ export default {
       }
     }
 
+    // Live merchant search (OpenStreetMap via Overpass). Browsers hit this
+    // Worker instead of Overpass directly, so we add CORS, a short KV cache by
+    // rounded tile, and edge caching to protect OSM's fair-use limits.
+    if (url.pathname === '/places') {
+      const lat = Number(url.searchParams.get('lat'));
+      const lon = Number(url.searchParams.get('lon'));
+      let radius = Number(url.searchParams.get('radius') ?? '5000');
+      if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180)
+        return jsonResponse({ updatedAt: new Date(0).toISOString(), items: [] }, 400);
+      radius = Math.min(50000, Math.max(500, Math.round(radius) || 5000));
+      const key = `places:${lat.toFixed(2)}:${lon.toFixed(2)}:${radius}`;
+      const cached = await env.NEWS_KV.get(key);
+      if (cached) {
+        return new Response(cached, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'public, max-age=900',
+            ...corsHeaders(),
+          },
+        });
+      }
+      const q = `[out:json][timeout:25];(nwr["currency:XBT"="yes"](around:${radius},${lat},${lon});nwr["payment:bitcoin"="yes"](around:${radius},${lat},${lon}););out center tags;`;
+      try {
+        const resp = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'BitcoinSinRuidoBot/1.0 (+https://bitcoinsinruidos.com)',
+          },
+          body: 'data=' + encodeURIComponent(q),
+          cf: { cacheTtl: 900, cacheEverything: true } as RequestInitCfProperties,
+        });
+        if (!resp.ok) return jsonResponse({ updatedAt: new Date().toISOString(), items: [] }, 200);
+        const data = (await resp.json()) as { elements?: any[] };
+        const items = (data.elements ?? [])
+          .map((e) => {
+            const t = e.tags ?? {};
+            const elat = e.lat ?? e.center?.lat;
+            const elon = e.lon ?? e.center?.lon;
+            if (elat == null || elon == null) return null;
+            const isAtm = t.amenity === 'atm' || t.amenity === 'bureau_de_change';
+            const isFood =
+              t.amenity === 'restaurant' || t.amenity === 'cafe' || t.amenity === 'bar' ||
+              t.amenity === 'fast_food' || t.amenity === 'pub';
+            return {
+              id: `${e.type}/${e.id}`,
+              lat: elat,
+              lon: elon,
+              name: t.name ?? (isAtm ? 'Cajero Bitcoin' : 'Comercio'),
+              kind: isAtm ? 'atm' : isFood ? 'food' : t.shop ? 'shop' : 'other',
+              lightning:
+                t['payment:lightning'] === 'yes' || t['payment:lightning_contactless'] === 'yes',
+              onchain:
+                t['payment:onchain'] === 'yes' ||
+                t['payment:bitcoin'] === 'yes' ||
+                t['currency:XBT'] === 'yes',
+              address: [t['addr:street'], t['addr:housenumber'], t['addr:city']]
+                .filter(Boolean)
+                .join(' '),
+              osmUrl: `https://www.openstreetmap.org/${e.type}/${e.id}`,
+            };
+          })
+          .filter(Boolean);
+        const body = JSON.stringify({ updatedAt: new Date().toISOString(), items });
+        await env.NEWS_KV.put(key, body, { expirationTtl: 1800 });
+        return new Response(body, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'public, max-age=900',
+            ...corsHeaders(),
+          },
+        });
+      } catch (err) {
+        return jsonResponse({ updatedAt: new Date().toISOString(), items: [], error: String(err) }, 200);
+      }
+    }
+
+    // Geocoding proxy (OpenStreetMap Nominatim). Long KV cache since the
+    // mapping from a place name to coordinates is stable.
+    if (url.pathname === '/geocode') {
+      const q = (url.searchParams.get('q') ?? '').slice(0, 120).trim();
+      if (q.length < 2) return jsonResponse({ results: [] }, 400);
+      const key = `geo:${q.toLowerCase()}`;
+      const cached = await env.NEWS_KV.get(key);
+      if (cached) {
+        return new Response(cached, {
+          status: 200,
+          headers: { 'Content-Type': 'application/json; charset=utf-8', ...corsHeaders() },
+        });
+      }
+      try {
+        const resp = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=${encodeURIComponent(q)}`,
+          {
+            headers: { 'User-Agent': 'BitcoinSinRuidoBot/1.0 (+https://bitcoinsinruidos.com)' },
+            cf: { cacheTtl: 86400, cacheEverything: true } as RequestInitCfProperties,
+          },
+        );
+        const arr = (await resp.json()) as any[];
+        const results = (arr ?? []).map((r) => ({
+          name: r.display_name,
+          lat: Number(r.lat),
+          lon: Number(r.lon),
+        }));
+        const body = JSON.stringify({ results });
+        await env.NEWS_KV.put(key, body, { expirationTtl: 60 * 60 * 24 * 30 });
+        return new Response(body, {
+          status: 200,
+          headers: { 'Content-Type': 'application/json; charset=utf-8', ...corsHeaders() },
+        });
+      } catch (err) {
+        return jsonResponse({ results: [], error: String(err) }, 200);
+      }
+    }
+
     if (url.pathname === '/rejected.json') {
       const raw = (await env.NEWS_KV.get(env.REJECTED_KEY)) ?? '[]';
       return new Response(raw, {

@@ -47,6 +47,7 @@ Bitcoin Sin Ruido explica cómo funciona Bitcoin a nivel técnico. El contenido 
 - [Qué es una clave privada](https://bitcoinsinruidos.com/articulos/que-es-una-clave-privada/)
 - [Errores comunes al usar Bitcoin](https://bitcoinsinruidos.com/articulos/errores-comunes-bitcoin/)
 - [Cómo proteger tus Bitcoin](https://bitcoinsinruidos.com/articulos/como-proteger-tus-bitcoin/)
+- [Comercios que aceptan Bitcoin (mapa en tiempo real)](https://bitcoinsinruidos.com/comercios-que-aceptan-bitcoin/): buscador global de tiendas, restaurantes y cajeros que aceptan Bitcoin, con datos reales de OpenStreetMap y cómo llegar.
 
 ## Recursos
 - [Todos los artículos](https://bitcoinsinruidos.com/articulos/)
