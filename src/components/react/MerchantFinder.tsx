@@ -362,38 +362,39 @@ export default function MerchantFinder() {
           )}
         </div>
       ) : (
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-          {/* Map */}
-          <div
-            ref={mapElRef}
-            className="h-[320px] w-full overflow-hidden rounded-xl border border-line bg-bg-card sm:h-[420px]"
-            role="application"
-            aria-label="Mapa de comercios que aceptan Bitcoin"
-          />
+        <div className="mt-6">
+          <div className="mb-3 flex items-center justify-between text-xs font-mono text-ink-dim">
+            <span>
+              {status === 'loading'
+                ? 'Consultando OpenStreetMap…'
+                : `${visible.length} resultado${visible.length === 1 ? '' : 's'}${
+                    locLabel ? ` · ${locLabel}` : ''
+                  }`}
+            </span>
+          </div>
 
-          {/* List */}
-          <div>
-            <div className="mb-3 flex items-center justify-between text-xs font-mono text-ink-dim">
-              <span>
-                {status === 'loading'
-                  ? 'Consultando OpenStreetMap…'
-                  : `${visible.length} resultado${visible.length === 1 ? '' : 's'}${
-                      locLabel ? ` · ${locLabel}` : ''
-                    }`}
-              </span>
-            </div>
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-start">
+            {/* Map */}
+            <div
+              ref={mapElRef}
+              className="h-[340px] w-full overflow-hidden rounded-xl border border-line bg-bg-card sm:h-[440px] lg:h-[520px]"
+              role="application"
+              aria-label="Mapa de comercios que aceptan Bitcoin"
+            />
 
-            {status === 'loading' ? (
-              <div className="grid gap-3" aria-busy="true">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-20 rounded-xl border border-line bg-bg-card animate-pulse-slow"
-                  />
-                ))}
-              </div>
-            ) : visible.length === 0 ? (
-              <div className="rounded-xl border border-line bg-bg-card p-6 text-sm text-ink-muted">
+            {/* List */}
+            <div className="lg:h-[520px]">
+              {status === 'loading' ? (
+                <div className="grid gap-3" aria-busy="true">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-20 rounded-xl border border-line bg-bg-card animate-pulse-slow"
+                    />
+                  ))}
+                </div>
+              ) : visible.length === 0 ? (
+                <div className="rounded-xl border border-line bg-bg-card p-6 text-sm text-ink-muted">
                 <p className="mb-2">
                   No encontramos comercios mapeados en esta zona con los filtros actuales.
                 </p>
@@ -412,7 +413,7 @@ export default function MerchantFinder() {
                 </p>
               </div>
             ) : (
-              <ul className="grid max-h-[480px] gap-3 overflow-y-auto pr-1">
+              <ul className="grid content-start gap-3 overflow-y-auto pr-1 max-h-[460px] lg:max-h-none lg:h-full">
                 {visible.map((m) => (
                   <li
                     key={m.id}
@@ -464,6 +465,7 @@ export default function MerchantFinder() {
                 ))}
               </ul>
             )}
+            </div>
           </div>
         </div>
       )}
