@@ -1,0 +1,9 @@
+6,51 millones de Bitcoin están en riesgo cuántico.
+
+El 32,7% del suministro total.
+
+BIP-360 propone la solución.
+Integrado al repositorio oficial en febrero de 2026.
+La transición completa: entre 5 y 10 años.
+
+Bitcoin ya está trabajando en el problema antes de que exista.
