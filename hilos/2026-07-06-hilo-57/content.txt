@@ -1,0 +1,86 @@
+HILO SEMANAL — Semana 28 — Taproot
+Generado: 2026-07-06 12:52 UTC
+==================================================
+
+TWEET 1/11 (142/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 28
+
+Estado de la red Bitcoin:
+📦 Bloque: #956,916
+⚡ Fee rapido: 3 sat/vB
+💪 Hashrate: 852.5 EH/s
+
+Esta semana: Taproot 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #412"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (107/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: TAPROOT
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (83/280 chars)
+────────────────────────────────────────
+Activada en noviembre de 2021.
+Casi nadie la entiende.
+Todos se benefician de ella.
+
+TWEET 5/11 (188/280 chars)
+────────────────────────────────────────
+Taproot introdujo las firmas Schnorr.
+Antes (ECDSA): cada firma es unica y rastreable.
+Ahora (Schnorr): multiples firmas se combinan en una sola.
+Un multisig 3/5 parece transaccion normal.
+
+TWEET 6/11 (182/280 chars)
+────────────────────────────────────────
+En practica:
+Una cartera multisig (mas segura) ahora cuesta lo mismo en fees que una wallet simple.
+Y es indistinguible en la blockchain.
+Mas seguridad. Mas privacidad. Mismo precio.
+
+TWEET 7/11 (159/280 chars)
+────────────────────────────────────────
+Taproot tambien introdujo Tapscript.
+Condiciones de gasto complejas que solo se revelan si se usan.
+Si nadie disputa, la blockchain solo ve la firma. Nada mas.
+
+TWEET 8/11 (146/280 chars)
+────────────────────────────────────────
+Para Lightning: Taproot es critico.
+Canales mas eficientes, mas privados, menor huella on-chain.
+Mejora directa en fees al abrir o cerrar canales.
+
+TWEET 9/11 (182/280 chars)
+────────────────────────────────────────
+La adopcion es lenta.
+A 2026, menos del 30% de transacciones usan Taproot.
+Las wallets tardan en actualizar. Los exchanges mas aun.
+La mejora esta disponible. El ecosistema la sigue.
+
+TWEET 10/11 (154/280 chars)
+────────────────────────────────────────
+Taproot es la base de lo que viene:
+→ Covenants
+→ Taproot Assets
+→ BitVM
+→ PTLC en Lightning
+El protocolo ya esta listo. El resto del ecosistema lo sigue.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
