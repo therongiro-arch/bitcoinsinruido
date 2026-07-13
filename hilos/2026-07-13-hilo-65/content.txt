@@ -1,0 +1,83 @@
+HILO SEMANAL — Semana 29 — BIP-360
+Generado: 2026-07-13 12:10 UTC
+==================================================
+
+TWEET 1/11 (142/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 29
+
+Estado de la red Bitcoin:
+📦 Bloque: #957,853
+⚡ Fee rapido: 2 sat/vB
+💪 Hashrate: 915.2 EH/s
+
+Esta semana: BIP-360 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #413"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (107/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: BIP-360
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (136/280 chars)
+────────────────────────────────────────
+Los ordenadores cuanticos no existen a escala practica.
+Pero Bitcoin ya se esta preparando.
+¿Por que ahora y no cuando llegue el riesgo?
+
+TWEET 5/11 (181/280 chars)
+────────────────────────────────────────
+El problema:
+Las firmas ECDSA actuales son vulnerables al algoritmo de Shor en un ordenador cuantico suficientemente potente.
+Un QC podria derivar la clave privada desde la publica.
+
+TWEET 6/11 (167/280 chars)
+────────────────────────────────────────
+¿Cuando es real el riesgo?
+Estimados actuales: entre 5 y 15 anos para QC capaces de atacar Bitcoin.
+No es inmediato. Pero la transicion tarda anos.
+Hay que empezar ya.
+
+TWEET 7/11 (167/280 chars)
+────────────────────────────────────────
+6,51 millones de Bitcoin en direcciones vulnerables.
+32.7% del suministro total.
+Direcciones que expusieron su clave publica (P2PK antiguas, direcciones reutilizadas).
+
+TWEET 8/11 (153/280 chars)
+────────────────────────────────────────
+BIP-360 propone el esquema QRSC (Quantum Resistant Signature Scheme).
+Integrado al repositorio oficial en febrero de 2026.
+Estado actual: testnet activo.
+
+TWEET 9/11 (175/280 chars)
+────────────────────────────────────────
+La transicion requiere:
+→ Soft fork con consenso de red
+→ Periodo de migracion de meses/anos
+→ Usuarios moviendo fondos a nuevas direcciones
+→ Wallets y exchanges actualizando
+
+TWEET 10/11 (173/280 chars)
+────────────────────────────────────────
+Bitcoin anticipa los problemas antes de que sean urgentes.
+BIP-360 en 2026 es ponerse el casco antes del accidente.
+Eso es como debe funcionar un protocolo de dinero global.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
