@@ -1,0 +1,756 @@
+---
+// Asistente flotante de Bitcoin Sin Ruido.
+// Widget en JS vanilla (sin isla React) que habla con /api/chat (Cloudflare
+// Pages Function → Gemini). Se incluye en BaseLayout para estar en toda la web.
+// Respeta los tokens de tema (claro/oscuro) y prefers-reduced-motion.
+---
+
+<div id="bsr-chat" class="bsr-chat" data-open="false">
+  <!-- Lanzador -->
+  <button
+    type="button"
+    id="bsr-chat-launcher"
+    class="bsr-chat__launcher"
+    aria-haspopup="dialog"
+    aria-controls="bsr-chat-panel"
+    aria-expanded="false"
+    aria-label="Abrir el asistente de Bitcoin"
+  >
+    <svg class="bsr-chat__launcher-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 3C6.9 3 3 6.5 3 10.9c0 2.5 1.3 4.7 3.3 6.1-.1.9-.6 2.2-1.4 3.2-.2.2 0 .6.3.5 1.9-.4 3.3-1.1 4.2-1.7.7.1 1.5.2 2.3.2 5.1 0 9-3.5 9-7.9S17.1 3 12 3Z"
+        fill="currentColor"
+      />
+      <path
+        d="M12.9 7.2v1.1c.9.1 1.7.5 1.7 1.5 0 .7-.4 1.1-1 1.3.7.2 1.2.7 1.2 1.5 0 1.1-.9 1.6-2 1.7v1.1h-.9v-1.1h-.7v1.1h-.9v-1.1H8.8v-1h.5c.3 0 .4-.1.4-.4v-3.4c0-.3-.1-.4-.4-.4h-.5v-1h1.5V7.2h.9v1.1h.7V7.2h.9Zm-1.7 3.9h.9c.5 0 .8-.2.8-.6s-.3-.6-.8-.6h-.9v1.2Zm0 2.3h1c.6 0 .9-.2.9-.7s-.3-.7-.9-.7h-1v1.4Z"
+        fill="#fff"
+      />
+    </svg>
+    <span class="bsr-chat__launcher-badge" aria-hidden="true"></span>
+  </button>
+
+  <!-- Panel -->
+  <section
+    id="bsr-chat-panel"
+    class="bsr-chat__panel"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="bsr-chat-title"
+    hidden
+  >
+    <header class="bsr-chat__header">
+      <div class="bsr-chat__header-info">
+        <span class="bsr-chat__avatar" aria-hidden="true">₿</span>
+        <div>
+          <p id="bsr-chat-title" class="bsr-chat__title">Asistente Bitcoin</p>
+          <p class="bsr-chat__subtitle">Resuelve tus dudas · sin ruido de precio</p>
+        </div>
+      </div>
+      <div class="bsr-chat__header-actions">
+        <button
+          type="button"
+          id="bsr-chat-reset"
+          class="bsr-chat__icon-btn"
+          aria-label="Reiniciar conversación"
+          title="Reiniciar conversación"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M4 4v5h5M20 20v-5h-5M19.4 9A8 8 0 0 0 5.6 7.3L4 9m16 6-1.6 1.7A8 8 0 0 1 4.6 15"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </button>
+        <button
+          type="button"
+          id="bsr-chat-close"
+          class="bsr-chat__icon-btn"
+          aria-label="Cerrar el asistente"
+          title="Cerrar"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="bsr-chat-messages" class="bsr-chat__messages" aria-live="polite" aria-atomic="false">
+      <!-- Los mensajes se inyectan aquí -->
+    </div>
+
+    <div id="bsr-chat-suggestions" class="bsr-chat__suggestions">
+      <button type="button" class="bsr-chat__chip" data-q="¿Qué es Bitcoin en pocas palabras?">¿Qué es Bitcoin?</button>
+      <button type="button" class="bsr-chat__chip" data-q="¿Qué es una clave privada y una frase semilla?">Claves y seguridad</button>
+      <button type="button" class="bsr-chat__chip" data-q="¿Cómo funciona Lightning Network?">Lightning Network</button>
+      <button type="button" class="bsr-chat__chip" data-q="¿Qué es el halving de Bitcoin?">El halving</button>
+    </div>
+
+    <form id="bsr-chat-form" class="bsr-chat__form">
+      <label for="bsr-chat-input" class="sr-only">Escribe tu pregunta sobre Bitcoin</label>
+      <textarea
+        id="bsr-chat-input"
+        class="bsr-chat__input"
+        rows="1"
+        placeholder="Pregunta lo que quieras sobre Bitcoin…"
+        autocomplete="off"
+        maxlength="4000"></textarea>
+      <button type="submit" id="bsr-chat-send" class="bsr-chat__send" aria-label="Enviar mensaje">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M4 12l16-8-6 16-3-6-7-2z"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none"></path>
+        </svg>
+      </button>
+    </form>
+
+    <p class="bsr-chat__disclaimer">
+      IA experimental. Puede equivocarse; verifica lo importante. No es asesoramiento financiero.
+    </p>
+  </section>
+</div>
+
+<style>
+  .bsr-chat {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 60;
+    font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /* --- Lanzador --- */
+  .bsr-chat__launcher {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 9999px;
+    background: #f7931a;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(247, 147, 26, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .bsr-chat__launcher:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 12px 30px rgba(247, 147, 26, 0.45), 0 3px 8px rgba(0, 0, 0, 0.25);
+  }
+  .bsr-chat__launcher:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .bsr-chat__launcher-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  .bsr-chat__launcher-badge {
+    position: absolute;
+    top: 0.15rem;
+    right: 0.15rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 9999px;
+    background: #22c55e;
+    border: 2px solid #f7931a;
+  }
+  /* Al abrir, el lanzador se oculta y el panel toma el foco visual. */
+  .bsr-chat[data-open='true'] .bsr-chat__launcher {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.6);
+  }
+
+  /* --- Panel --- */
+  .bsr-chat__panel {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    width: min(24rem, calc(100vw - 2rem));
+    height: min(34rem, calc(100dvh - 2rem));
+    display: flex;
+    flex-direction: column;
+    background: rgb(var(--bg-card));
+    color: rgb(var(--ink));
+    border: 1px solid rgb(var(--line));
+    border-radius: 1rem;
+    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.35), 0 8px 24px -8px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transform-origin: bottom right;
+    animation: bsr-chat-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* El atributo [hidden] debe ganar a `display: flex` (misma clase, menor
+     especificidad), o el panel quedaría visible siempre y taparía el lanzador. */
+  .bsr-chat__panel[hidden] {
+    display: none;
+  }
+  @keyframes bsr-chat-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .bsr-chat__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid rgb(var(--line));
+    background: linear-gradient(180deg, rgba(247, 147, 26, 0.08), transparent);
+  }
+  .bsr-chat__header-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+  .bsr-chat__avatar {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 9999px;
+    background: #f7931a;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .bsr-chat__title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.1;
+    margin: 0;
+  }
+  .bsr-chat__subtitle {
+    font-size: 0.72rem;
+    color: rgb(var(--ink-dim));
+    margin: 0.1rem 0 0;
+  }
+  .bsr-chat__header-actions {
+    display: flex;
+    gap: 0.15rem;
+    flex-shrink: 0;
+  }
+  .bsr-chat__icon-btn {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: transparent;
+    border: none;
+    color: rgb(var(--ink-muted));
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .bsr-chat__icon-btn:hover {
+    background: rgb(var(--bg-soft));
+    color: rgb(var(--ink));
+  }
+  .bsr-chat__icon-btn svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  /* --- Mensajes --- */
+  .bsr-chat__messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0.85rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line)) transparent;
+  }
+  .bsr-chat__messages::-webkit-scrollbar { width: 8px; }
+  .bsr-chat__messages::-webkit-scrollbar-thumb {
+    background: rgb(var(--line));
+    border-radius: 8px;
+  }
+
+  .bsr-msg {
+    display: flex;
+    max-width: 100%;
+  }
+  .bsr-msg--user { justify-content: flex-end; }
+  .bsr-msg__bubble {
+    max-width: 85%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+  }
+  .bsr-msg--user .bsr-msg__bubble {
+    background: #f7931a;
+    color: #fff;
+    border-bottom-right-radius: 0.25rem;
+  }
+  .bsr-msg--bot .bsr-msg__bubble {
+    background: rgb(var(--bg-soft));
+    color: rgb(var(--ink));
+    border: 1px solid rgb(var(--line));
+    border-bottom-left-radius: 0.25rem;
+  }
+  .bsr-msg__bubble p { margin: 0 0 0.5rem; }
+  .bsr-msg__bubble p:last-child { margin-bottom: 0; }
+  .bsr-msg__bubble a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 600;
+  }
+  .bsr-msg--bot .bsr-msg__bubble a { color: #b46a00; }
+  :global(:root.dark) .bsr-msg--bot .bsr-msg__bubble a { color: #f7b955; }
+  .bsr-msg__bubble ul,
+  .bsr-msg__bubble ol {
+    margin: 0.3rem 0 0.5rem;
+    padding-left: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .bsr-msg__bubble ul { list-style: disc; }
+  .bsr-msg__bubble ol { list-style: decimal; }
+  .bsr-msg__bubble code {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.82em;
+    background: rgb(var(--bg-card));
+    border: 1px solid rgb(var(--line));
+    border-radius: 0.3rem;
+    padding: 0.05rem 0.3rem;
+  }
+
+  /* Indicador de escritura */
+  .bsr-typing {
+    display: inline-flex;
+    gap: 0.22rem;
+    align-items: center;
+    padding: 0.2rem 0;
+  }
+  .bsr-typing span {
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 9999px;
+    background: rgb(var(--ink-dim));
+    animation: bsr-blink 1.2s infinite ease-in-out both;
+  }
+  .bsr-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .bsr-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bsr-blink {
+    0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-2px); }
+  }
+
+  /* --- Sugerencias --- */
+  .bsr-chat__suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.15rem 0.85rem 0.6rem;
+  }
+  .bsr-chat__suggestions[hidden] { display: none; }
+  .bsr-chat__chip {
+    font-size: 0.76rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 9999px;
+    background: rgb(var(--bg-soft));
+    border: 1px solid rgb(var(--line));
+    color: rgb(var(--ink-muted));
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .bsr-chat__chip:hover {
+    border-color: #f7931a;
+    color: rgb(var(--ink));
+    background: rgba(247, 147, 26, 0.08);
+  }
+
+  /* --- Formulario --- */
+  .bsr-chat__form {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    padding: 0.6rem 0.85rem;
+    border-top: 1px solid rgb(var(--line));
+  }
+  .bsr-chat__input {
+    flex: 1;
+    resize: none;
+    max-height: 7rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: rgb(var(--ink));
+    background: rgb(var(--bg-soft));
+    border: 1px solid rgb(var(--line));
+    border-radius: 0.7rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    font-family: inherit;
+  }
+  .bsr-chat__input:focus {
+    border-color: #f7931a;
+    box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.15);
+  }
+  .bsr-chat__input::placeholder { color: rgb(var(--ink-dim)); }
+  .bsr-chat__send {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex-shrink: 0;
+    border-radius: 0.7rem;
+    background: #f7931a;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .bsr-chat__send:hover { transform: translateY(-1px); }
+  .bsr-chat__send:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .bsr-chat__send svg { width: 1.25rem; height: 1.25rem; }
+
+  .bsr-chat__disclaimer {
+    font-size: 0.68rem;
+    color: rgb(var(--ink-dim));
+    text-align: center;
+    padding: 0 0.85rem 0.7rem;
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  /* --- Móvil: hoja inferior a pantalla casi completa --- */
+  @media (max-width: 480px) {
+    .bsr-chat__panel {
+      right: 0;
+      left: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 88dvh;
+      border-radius: 1rem 1rem 0 0;
+      border-bottom: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bsr-chat__launcher,
+    .bsr-chat__panel,
+    .bsr-chat__send,
+    .bsr-typing span {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  type ChatRole = 'user' | 'assistant';
+  interface ChatMsg { role: ChatRole; content: string; }
+
+  const STORAGE_KEY = 'bsr-chat-v1';
+  const API_URL = '/api/chat';
+
+  const root = document.getElementById('bsr-chat');
+  if (root) {
+    const launcher = document.getElementById('bsr-chat-launcher') as HTMLButtonElement;
+    const panel = document.getElementById('bsr-chat-panel') as HTMLElement;
+    const closeBtn = document.getElementById('bsr-chat-close') as HTMLButtonElement;
+    const resetBtn = document.getElementById('bsr-chat-reset') as HTMLButtonElement;
+    const messagesEl = document.getElementById('bsr-chat-messages') as HTMLElement;
+    const suggestionsEl = document.getElementById('bsr-chat-suggestions') as HTMLElement;
+    const form = document.getElementById('bsr-chat-form') as HTMLFormElement;
+    const input = document.getElementById('bsr-chat-input') as HTMLTextAreaElement;
+    const sendBtn = document.getElementById('bsr-chat-send') as HTMLButtonElement;
+
+    let messages: ChatMsg[] = [];
+    let isStreaming = false;
+
+    const WELCOME =
+      '¡Hola! 👋 Soy el asistente de **Bitcoin Sin Ruido**. Pregúntame lo que quieras sobre Bitcoin: cómo funciona el protocolo, minería, wallets, Lightning, seguridad… Explico sin ruido de precio.';
+
+    // ---------- Persistencia ----------
+    function load() {
+      try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          if (Array.isArray(data.messages)) messages = data.messages.slice(-40);
+          if (data.open) open(true);
+        }
+      } catch { /* ignore */ }
+    }
+    function save() {
+      try {
+        sessionStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ messages: messages.slice(-40), open: root!.dataset.open === 'true' })
+        );
+      } catch { /* ignore */ }
+    }
+
+    // ---------- Render ----------
+    function escapeHtml(s: string): string {
+      return s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function inlineFormat(s: string): string {
+      let out = escapeHtml(s);
+      // Código en línea
+      out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Enlaces Markdown [texto](url) — solo http/https o rutas internas
+      out = out.replace(/\[([^\]]+)\]\(((?:https?:\/\/|\/)[^\s)]+)\)/g, (_m, text, url) => {
+        const safe = String(url).replace(/"/g, '%22');
+        return `<a href="${safe}" target="_blank" rel="noopener noreferrer nofollow">${text}</a>`;
+      });
+      // Negritas **texto**
+      out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      return out;
+    }
+
+    function renderMarkdown(text: string): string {
+      const lines = text.split('\n');
+      let html = '';
+      let list: '' | 'ul' | 'ol' = '';
+      let para: string[] = [];
+
+      const flushPara = () => {
+        if (para.length) { html += `<p>${para.join('<br>')}</p>`; para = []; }
+      };
+      const flushList = () => {
+        if (list) { html += `</${list}>`; list = ''; }
+      };
+
+      for (const rawLine of lines) {
+        const line = rawLine.replace(/\s+$/, '');
+        const ulMatch = /^\s*[-*]\s+(.*)$/.exec(line);
+        const olMatch = /^\s*\d+[.)]\s+(.*)$/.exec(line);
+        if (ulMatch) {
+          flushPara();
+          if (list !== 'ul') { flushList(); html += '<ul>'; list = 'ul'; }
+          html += `<li>${inlineFormat(ulMatch[1])}</li>`;
+        } else if (olMatch) {
+          flushPara();
+          if (list !== 'ol') { flushList(); html += '<ol>'; list = 'ol'; }
+          html += `<li>${inlineFormat(olMatch[1])}</li>`;
+        } else if (line.trim() === '') {
+          flushPara();
+          flushList();
+        } else {
+          flushList();
+          para.push(inlineFormat(line));
+        }
+      }
+      flushPara();
+      flushList();
+      return html || '<p></p>';
+    }
+
+    function bubble(msg: ChatMsg): HTMLElement {
+      const wrap = document.createElement('div');
+      wrap.className = `bsr-msg bsr-msg--${msg.role === 'user' ? 'user' : 'bot'}`;
+      const b = document.createElement('div');
+      b.className = 'bsr-msg__bubble';
+      if (msg.role === 'user') {
+        b.textContent = msg.content;
+      } else {
+        b.innerHTML = renderMarkdown(msg.content);
+      }
+      wrap.appendChild(b);
+      return wrap;
+    }
+
+    function renderAll() {
+      messagesEl.innerHTML = '';
+      const intro: ChatMsg = { role: 'assistant', content: WELCOME };
+      messagesEl.appendChild(bubble(intro));
+      for (const m of messages) messagesEl.appendChild(bubble(m));
+      suggestionsEl.hidden = messages.length > 0;
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      requestAnimationFrame(() => { messagesEl.scrollTop = messagesEl.scrollHeight; });
+    }
+
+    // ---------- Abrir / cerrar ----------
+    function open(skipFocus = false) {
+      root!.dataset.open = 'true';
+      panel.hidden = false;
+      launcher.setAttribute('aria-expanded', 'true');
+      if (messagesEl.childElementCount === 0) renderAll();
+      if (!skipFocus) setTimeout(() => input.focus(), 60);
+      scrollToBottom();
+      save();
+    }
+    function close() {
+      root!.dataset.open = 'false';
+      panel.hidden = true;
+      launcher.setAttribute('aria-expanded', 'false');
+      launcher.focus();
+      save();
+    }
+
+    launcher.addEventListener('click', () => open());
+    closeBtn.addEventListener('click', close);
+    resetBtn.addEventListener('click', () => {
+      messages = [];
+      renderAll();
+      save();
+      input.focus();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && root!.dataset.open === 'true') close();
+    });
+
+    // ---------- Auto-resize del textarea ----------
+    function autoresize() {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 112) + 'px';
+    }
+    input.addEventListener('input', autoresize);
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    // Chips de sugerencia
+    suggestionsEl.querySelectorAll<HTMLButtonElement>('.bsr-chat__chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const q = chip.dataset.q || chip.textContent || '';
+        input.value = q;
+        form.requestSubmit();
+      });
+    });
+
+    // ---------- Envío + streaming ----------
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (isStreaming) return;
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      autoresize();
+      sendMessage(text);
+    });
+
+    async function sendMessage(text: string) {
+      messages.push({ role: 'user', content: text });
+      messagesEl.appendChild(bubble({ role: 'user', content: text }));
+      suggestionsEl.hidden = true;
+      scrollToBottom();
+      save();
+
+      // Burbuja del bot con indicador de escritura
+      const botWrap = document.createElement('div');
+      botWrap.className = 'bsr-msg bsr-msg--bot';
+      const botBubble = document.createElement('div');
+      botBubble.className = 'bsr-msg__bubble';
+      botBubble.innerHTML = '<span class="bsr-typing"><span></span><span></span><span></span></span>';
+      botWrap.appendChild(botBubble);
+      messagesEl.appendChild(botWrap);
+      scrollToBottom();
+
+      isStreaming = true;
+      sendBtn.disabled = true;
+
+      let answer = '';
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages,
+            page: { url: location.pathname, title: document.title },
+          }),
+        });
+
+        if (!res.ok || !res.body) {
+          let msg = 'No he podido responder ahora mismo.';
+          try {
+            const err = await res.json();
+            if (err?.error) msg = err.error;
+          } catch { /* ignore */ }
+          botBubble.innerHTML = renderMarkdown(`⚠️ ${msg}`);
+          isStreaming = false;
+          sendBtn.disabled = false;
+          return;
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let sep: number;
+          while ((sep = buffer.indexOf('\n\n')) !== -1) {
+            const evt = buffer.slice(0, sep);
+            buffer = buffer.slice(sep + 2);
+            for (const line of evt.split('\n')) {
+              const trimmed = line.trimStart();
+              if (!trimmed.startsWith('data:')) continue;
+              const data = trimmed.slice(5).trim();
+              if (!data || data === '[DONE]') continue;
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.text) {
+                  answer += parsed.text;
+                  botBubble.innerHTML = renderMarkdown(answer);
+                  scrollToBottom();
+                }
+              } catch { /* fragmento parcial */ }
+            }
+          }
+        }
+
+        if (!answer.trim()) {
+          answer = 'No he obtenido respuesta. Prueba a reformular la pregunta.';
+          botBubble.innerHTML = renderMarkdown(answer);
+        }
+        messages.push({ role: 'assistant', content: answer });
+        save();
+      } catch {
+        botBubble.innerHTML = renderMarkdown(
+          '⚠️ Ha ocurrido un error de conexión. Inténtalo de nuevo en un momento.'
+        );
+      } finally {
+        isStreaming = false;
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    // Init
+    load();
+    if (root.dataset.open === 'true') renderAll();
+  }
+</script>
