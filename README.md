@@ -12,9 +12,10 @@ Sitio estático en **Astro 4** + **React islands**, desplegado en **Cloudflare P
 2. [Desarrollo local](#desarrollo-local)
 3. [Publicar un artículo nuevo (sin tocar código)](#publicar-un-artículo-nuevo)
 4. [Setup de Cloudflare Pages (one-time)](#setup-de-cloudflare-pages)
-5. [Setup del Worker BitcoinNews (one-time)](#setup-del-worker-bitcoinnews)
-6. [Verificación end-to-end](#verificación-end-to-end)
-7. [Performance budget](#performance-budget)
+5. [Setup del Asistente IA (one-time)](#setup-del-asistente-ia)
+6. [Setup del Worker BitcoinNews (one-time)](#setup-del-worker-bitcoinnews)
+7. [Verificación end-to-end](#verificación-end-to-end)
+8. [Performance budget](#performance-budget)
 
 ---
 
@@ -135,6 +136,36 @@ Igual que cualquier archivo en GitHub: edítalo en la web, commit a main, redepl
 7. Listo. Cada push a `main` redeploya. Cada PR genera una preview en `<branch>.<project>.pages.dev`.
 
 > ⚠️ **No subir `node_modules` ni `dist`** — el `.gitignore` ya los excluye.
+
+---
+
+## Setup del Asistente IA
+
+El chatbot flotante ("Asistente Bitcoin") vive en toda la web. Es una **Cloudflare
+Pages Function** (`functions/api/chat.ts`, ruta `POST /api/chat`) que actúa de proxy
+seguro sobre la **API de Gemini** de Google. La clave nunca llega al navegador: se
+guarda como *secret* del proyecto de Pages y solo se usa en el edge.
+
+**Una sola vez:**
+
+1. Consigue una API key de Gemini en [Google AI Studio](https://aistudio.google.com/apikey)
+   (o habilita la *Generative Language API* en tu proyecto de Google Cloud y crea una
+   API key). Es gratis dentro de la cuota generosa del tier gratuito.
+2. Cloudflare dashboard → **Workers & Pages** → proyecto `bitcoinsinruido` →
+   **Settings** → **Variables and Secrets** → **Add**.
+3. Añade el secret (marca **Encrypt**), en **Production** y también en **Preview**:
+   - `GEMINI_API_KEY` = *(tu clave de Gemini)*
+   - (opcional) `GEMINI_MODEL` = `gemini-flash-latest` *(valor por defecto si se omite)*
+4. **Save** y vuelve a desplegar (push a `main` o *Retry deployment*) para que el
+   secret quede disponible en runtime.
+
+> 🔒 El secret se configura en **el proyecto de Pages** (runtime), no como secret de
+> GitHub Actions. Si falta, el asistente responde con un aviso de "no configurado"
+> (HTTP 503) en vez de romperse.
+
+> 💡 En local, `npm run dev` **no** ejecuta la Function (Astro sirve solo estático), así
+> que el chat mostrará un aviso de error al enviar. Para probar el backend en local usa
+> `npx wrangler pages dev dist` con un archivo `.dev.vars` que contenga `GEMINI_API_KEY=...`.
 
 ---
 
