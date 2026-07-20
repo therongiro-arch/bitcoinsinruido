@@ -1,0 +1,85 @@
+HILO SEMANAL — Semana 30 — Modelo de Seguridad de Bitcoin
+Generado: 2026-07-20 11:49 UTC
+==================================================
+
+TWEET 1/11 (166/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 30
+
+Estado de la red Bitcoin:
+📦 Bloque: #958,873
+⚡ Fee rapido: 1 sat/vB
+💪 Hashrate: 1061.0 EH/s
+
+Esta semana: Modelo de Seguridad de Bitcoin 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #414"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (130/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: MODELO DE SEGURIDAD DE BITCOIN
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (127/280 chars)
+────────────────────────────────────────
+Bitcoin no necesita que confies en nadie.
+Esta disenado para que no tengas que hacerlo.
+¿Como funciona realmente esa seguridad?
+
+TWEET 5/11 (164/280 chars)
+────────────────────────────────────────
+Capa 1 — Criptografia:
+Tus Bitcoin solo se mueven con tu firma digital.
+La clave privada nunca sale de tu dispositivo.
+Sin firma valida, no hay transaccion posible.
+
+TWEET 6/11 (157/280 chars)
+────────────────────────────────────────
+Capa 2 — Proof of Work:
+Cada bloque requiere trabajo real.
+Alterar el pasado requiere rehacer ese trabajo + todo el posterior.
+Costo fisico = seguridad real.
+
+TWEET 7/11 (162/280 chars)
+────────────────────────────────────────
+Capa 3 — Nodos:
+~20.000 nodos verifican cada bloque independientemente.
+Si viola las reglas, es rechazado.
+No hay autoridad central. El consenso emerge de la red.
+
+TWEET 8/11 (158/280 chars)
+────────────────────────────────────────
+Capa 4 — Descentralizacion:
+No hay punto unico de fallo.
+No hay servidor que apagar.
+No hay CEO que arrestar.
+Bitcoin vive en miles de nodos en todo el mundo.
+
+TWEET 9/11 (184/280 chars)
+────────────────────────────────────────
+Capa 5 — Auditabilidad:
+Cualquier persona puede descargar el software gratuito, verificar la blockchain completa y confirmar que las reglas se cumplen.
+La transparencia es la garantia.
+
+TWEET 10/11 (147/280 chars)
+────────────────────────────────────────
+La suma: un sistema monetario donde la confianza no es necesaria.
+No confias en Satoshi. No confias en los mineros.
+Verificas. Y eso es suficiente.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
