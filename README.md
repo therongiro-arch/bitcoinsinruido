@@ -155,7 +155,7 @@ guarda como *secret* del proyecto de Pages y solo se usa en el edge.
    **Settings** → **Variables and Secrets** → **Add**.
 3. Añade el secret (marca **Encrypt**), en **Production** y también en **Preview**:
    - `GEMINI_API_KEY` = *(tu clave de Gemini)*
-   - (opcional) `GEMINI_MODEL` = `gemini-2.5-flash` *(valor por defecto si se omite)*
+   - (opcional) `GEMINI_MODEL` = `gemini-flash-latest` *(valor por defecto si se omite)*
 4. **Save** y vuelve a desplegar (push a `main` o *Retry deployment*) para que el
    secret quede disponible en runtime.
 

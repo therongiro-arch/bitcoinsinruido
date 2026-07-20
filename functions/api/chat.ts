@@ -8,7 +8,7 @@
  * Requisitos de configuración (Cloudflare Pages → Settings → Variables and
  * Secrets), tanto en Production como en Preview:
  *   - GEMINI_API_KEY  (secret, obligatorio)  · clave de Google AI Studio
- *   - GEMINI_MODEL    (variable, opcional)    · por defecto "gemini-2.5-flash"
+ *   - GEMINI_MODEL    (variable, opcional)    · por defecto "gemini-flash-latest"
  *
  * La respuesta se transmite en streaming (SSE) para dar sensación de escritura
  * en vivo. Cada evento es `data: {"text":"..."}` y el cierre es `data: [DONE]`.
@@ -34,7 +34,11 @@ interface ChatRequest {
 const MAX_MESSAGES = 24;
 const MAX_CHARS_PER_MESSAGE = 4000;
 const MAX_TOTAL_CHARS = 24000;
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+// Alias "latest": apunta siempre al modelo Flash vigente, de modo que la web no
+// se rompe cuando Google retira una versión concreta (p. ej. gemini-2.5-flash
+// dejó de estar disponible para claves nuevas). Es un modelo con razonamiento
+// interno ("thinking"); lo desactivamos abajo para respuestas rápidas y baratas.
+const DEFAULT_MODEL = 'gemini-flash-latest';
 
 // Dominios autorizados a usar el endpoint (protege contra hotlinking del proxy).
 // Se permite el propio host de la request, el dominio de producción y las
@@ -207,6 +211,10 @@ export const onRequestPost = async (context: {
       temperature: 0.6,
       topP: 0.95,
       maxOutputTokens: 1024,
+      // Desactiva el razonamiento interno: para un asistente de FAQ no aporta
+      // calidad y consumiría el presupuesto de tokens (dejando la respuesta
+      // vacía) además de encarecer y ralentizar cada llamada.
+      thinkingConfig: { thinkingBudget: 0 },
     },
     safetySettings: [
       { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
