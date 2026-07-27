@@ -1,0 +1,86 @@
+HILO SEMANAL — Semana 31 — Lightning Network
+Generado: 2026-07-27 12:28 UTC
+==================================================
+
+TWEET 1/11 (152/280 chars)
+────────────────────────────────────────
+🧵 HILO SEMANAL — Semana 31
+
+Estado de la red Bitcoin:
+📦 Bloque: #959,842
+⚡ Fee rapido: 1 sat/vB
+💪 Hashrate: 919.6 EH/s
+
+Esta semana: Lightning Network 👇
+
+TWEET 2/11 (139/280 chars)
+────────────────────────────────────────
+📰 Ultimo Bitcoin Optech:
+"Bitcoin Optech Newsletter #415"
+
+La newsletter tecnica mas rigurosa del ecosistema.
+Te explico lo mas relevante 👇
+
+TWEET 3/11 (117/280 chars)
+────────────────────────────────────────
+🔬 DEEP DIVE: LIGHTNING NETWORK
+
+¿Entiendes realmente como funciona?
+Vamos a verlo sin condescendencia. Con precision.
+
+TWEET 4/11 (181/280 chars)
+────────────────────────────────────────
+Abres un canal con otra persona.
+Ambos bloquean Bitcoin en un contrato multi-firma.
+Luego intercambian firmas actualizadas sin tocar la blockchain.
+Miles de pagos. Cero fees de red.
+
+TWEET 5/11 (148/280 chars)
+────────────────────────────────────────
+Cuando cierras el canal, solo ESA transaccion final va a la blockchain.
+Toda la actividad comprimida en 2 transacciones on-chain.
+Eficiencia brutal.
+
+TWEET 6/11 (138/280 chars)
+────────────────────────────────────────
+Channel splicing ya implementado en LDK, Eclair y c-lightning.
+Permite redimensionar canales sin cerrarlos.
+Menos fricccion. Mas liquidez.
+
+TWEET 7/11 (125/280 chars)
+────────────────────────────────────────
+Cash App: crecimiento 7x en Lightning durante 2024.
+No es un experimento.
+Es infraestructura de pagos global en construccion.
+
+TWEET 8/11 (137/280 chars)
+────────────────────────────────────────
+El problema pendiente: routing.
+Encontrar el camino optimo entre nodos es NP-hard.
+Los algoritmos mejoran, pero la UX aun no es perfecta.
+
+TWEET 9/11 (171/280 chars)
+────────────────────────────────────────
+Lo que viene:
+→ Async payments (sin estar online)
+→ Taproot channels (mas privados)
+→ LSP estandarizados
+→ Splicing nativo en mas wallets
+La infraestructura madura rapido.
+
+TWEET 10/11 (156/280 chars)
+────────────────────────────────────────
+Lightning no reemplaza la blockchain base.
+La complementa.
+Bitcoin: liquidacion final.
+Lightning: pagos del dia a dia.
+Dos capas. Una sola red de confianza.
+
+TWEET 11/11 (145/280 chars)
+────────────────────────────────────────
+Eso es todo por esta semana.
+
+Sigueme @BitcoinSinRuido para mas contenido tecnico de Bitcoin en espanol.
+
+Sin precio. Sin hype. Solo protocolo. 🟠
+
