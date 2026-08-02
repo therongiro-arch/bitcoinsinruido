@@ -30,9 +30,9 @@ related:
 
 ## Resumen rápido
 
-**Un hash es la huella digital de un dato: una cadena de caracteres de longitud fija que identifica de forma única cualquier información.** Bitcoin usa la función **SHA-256**, que toma cualquier dato y devuelve siempre un resultado de 64 caracteres. Tiene tres propiedades clave: el mismo dato siempre da el mismo hash, el más mínimo cambio produce un hash totalmente distinto, y es imposible revertirlo. Sobre estas propiedades se apoyan el encadenado de bloques, el [Proof of Work](/articulos/proof-of-work) y la verificación de transacciones.
+**Un hash es la huella digital de un dato: una cadena de caracteres de longitud fija que identifica de forma única cualquier información.** Bitcoin usa la función **SHA-256**, que toma cualquier dato y devuelve siempre un resultado de 64 caracteres. Tiene tres propiedades clave: el mismo dato siempre da el mismo hash, el más mínimo cambio produce un hash totalmente distinto, y es imposible revertirlo. Sobre estas propiedades se apoyan el encadenado de bloques, el [Proof of Work](/articulos/proof-of-work/) y la verificación de transacciones.
 
-Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia).
+Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/).
 
 ## Qué es un hash, con una analogía
 
@@ -83,11 +83,11 @@ El hash no es un detalle técnico secundario: es **el material con el que está 
 
 ### 1. Encadenar los bloques
 
-Cada [bloque](/articulos/que-es-un-bloque-bitcoin) contiene en su cabecera el **hash del bloque anterior**. Eso es lo que convierte una pila de bloques en una *cadena* enlazada. Como el hash depende de todo el contenido del bloque, alterar un bloque antiguo cambiaría su hash, lo que rompería el enlace con el siguiente, y con el siguiente... delatando la manipulación de inmediato. Esto es lo que hace la blockchain **inmutable**.
+Cada [bloque](/articulos/que-es-un-bloque-bitcoin/) contiene en su cabecera el **hash del bloque anterior**. Eso es lo que convierte una pila de bloques en una *cadena* enlazada. Como el hash depende de todo el contenido del bloque, alterar un bloque antiguo cambiaría su hash, lo que rompería el enlace con el siguiente, y con el siguiente... delatando la manipulación de inmediato. Esto es lo que hace la blockchain **inmutable**.
 
 ### 2. Asegurar el Proof of Work
 
-El [minado](/articulos/mineria-de-bitcoin) consiste en buscar un hash de la cabecera del bloque que sea **menor que un objetivo** (el *target*). Como no se puede calcular ese hash directamente, los mineros prueban miles de billones de combinaciones por segundo hasta dar con una que funcione. Esa búsqueda por fuerza bruta es el [Proof of Work](/articulos/proof-of-work): el "trabajo" es, literalmente, calcular hashes hasta encontrar uno válido.
+El [minado](/articulos/mineria-de-bitcoin/) consiste en buscar un hash de la cabecera del bloque que sea **menor que un objetivo** (el *target*). Como no se puede calcular ese hash directamente, los mineros prueban miles de billones de combinaciones por segundo hasta dar con una que funcione. Esa búsqueda por fuerza bruta es el [Proof of Work](/articulos/proof-of-work/): el "trabajo" es, literalmente, calcular hashes hasta encontrar uno válido.
 
 ### 3. Resumir transacciones (merkle root)
 
@@ -97,13 +97,13 @@ Todas las transacciones de un bloque se combinan, mediante hashes encadenados en
 
 ## ¿Y la computación cuántica?
 
-Una pregunta frecuente es si un ordenador cuántico podría "romper" SHA-256. La respuesta corta: **el hashing es de las partes más resistentes de Bitcoin**. La computación cuántica afectaría más a las firmas (la criptografía de clave pública) que a las funciones hash, que solo se verían debilitadas de forma moderada y manejable. Aun así, la comunidad se prepara con años de antelación; puedes ver el detalle en [BIP-360 y resistencia cuántica](/articulos/bip360-resistencia-cuantica).
+Una pregunta frecuente es si un ordenador cuántico podría "romper" SHA-256. La respuesta corta: **el hashing es de las partes más resistentes de Bitcoin**. La computación cuántica afectaría más a las firmas (la criptografía de clave pública) que a las funciones hash, que solo se verían debilitadas de forma moderada y manejable. Aun así, la comunidad se prepara con años de antelación; puedes ver el detalle en [BIP-360 y resistencia cuántica](/articulos/bip360-resistencia-cuantica/).
 
 ## Contenido relacionado
 
-- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia) — Guía pillar del silo.
-- [Qué es Proof of Work](/articulos/proof-of-work) — Donde el hash hace el "trabajo".
-- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin) — Cómo el hash encadena la cadena.
-- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin)
-- [BIP-360 y resistencia cuántica](/articulos/bip360-resistencia-cuantica)
-- [Glosario de Bitcoin](/glosario)
+- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/) — Guía pillar del silo.
+- [Qué es Proof of Work](/articulos/proof-of-work/) — Donde el hash hace el "trabajo".
+- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin/) — Cómo el hash encadena la cadena.
+- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin/)
+- [BIP-360 y resistencia cuántica](/articulos/bip360-resistencia-cuantica/)
+- [Glosario de Bitcoin](/glosario/)

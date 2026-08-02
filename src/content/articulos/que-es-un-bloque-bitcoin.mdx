@@ -32,7 +32,7 @@ related:
 
 **Un bloque de Bitcoin es un paquete de transacciones validadas que se encadena criptográficamente al bloque anterior.** Cada bloque tiene dos partes: una **cabecera** (con el resumen del bloque y el enlace al anterior) y la **lista de transacciones**. Se crea aproximadamente uno cada diez minutos mediante minería, y una vez añadido a la cadena es prácticamente imposible de alterar. Los bloques encadenados son lo que forma la *blockchain*.
 
-Este artículo forma parte del silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia). Para el contexto general, ver también [Qué es Bitcoin](/que-es-bitcoin).
+Este artículo forma parte del silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/). Para el contexto general, ver también [Qué es Bitcoin](/que-es-bitcoin/).
 
 ## Qué contiene un bloque
 
@@ -44,9 +44,9 @@ La cabecera son apenas 80 bytes, pero contienen toda la información que enlaza 
 
 - **Versión:** indica qué reglas sigue el bloque.
 - **Hash del bloque anterior:** el enlace que encadena este bloque al previo. Es lo que convierte una lista de bloques en una *cadena*.
-- **Merkle root:** un único [hash](/articulos/que-es-el-hash-bitcoin) que resume todas las transacciones del bloque (lo explicamos abajo).
+- **Merkle root:** un único [hash](/articulos/que-es-el-hash-bitcoin/) que resume todas las transacciones del bloque (lo explicamos abajo).
 - **Marca de tiempo (timestamp):** cuándo se minó el bloque, aproximadamente.
-- **Bits / target:** el objetivo de [dificultad](/articulos/dificultad-de-minado) que el bloque debe cumplir.
+- **Bits / target:** el objetivo de [dificultad](/articulos/dificultad-de-minado/) que el bloque debe cumplir.
 - **Nonce:** un número que los mineros van cambiando para encontrar un hash válido.
 
 ### 2. La lista de transacciones
@@ -68,11 +68,11 @@ Esto tiene dos ventajas enormes:
 
 Veamos el proceso completo, desde que envías una transacción hasta que queda grabada en un bloque:
 
-1. **Llega una transacción.** Un usuario firma y propaga una transacción a la red. Cada [nodo](/articulos/nodos-los-guardianes) la verifica y la guarda en su *mempool* (la cola de pendientes).
+1. **Llega una transacción.** Un usuario firma y propaga una transacción a la red. Cada [nodo](/articulos/nodos-los-guardianes/) la verifica y la guarda en su *mempool* (la cola de pendientes).
 
 2. **El minero arma un bloque candidato.** Un minero selecciona transacciones de la mempool —normalmente priorizando las que pagan más comisión por byte— y las agrupa. Añade la transacción coinbase con su recompensa y calcula el merkle root.
 
-3. **Empieza la competición (Proof of Work).** El minero arma la cabecera y prueba miles de millones de valores del *nonce*, calculando el [hash](/articulos/que-es-el-hash-bitcoin) de la cabecera cada vez, buscando uno que esté **por debajo del objetivo de dificultad**. Esto es el [Proof of Work](/articulos/proof-of-work): no hay atajo, solo prueba y error a gran escala.
+3. **Empieza la competición (Proof of Work).** El minero arma la cabecera y prueba miles de millones de valores del *nonce*, calculando el [hash](/articulos/que-es-el-hash-bitcoin/) de la cabecera cada vez, buscando uno que esté **por debajo del objetivo de dificultad**. Esto es el [Proof of Work](/articulos/proof-of-work/): no hay atajo, solo prueba y error a gran escala.
 
 4. **Alguien encuentra un hash válido.** El primer minero que da con un nonce que produce un hash válido **anuncia el bloque** a toda la red.
 
@@ -96,13 +96,13 @@ Y todo eso **más rápido que el resto de la red junta**, que mientras tanto sig
 
 ## El bloque génesis
 
-El primer bloque de la historia, el **bloque 0** o *bloque génesis*, lo minó Satoshi Nakamoto el 3 de enero de 2009. Es el único bloque que no apunta a ninguno anterior, y contiene un mensaje incrustado famoso. Puedes leer la historia completa en [Historia de Bitcoin](/articulos/historia-de-bitcoin).
+El primer bloque de la historia, el **bloque 0** o *bloque génesis*, lo minó Satoshi Nakamoto el 3 de enero de 2009. Es el único bloque que no apunta a ninguno anterior, y contiene un mensaje incrustado famoso. Puedes leer la historia completa en [Historia de Bitcoin](/articulos/historia-de-bitcoin/).
 
 ## Contenido relacionado
 
-- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia) — Guía pillar del silo.
-- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin) — Cómo se compite por crear bloques.
-- [Qué es el hash en Bitcoin](/articulos/que-es-el-hash-bitcoin) — La pieza que encadena los bloques.
-- [Qué es Proof of Work](/articulos/proof-of-work) — El consenso detrás del minado.
-- [Qué son los nodos](/articulos/nodos-los-guardianes) — Quién verifica cada bloque.
-- [Glosario de Bitcoin](/glosario)
+- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/) — Guía pillar del silo.
+- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin/) — Cómo se compite por crear bloques.
+- [Qué es el hash en Bitcoin](/articulos/que-es-el-hash-bitcoin/) — La pieza que encadena los bloques.
+- [Qué es Proof of Work](/articulos/proof-of-work/) — El consenso detrás del minado.
+- [Qué son los nodos](/articulos/nodos-los-guardianes/) — Quién verifica cada bloque.
+- [Glosario de Bitcoin](/glosario/)

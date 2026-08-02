@@ -167,7 +167,7 @@ const faqLd = {
         <li><strong>Sin dirección "principal"</strong> — Cada UTXO puede vivir en una dirección distinta.</li>
         <li><strong>Sin balance público</strong> — A diferencia de Ethereum, no hay un saldo agregado público por usuario.</li>
         <li><strong>Compatible con CoinJoin</strong> — Técnica que mezcla UTXOs de varios usuarios para romper trazabilidad (Whirlpool, JoinMarket).</li>
-        <li><strong>Compatible con <a href="/taproot">Taproot</a></strong> — Indistinguibilidad entre pago simple y contrato complejo.</li>
+        <li><strong>Compatible con <a href="/taproot/">Taproot</a></strong> — Indistinguibilidad entre pago simple y contrato complejo.</li>
       </ul>
       <p>
         Para máxima privacidad, las prácticas recomendadas son: usar una dirección nueva por cada transacción, evitar reutilización, considerar CoinJoin antes de mezclar UTXOs de fuentes distintas y usar wallets que implementen coin selection consciente de privacidad (Sparrow, Bitcoin Core).
@@ -175,7 +175,7 @@ const faqLd = {
 
       <h2>Errores comunes con UTXOs</h2>
       <ul>
-        <li><strong>Reutilizar direcciones</strong> — La buena práctica es una dirección por uso. Reutilizar revela patrones y, post-cuántico, expone la pubkey ([BIP-360](/articulos/bip360-resistencia-cuantica)).</li>
+        <li><strong>Reutilizar direcciones</strong> — La buena práctica es una dirección por uso. Reutilizar revela patrones y, post-cuántico, expone la pubkey ([BIP-360](/articulos/bip360-resistencia-cuantica/)).</li>
         <li><strong>Mezclar UTXOs de KYC y no-KYC</strong> — Combinar UTXOs de un exchange con KYC y de fuentes anónimas en una misma tx vincula ambos orígenes.</li>
         <li><strong>Olvidar las dust UTXOs</strong> — Pequeñas cantidades pueden costar más en fee que su valor. Las wallets ofrecen consolidación.</li>
         <li><strong>No revisar coin selection</strong> — Por defecto las wallets eligen UTXOs sin considerar privacidad. Sparrow y otras permiten control manual.</li>
@@ -185,7 +185,7 @@ const faqLd = {
       <h2>UTXO en contextos avanzados</h2>
       <ul>
         <li><strong>Lightning Network</strong> — Cada canal Lightning empieza con un UTXO multisig 2-de-2.</li>
-        <li><strong>Covenants</strong> — Las propuestas <a href="/articulos/covenants">OP_CAT y CTV</a> añadirían restricciones a cómo se gastan UTXOs.</li>
+        <li><strong>Covenants</strong> — Las propuestas <a href="/articulos/covenants/">OP_CAT y CTV</a> añadirían restricciones a cómo se gastan UTXOs.</li>
         <li><strong>BitVM y Citrea</strong> — Usan UTXOs para anclar pruebas y compromisos.</li>
         <li><strong>Taproot Assets</strong> — Codifica activos arbitrarios sobre UTXOs Bitcoin.</li>
         <li><strong>Vaults</strong> — Esquemas (con covenants) donde un UTXO solo se puede gastar tras un periodo de gracia, permitiendo revertir un robo si se detecta a tiempo.</li>
@@ -204,8 +204,8 @@ const faqLd = {
         <li><strong>Consolidation</strong> — Combinar muchos UTXOs pequeños en uno grande para reducir fees futuras.</li>
         <li><strong>CoinJoin</strong> — Técnica para mezclar UTXOs de varios usuarios y romper trazabilidad.</li>
         <li><strong>Address reuse</strong> — Práctica desaconsejada: usar la misma dirección para múltiples pagos reduce privacidad.</li>
-        <li><strong>P2WPKH, P2TR</strong> — Tipos de scriptPubKey modernos. Ver <a href="/anatomia-de-una-transaccion-bitcoin">anatomía de una transacción</a>.</li>
-        <li><strong>Multisig</strong> — UTXO que requiere M-de-N firmas. Con MuSig2 y <a href="/taproot">Taproot</a> son baratos y privados.</li>
+        <li><strong>P2WPKH, P2TR</strong> — Tipos de scriptPubKey modernos. Ver <a href="/anatomia-de-una-transaccion-bitcoin/">anatomía de una transacción</a>.</li>
+        <li><strong>Multisig</strong> — UTXO que requiere M-de-N firmas. Con MuSig2 y <a href="/taproot/">Taproot</a> son baratos y privados.</li>
       </ul>
 
       <h2>Tabla de fuentes validadas</h2>
@@ -224,18 +224,18 @@ const faqLd = {
 
       <h2>Recursos relacionados</h2>
       <ul>
-        <li><a href="/articulos/que-es-utxo">Artículo corto: UTXO</a></li>
-        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
-        <li><a href="/articulos/proof-of-work">Proof of Work</a></li>
-        <li><a href="/taproot">Qué es Taproot</a></li>
-        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
-        <li><a href="/glosario#utxo">UTXO en el glosario</a></li>
-        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
-        <li><a href="/anatomia-de-una-transaccion-bitcoin">Anatomía de una transacción</a></li>
-        <li><a href="/mapa-stack-bitcoin">Mapa del stack de Bitcoin</a></li>
-        <li><a href="/que-es-blockchain">Qué es blockchain</a></li>
-        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
-        <li><a href="/metodologia">Metodología editorial</a></li>
+        <li><a href="/articulos/que-es-utxo/">Artículo corto: UTXO</a></li>
+        <li><a href="/que-es-bitcoin/">Qué es Bitcoin</a></li>
+        <li><a href="/articulos/proof-of-work/">Proof of Work</a></li>
+        <li><a href="/taproot/">Qué es Taproot</a></li>
+        <li><a href="/lightning-network/">Qué es Lightning Network</a></li>
+        <li><a href="/glosario/#utxo">UTXO en el glosario</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum/">Bitcoin vs Ethereum</a></li>
+        <li><a href="/anatomia-de-una-transaccion-bitcoin/">Anatomía de una transacción</a></li>
+        <li><a href="/mapa-stack-bitcoin/">Mapa del stack de Bitcoin</a></li>
+        <li><a href="/que-es-blockchain/">Qué es blockchain</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2/">Layer 1 vs Layer 2</a></li>
+        <li><a href="/metodologia/">Metodología editorial</a></li>
       </ul>
 
       <h2>Fuentes</h2>
@@ -249,7 +249,7 @@ const faqLd = {
     <Faq items={faqs} />
 
     <footer class="mt-16 pt-8 border-t border-line">
-      <a href="/articulos" class="btn">← Todos los artículos</a>
+      <a href="/articulos/" class="btn">← Todos los artículos</a>
     </footer>
   </article>
 </BaseLayout>

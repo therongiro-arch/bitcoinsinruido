@@ -31,16 +31,16 @@ related:
 
 ## Resumen rápido
 
-**Minar Bitcoin es competir por crear el siguiente bloque resolviendo un problema de cómputo por fuerza bruta.** Miles de máquinas especializadas prueban billones de combinaciones por segundo buscando un [hash](/articulos/que-es-el-hash-bitcoin) válido. El primero que lo encuentra añade su [bloque](/articulos/que-es-un-bloque-bitcoin) a la cadena y se lleva una recompensa: bitcoins recién emitidos más las comisiones de las transacciones. Ese proceso, llamado [Proof of Work](/articulos/proof-of-work), es lo que da seguridad a la red y emite nuevos bitcoins de forma ordenada.
+**Minar Bitcoin es competir por crear el siguiente bloque resolviendo un problema de cómputo por fuerza bruta.** Miles de máquinas especializadas prueban billones de combinaciones por segundo buscando un [hash](/articulos/que-es-el-hash-bitcoin/) válido. El primero que lo encuentra añade su [bloque](/articulos/que-es-un-bloque-bitcoin/) a la cadena y se lleva una recompensa: bitcoins recién emitidos más las comisiones de las transacciones. Ese proceso, llamado [Proof of Work](/articulos/proof-of-work/), es lo que da seguridad a la red y emite nuevos bitcoins de forma ordenada.
 
-Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia).
+Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/).
 
 ## Para qué sirve la minería (sus dos funciones)
 
 La palabra "minería" sugiere extraer oro, y la analogía no es del todo mala —se obtienen monedas nuevas— pero confunde lo esencial. La minería cumple **dos funciones** a la vez:
 
 1. **Asegurar la red.** Los mineros gastan energía para validar y ordenar las transacciones, haciendo que reescribir el historial sea prohibitivamente caro. Esta es su función principal.
-2. **Emitir bitcoins nuevos.** Como recompensa por ese trabajo, el protocolo entrega bitcoins recién creados. Es el mecanismo por el que entran en circulación las únicas unidades nuevas que existirán, hasta el límite de [21 millones](/articulos/los-21-millones).
+2. **Emitir bitcoins nuevos.** Como recompensa por ese trabajo, el protocolo entrega bitcoins recién creados. Es el mecanismo por el que entran en circulación las únicas unidades nuevas que existirán, hasta el límite de [21 millones](/articulos/los-21-millones/).
 
 La emisión es, en realidad, el **incentivo** que paga la seguridad. Sin recompensa, nadie gastaría energía en proteger la red.
 
@@ -52,7 +52,7 @@ Cada minero toma transacciones pendientes de la *mempool* (la cola de transaccio
 
 ### 2. Buscar un hash válido
 
-Aquí está el corazón de la minería. El minero calcula el [hash](/articulos/que-es-el-hash-bitcoin) de la cabecera del bloque con la función **SHA-256**. Pero no vale cualquier hash: debe ser **menor que un objetivo** (el *target*) fijado por la [dificultad](/articulos/dificultad-de-minado) de la red.
+Aquí está el corazón de la minería. El minero calcula el [hash](/articulos/que-es-el-hash-bitcoin/) de la cabecera del bloque con la función **SHA-256**. Pero no vale cualquier hash: debe ser **menor que un objetivo** (el *target*) fijado por la [dificultad](/articulos/dificultad-de-minado/) de la red.
 
 Como no se puede "calcular" un hash que cumpla esa condición, la única forma es **probar y probar**: el minero cambia un número de la cabecera (el *nonce*), recalcula el hash, comprueba si es válido, y repite. Miles de billones de veces por segundo.
 
@@ -62,7 +62,7 @@ El primer minero que encuentra un hash válido **anuncia su bloque** a la red. L
 
 ### 4. Verificación de los nodos
 
-Importante: el minero no decide qué es válido. Son los [nodos](/articulos/nodos-los-guardianes) quienes verifican el bloque. Si un minero intenta hacer trampa —incluir un doble gasto, crear bitcoins de más— **su bloque es rechazado** y habrá gastado la energía en vano.
+Importante: el minero no decide qué es válido. Son los [nodos](/articulos/nodos-los-guardianes/) quienes verifican el bloque. Si un minero intenta hacer trampa —incluir un doble gasto, crear bitcoins de más— **su bloque es rechazado** y habrá gastado la energía en vano.
 
 ## Qué es el hashrate
 
@@ -74,7 +74,7 @@ El hashrate de Bitcoin se mide en *exahashes por segundo* (EH/s), es decir, **tr
 
 La recompensa de cada bloque tiene dos componentes:
 
-- **Subsidio del bloque:** bitcoins recién emitidos. Desde el [halving](/articulos/halving-bitcoin) de 2024 son **3,125 BTC** por bloque. Esta cifra se reduce a la mitad cada cuatro años.
+- **Subsidio del bloque:** bitcoins recién emitidos. Desde el [halving](/articulos/halving-bitcoin/) de 2024 son **3,125 BTC** por bloque. Esta cifra se reduce a la mitad cada cuatro años.
 - **Comisiones (fees):** lo que pagan los usuarios por incluir sus transacciones.
 
 A medida que el subsidio disminuye con cada halving, las comisiones irán ganando peso. Alrededor del año 2140, cuando se emita el último bitcoin, los mineros vivirán **solo de comisiones**.
@@ -104,13 +104,13 @@ Además, el debate evoluciona: una proporción creciente del minado usa energía
 
 ## Las pools de minería
 
-Como encontrar un bloque en solitario es cada vez más improbable, los mineros se agrupan en **pools**: combinan su poder de cómputo y reparten las recompensas en proporción al trabajo aportado. Esto da ingresos más estables, pero introduce una preocupación: si una pool concentrara demasiado poder, podría afectar a la [descentralización](/articulos/descentralizacion-bitcoin). Por eso se vigila el reparto del hashrate y existen protocolos que devuelven a cada minero el control sobre qué transacciones incluye.
+Como encontrar un bloque en solitario es cada vez más improbable, los mineros se agrupan en **pools**: combinan su poder de cómputo y reparten las recompensas en proporción al trabajo aportado. Esto da ingresos más estables, pero introduce una preocupación: si una pool concentrara demasiado poder, podría afectar a la [descentralización](/articulos/descentralizacion-bitcoin/). Por eso se vigila el reparto del hashrate y existen protocolos que devuelven a cada minero el control sobre qué transacciones incluye.
 
 ## Contenido relacionado
 
-- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia) — Guía pillar del silo.
-- [Qué es Proof of Work](/articulos/proof-of-work) — El consenso que sostiene el minado.
-- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin) — Lo que produce el minero.
-- [Qué es la dificultad de minado](/articulos/dificultad-de-minado) — Por qué el ritmo es constante.
-- [Qué es el halving](/articulos/halving-bitcoin) — Cómo cae la recompensa.
-- [Glosario de Bitcoin](/glosario)
+- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/) — Guía pillar del silo.
+- [Qué es Proof of Work](/articulos/proof-of-work/) — El consenso que sostiene el minado.
+- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin/) — Lo que produce el minero.
+- [Qué es la dificultad de minado](/articulos/dificultad-de-minado/) — Por qué el ritmo es constante.
+- [Qué es el halving](/articulos/halving-bitcoin/) — Cómo cae la recompensa.
+- [Glosario de Bitcoin](/glosario/)

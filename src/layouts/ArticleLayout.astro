@@ -155,7 +155,7 @@ const allKeywords = [...new Set([...keywords, ...tags])];
   <article class="container-reading py-12 sm:py-16 animate-fade-in">
     <Breadcrumbs items={[
       { name: 'Inicio', href: '/' },
-      { name: 'Artículos', href: '/articulos' },
+      { name: 'Artículos', href: '/articulos/' },
       { name: title },
     ]} />
 
@@ -181,8 +181,8 @@ const allKeywords = [...new Set([...keywords, ...tags])];
     <RelatedLinks slugs={related} currentSlug={slug} />
 
     <footer class="mt-16 pt-8 border-t border-line flex flex-wrap items-center justify-between gap-4">
-      <a href="/articulos" class="btn">← Todos los artículos</a>
-      <a href="/glosario" class="text-sm text-ink-muted hover:text-btc transition">¿Dudas con un término? → Glosario</a>
+      <a href="/articulos/" class="btn">← Todos los artículos</a>
+      <a href="/glosario/" class="text-sm text-ink-muted hover:text-btc transition">¿Dudas con un término? → Glosario</a>
     </footer>
   </article>
 </BaseLayout>

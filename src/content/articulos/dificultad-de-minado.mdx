@@ -32,11 +32,11 @@ related:
 
 **La dificultad de minado es el parámetro que regula cuánto cuesta encontrar un bloque, para que la red mantenga un ritmo constante de uno cada diez minutos.** Si entra más poder de minado y los bloques empiezan a salir demasiado rápido, la dificultad sube. Si los mineros se van y los bloques tardan más, la dificultad baja. El ajuste es automático y ocurre cada **2.016 bloques** (unas dos semanas). Es uno de los mecanismos más elegantes de Bitcoin: hace que la red se autorregule sin que nadie tenga que intervenir.
 
-Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia).
+Este artículo pertenece al silo de [tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/).
 
 ## El problema que resuelve
 
-Recordemos cómo funciona el [minado](/articulos/mineria-de-bitcoin): los mineros prueban miles de billones de combinaciones por segundo buscando un [hash](/articulos/que-es-el-hash-bitcoin) válido. Cuantas más máquinas haya compitiendo, más rápido se encontrará un hash válido.
+Recordemos cómo funciona el [minado](/articulos/mineria-de-bitcoin/): los mineros prueban miles de billones de combinaciones por segundo buscando un [hash](/articulos/que-es-el-hash-bitcoin/) válido. Cuantas más máquinas haya compitiendo, más rápido se encontrará un hash válido.
 
 Aquí surge un problema. El poder de minado total (el *hashrate*) **no para de cambiar**: entran y salen mineros, mejora el hardware, cambia el precio de la electricidad. Si la dificultad fuera fija, pasaría algo indeseable:
 
@@ -51,7 +51,7 @@ La idea es simple: **la red mide cuánto tarda en realidad y corrige**.
 
 1. Bitcoin quiere un bloque cada **10 minutos**. Eso significa que 2.016 bloques deberían tardar exactamente **dos semanas** (2.016 × 10 minutos = 20.160 minutos ≈ 14 días).
 
-2. Cada **2.016 bloques**, cada [nodo](/articulos/nodos-los-guardianes) calcula cuánto se tardó *realmente* en minarlos.
+2. Cada **2.016 bloques**, cada [nodo](/articulos/nodos-los-guardianes/) calcula cuánto se tardó *realmente* en minarlos.
 
 3. **Compara y ajusta:**
    - Si se tardó **menos** de dos semanas (entró mucho poder de minado), la dificultad **sube**: ahora cuesta más encontrar un bloque.
@@ -92,15 +92,15 @@ Y cuando un evento externo reduce el poder de minado de golpe —por ejemplo, un
 Conviene no confundir dos cosas que cambian con el tiempo pero hacen cosas distintas:
 
 - La **dificultad** regula *cuánto cuesta* encontrar un bloque (se ajusta cada dos semanas, sube y baja).
-- El **[halving](/articulos/halving-bitcoin)** regula *cuántos bitcoins* da cada bloque (se reduce a la mitad cada cuatro años, solo baja).
+- El **[halving](/articulos/halving-bitcoin/)** regula *cuántos bitcoins* da cada bloque (se reduce a la mitad cada cuatro años, solo baja).
 
 Ambos son automáticos y forman parte de las reglas que hacen de Bitcoin un sistema **predecible**: cualquiera puede calcular hoy cuántos bitcoins existirán dentro de diez años, y a qué ritmo se minarán.
 
 ## Contenido relacionado
 
-- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia) — Guía pillar del silo.
-- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin) — El proceso que la dificultad regula.
-- [Qué es Proof of Work](/articulos/proof-of-work)
-- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin)
-- [Qué es el halving](/articulos/halving-bitcoin) — El otro gran ajuste automático.
-- [Glosario de Bitcoin](/glosario)
+- [Cómo funciona la tecnología de Bitcoin](/articulos/bitcoin-como-tecnologia/) — Guía pillar del silo.
+- [Qué es la minería de Bitcoin](/articulos/mineria-de-bitcoin/) — El proceso que la dificultad regula.
+- [Qué es Proof of Work](/articulos/proof-of-work/)
+- [Qué es un bloque](/articulos/que-es-un-bloque-bitcoin/)
+- [Qué es el halving](/articulos/halving-bitcoin/) — El otro gran ajuste automático.
+- [Glosario de Bitcoin](/glosario/)

@@ -32,7 +32,7 @@ const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity
   </Fragment>
 
   <article class="container-reading py-12 sm:py-16 animate-fade-in">
-    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas', href: '/comparativas' }, { name: 'Layer 1 vs Layer 2' }]} />
+    <Breadcrumbs items={[{ name: 'Inicio', href: '/' }, { name: 'Comparativas', href: '/comparativas/' }, { name: 'Layer 1 vs Layer 2' }]} />
 
     <header class="mb-10">
       <p class="chip-btc font-mono mb-3">COMPARATIVA</p>
@@ -43,12 +43,12 @@ const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity
     <div class="prose-bsr">
       <h2>Resumen rápido</h2>
       <p>
-        <strong>Layer 1 (L1)</strong> es la cadena base de <a href="/que-es-bitcoin">Bitcoin</a>: bloques cada ~10 minutos, asentamiento final, máxima seguridad. <strong>Layer 2 (L2)</strong> son protocolos construidos encima que heredan esa seguridad pero operan fuera de la cadena para ofrecer velocidad, costo bajo o mayor expresividad. En 2026 las L2 principales sobre Bitcoin son <a href="/lightning-network">Lightning Network</a>, <a href="/articulos/taproot-assets">Taproot Assets</a> y <a href="/bitvm">BitVM</a>/<a href="/articulos/bitvm-y-citrea">Citrea</a>.
+        <strong>Layer 1 (L1)</strong> es la cadena base de <a href="/que-es-bitcoin/">Bitcoin</a>: bloques cada ~10 minutos, asentamiento final, máxima seguridad. <strong>Layer 2 (L2)</strong> son protocolos construidos encima que heredan esa seguridad pero operan fuera de la cadena para ofrecer velocidad, costo bajo o mayor expresividad. En 2026 las L2 principales sobre Bitcoin son <a href="/lightning-network/">Lightning Network</a>, <a href="/articulos/taproot-assets/">Taproot Assets</a> y <a href="/bitvm/">BitVM</a>/<a href="/articulos/bitvm-y-citrea/">Citrea</a>.
       </p>
 
       <h2>Qué es Layer 1</h2>
       <p>
-        La L1 de Bitcoin es la blockchain mantenida por <a href="/articulos/proof-of-work">Proof of Work</a>: los mineros compiten gastando energía para añadir bloques, los <a href="/que-es-un-nodo-bitcoin">nodos</a> verifican y la cadena más larga gana. Cada bloque cuesta ~10 minutos de media. Es donde vive la verdad última de quién tiene qué bitcoin, expresado en <a href="/utxo">UTXOs</a>.
+        La L1 de Bitcoin es la blockchain mantenida por <a href="/articulos/proof-of-work/">Proof of Work</a>: los mineros compiten gastando energía para añadir bloques, los <a href="/que-es-un-nodo-bitcoin/">nodos</a> verifican y la cadena más larga gana. Cada bloque cuesta ~10 minutos de media. Es donde vive la verdad última de quién tiene qué bitcoin, expresado en <a href="/utxo/">UTXOs</a>.
       </p>
 
       <h2>Qué es Layer 2</h2>
@@ -95,27 +95,27 @@ const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity
 
       <h2>Conclusión</h2>
       <p>
-        L1 y L2 no compiten: <strong>cooperan</strong>. La L1 es la verdad última, lenta y cara por diseño porque debe ser verificable por cualquiera. Las L2 son rápidas y baratas porque dejan a la L1 el trabajo más costoso (asentar). En 2026, la combinación es lo que permite a Bitcoin escalar sin renunciar a su descentralización. Para entender la estrategia completa, ver <a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a>.
+        L1 y L2 no compiten: <strong>cooperan</strong>. La L1 es la verdad última, lenta y cara por diseño porque debe ser verificable por cualquiera. Las L2 son rápidas y baratas porque dejan a la L1 el trabajo más costoso (asentar). En 2026, la combinación es lo que permite a Bitcoin escalar sin renunciar a su descentralización. Para entender la estrategia completa, ver <a href="/escalabilidad-bitcoin/">Escalabilidad de Bitcoin</a>.
       </p>
 
       <h2>Recursos relacionados</h2>
       <ul>
-        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
-        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
-        <li><a href="/bitvm">Qué es BitVM</a></li>
-        <li><a href="/articulos/taproot-assets">Taproot Assets</a></li>
-        <li><a href="/articulos/bitvm-y-citrea">Citrea</a></li>
-        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
-        <li><a href="/comparativas/lightning-vs-visa">Lightning vs Visa</a></li>
-        <li><a href="/comparativas/bitvm-vs-smart-contracts">BitVM vs smart contracts</a></li>
-        <li><a href="/glosario">Glosario</a></li>
+        <li><a href="/que-es-bitcoin/">Qué es Bitcoin</a></li>
+        <li><a href="/lightning-network/">Qué es Lightning Network</a></li>
+        <li><a href="/bitvm/">Qué es BitVM</a></li>
+        <li><a href="/articulos/taproot-assets/">Taproot Assets</a></li>
+        <li><a href="/articulos/bitvm-y-citrea/">Citrea</a></li>
+        <li><a href="/escalabilidad-bitcoin/">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/comparativas/lightning-vs-visa/">Lightning vs Visa</a></li>
+        <li><a href="/comparativas/bitvm-vs-smart-contracts/">BitVM vs smart contracts</a></li>
+        <li><a href="/glosario/">Glosario</a></li>
       </ul>
     </div>
 
     <Faq items={faqs} />
 
     <footer class="mt-16 pt-8 border-t border-line">
-      <a href="/comparativas" class="btn">← Todas las comparativas</a>
+      <a href="/comparativas/" class="btn">← Todas las comparativas</a>
     </footer>
   </article>
 </BaseLayout>
