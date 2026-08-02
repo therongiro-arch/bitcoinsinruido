@@ -18,7 +18,7 @@ const seed = entry.slug.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
 const viz = seed % 4;
 ---
 
-<a href={`/articulos/${entry.slug}`} class:list={['bsr-card group', big && 'big']}>
+<a href={`/articulos/${entry.slug}/`} class:list={['bsr-card group', big && 'big']}>
   <div class="bsr-card-image">
     {viz === 0 && (
       <div class="bsr-viz bsr-viz-bg-grid">
