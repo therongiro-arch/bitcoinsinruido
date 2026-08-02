@@ -4,6 +4,16 @@ import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
+// Variantes canonicalizadas que NO deben ir al sitemap (anti-canibalización):
+// sus señales SEO se consolidan en los pilares raíz /lightning-network/ y
+// /taproot/ vía `canonical` en el frontmatter. Se comparan por RUTA EXACTA
+// (sin barra final), nunca por subcadena — ver el filtro de abajo.
+const SITEMAP_EXCLUIDAS = new Set([
+  '/404',
+  '/articulos/lightning-network',
+  '/articulos/taproot',
+]);
+
 export default defineConfig({
   site: 'https://bitcoinsinruidos.com',
   // Cloudflare Pages sirve las páginas (formato directorio) con barra final.
@@ -15,12 +25,19 @@ export default defineConfig({
     mdx(),
     tailwind({ applyBaseStyles: false }),
     sitemap({
-      // Excluir 404 y las variantes canonicalizadas (anti-canibalización):
-      // sus señales SEO se consolidan en los pilares raíz /lightning-network y /taproot.
-      filter: (page) =>
-        !page.includes('/404') &&
-        !page.includes('/articulos/lightning-network') &&
-        !page.includes('/articulos/taproot'),
+      // Comparación por ruta EXACTA en lugar de `includes()`.
+      //
+      // El filtro anterior usaba subcadenas, así que el patrón
+      // '/articulos/taproot' capturaba también '/articulos/taproot-assets/':
+      // una página legítima (200, canonical propio, 32 enlaces internos)
+      // quedaba fuera del sitemap por colisión de prefijo.
+      //
+      // Normalizamos a pathname sin barra final para que la comparación sea
+      // independiente de `site` y de `trailingSlash`.
+      filter: (page) => {
+        const ruta = new URL(page, 'https://bitcoinsinruidos.com').pathname.replace(/\/+$/, '');
+        return !SITEMAP_EXCLUIDAS.has(ruta);
+      },
     }),
   ],
   build: {
