@@ -4,7 +4,7 @@
 > tomadas. Sirve para no repetir errores ya resueltos y para que cualquiera
 > (humano o agente) entienda el porqué de la estructura actual.
 >
-> Última actualización: 2026-06-18.
+> Última actualización: 2026-08-02.
 
 ---
 
@@ -82,6 +82,18 @@ Se detectaron 4 pares de URLs compitiendo por la misma keyword. Resolución:
 La exclusión del sitemap de las variantes canonicalizadas está en el filtro de
 `@astrojs/sitemap` (`astro.config.mjs`).
 
+> ⚠️ **Las exclusiones del sitemap se comparan por RUTA EXACTA, nunca con
+> `includes()`.** El filtro original usaba subcadenas y el patrón
+> `/articulos/taproot` capturaba también `/articulos/taproot-assets/` — una
+> página legítima (200, canonical propio, 32 enlaces internos) que llevaba meses
+> fuera del sitemap por colisión de prefijo. Corregido en el PR #33: el filtro
+> normaliza a `pathname` sin barra final y compara contra un `Set`, de forma que
+> es independiente de `site` y de `trailingSlash`.
+>
+> **`/articulos/taproot-assets/` NO es una variante canonicalizada**: es una
+> página con entidad propia y debe estar en el sitemap. Solo
+> `/articulos/lightning-network/` y `/articulos/taproot/` se excluyen.
+
 ---
 
 ## 5. Política de URLs
@@ -93,9 +105,27 @@ La exclusión del sitemap de las variantes canonicalizadas está en el filtro de
 - `BaseLayout` **normaliza el canonical a barra final** (cubre también páginas
   que lo hardcodean), para que canonical, hreflang, og:url y sitemap apunten
   siempre a la URL 200 y no a una que redirige.
-- **No** se añadió barra final a los enlaces internos en el código: solo
-  generan *avisos* de redirección (no errores) y el valor real es nulo a esta
-  escala. El 308 funciona y pasa el equity.
+- **Todo enlace interno termina en `/`.** (Política vigente desde el PR #34,
+  ago-2026. Revierte la decisión anterior.)
+
+> **Por qué se revirtió.** La versión anterior de este documento decía: *"No se
+> añadió barra final a los enlaces internos: solo generan avisos de redirección
+> (no errores) y el valor real es nulo a esta escala"*. **El valor no era nulo.**
+> El sitio tenía **954 enlaces internos** (64 ficheros) apuntando a la forma sin
+> barra, que responde 308. Eso mantenía abierto un ciclo: el sitio enlaza a la
+> URL que redirige → Google la descubre y la rastrea → durante la ventana previa
+> a consolidar la muestra en resultados como si fuera una página propia.
+>
+> El coste era medible en **páginas nuevas**: `/comercios-que-aceptan-bitcoin/`,
+> publicada en julio de 2026, compitió consigo misma durante ~2 semanas sobre 5
+> queries compartidas antes de que Google consolidara. Se habría repetido con
+> cada artículo nuevo.
+>
+> Google confirmaba el mecanismo él mismo: en la URL Inspection API, las
+> `referringUrls` de la variante sin barra eran páginas del propio sitio.
+>
+> Verificado tras el PR #34: 51 enlaces internos únicos muestreados en 6 páginas,
+> **todos 200 directo, cero redirecciones**.
 
 ### www → no-www
 - El dominio canónico es **sin www** (`site: 'https://bitcoinsinruidos.com'`).
@@ -147,17 +177,60 @@ generaban conflictos y "language mismatch" en la auditoría.
   apunta al sitemap.
 - **Sitemap**: `https://bitcoinsinruidos.com/sitemap-index.xml`
   (`@astrojs/sitemap`), enviado en Search Console.
+- **⚠️ `bitcoinsinruido.pages.dev` es público e indexable.** Es el dominio de
+  Cloudflare Pages y sirve el sitio entero, con un `robots.txt` permisivo
+  (`Allow: /`). **Mitigado**: el `canonical` y el sitemap que sirve apuntan al
+  dominio real (`bitcoinsinruidos.com`), que es la defensa correcta entre
+  dominios. Riesgo residual bajo, pero conviene saberlo — no aparece en los datos
+  de GSC porque la propiedad es `sc-domain:bitcoinsinruidos.com` y no cubre
+  `pages.dev`.
 
 ---
 
 ## 9. Google Search Console
 
-- Sitemap enviado y "Correcto".
+- Sitemap enviado y "Correcto". **62 URLs** desde el PR #33 (antes 61).
 - Indexación solicitada manualmente para los pilares en su forma canónica
   (no-www, con barra final).
 - FAQs y breadcrumbs reconocidos como datos estructurados válidos.
 - **Forma canónica de toda URL:** `https://bitcoinsinruidos.com/<ruta>/`
   (no-www, con barra final). Usar siempre esta forma al pedir indexación.
+
+### ⚠️ Cómo verificar duplicados de URL (leer antes de diagnosticar)
+
+**El informe de Rendimiento NO sirve para diagnosticar duplicados.** Es un
+histórico *inmutable* de qué URL se mostró en la SERP cada día: GSC no reescribe
+el pasado cuando Google consolida después. Agregar un rango largo mezcla épocas
+distintas del sitio y hace aparecer como "duplicados vivos" URLs que Google
+fusionó hace meses.
+
+Para saber si un duplicado sigue vivo, usar la **URL Inspection API**:
+
+```bash
+python scripts/gsc/gsc.py inspect https://bitcoinsinruidos.com/<ruta>
+```
+
+y leer dos campos:
+
+| Campo | Qué significa |
+|---|---|
+| `coverageState: "Página con redirección"` | Estado de **NO indexación** → el duplicado está resuelto |
+| `coverageState: "Enviada e indexada"` | Es la URL que Google tiene indexada |
+| `googleCanonical` | La URL que Google considera canónica de verdad |
+
+Contrastar además con `curl` en producción (código de estado real y
+`<link rel="canonical">` servido) y con la distribución temporal por mes: si las
+impresiones anómalas decaen mes a mes, la consolidación está ocurriendo.
+
+> **Origen de esta nota (ago-2026).** Un análisis basado solo en el informe de
+> Rendimiento concluyó que había 15 pares de URLs duplicadas sin consolidar,
+> incluido un caso aparentemente flagrante (`/que-es-bitcoin` sin barra en
+> posición 2 frente a la canónica en posición 45). Era falso: esas 4 impresiones
+> eran **todas de un único día**, el 28-may, dos días antes del fix de
+> `trailingSlash`; las dos variantes no compartían ninguna query; y producción
+> devolvía un 308 limpio. La mala posición media de la canónica la causaba que el
+> 71 % de sus impresiones venían de `bitcoin system`, una query de ruido en
+> inglés donde rankea en posición 43.
 
 ---
 
@@ -170,19 +243,56 @@ generaban conflictos y "language mismatch" en la auditoría.
 - [ ] Título con keyword al principio (la marca se gestiona sola).
 - [ ] Enlazar el artículo **desde** su pilar (interlinking bidireccional).
 - [ ] No crear una URL que canibalice una keyword ya cubierta (ver sección 4).
+- [ ] **Todos los enlaces internos terminan en `/`** (ver sección 5).
 - [ ] `npx astro check` sin errores antes de PR.
 
 ---
 
 ## 11. Pendientes / próximos pasos
 
-- **Monitorizar GSC** (~3 semanas): confirmar que las URLs duplicadas
-  (www/no-www, slash/no-slash) se fusionan en una sola por página.
-- **Fase 2 opcional (cosmética):** barra final en enlaces internos para vaciar
-  los avisos de redirección de Semrush (valor real bajo a esta escala).
+### ✅ Cerrado (ago-2026)
+
+- **Consolidación de duplicados: CONFIRMADA.** Verificado con URL Inspection
+  (`coverageState: "Página con redirección"` + `googleCanonical` correcto en
+  todas las variantes comprobadas) y con la evolución mensual de impresiones:
+
+  | Mes | Canónicas | Sin barra | Con www |
+  |---|---|---|---|
+  | 2026-05 | 21 | 4 | 22 |
+  | 2026-06 | 219 | 29 | 41 |
+  | 2026-07 | 693 | 35 | **1** |
+
+  La Page Rule de www funcionó y Google ya lo digirió. *(Nota: este desglose usa
+  la dimensión* página *de GSC, cuyo total difiere del total por* fecha *— es
+  comportamiento normal de la API.)*
+- **Barra final en enlaces internos: HECHO** (PR #34). Ya no era "cosmético" —
+  ver sección 5.
+- **Bug del filtro del sitemap: CORREGIDO** (PR #33) — ver sección 4.
+
+### Abierto
+
 - **Re-auditar en Semrush** tras el recrawl.
+- **Deuda técnica de CI:** las GitHub Actions avisan de deprecación de Node 20
+  (`actions/checkout@v4`, `setup-node@v4`, `wrangler-action@v3` corriendo
+  forzados en Node 24). No rompe nada hoy. Pendiente de un PR de mantenimiento
+  propio — **no** mezclarlo con cambios de contenido o SEO.
+- **Entorno local desactualizado:** `npx astro check` da 3 errores
+  `Cannot find module 'leaflet'` en `src/components/react/MerchantFinder.tsx`.
+  La dependencia **sí está** en `package.json` (`^1.9.4`); falta en el
+  `node_modules` local. Mismo patrón que el desajuste `three`/`globe.gl`. Se
+  arregla con `npm install`; CI compila bien. **No es una regresión**: el
+  baseline de `main` tiene los mismos 3 errores.
 - La difusión (X vía `tweet.yml`) y los backlinks son ahora la palanca
-  principal; el SEO técnico ya está resuelto.
+  principal; el SEO técnico está resuelto.
+
+### Oportunidad de contenido detectada en GSC (ago-2026)
+
+El cluster **"aceptan bitcoin"** (`sitios/lugares/donde aceptan bitcoin`) suma
+**262 impresiones** — con diferencia el tema de mayor demanda del sitio — pero
+rankea en posiciones 50-65. Todas las variantes aterrizan en
+`/comercios-que-aceptan-bitcoin/`. La intención de búsqueda está muy alineada con
+el contenido: el freno es **autoridad/posición, no relevancia**. Candidato
+prioritario para enlaces internos y backlinks.
 
 ---
 
