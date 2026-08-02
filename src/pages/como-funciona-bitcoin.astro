@@ -66,12 +66,12 @@ const faqLd = {
     <div class="prose-bsr">
       <h2>Resumen rápido</h2>
       <p>
-        <strong>Bitcoin funciona combinando criptografía de clave pública, una blockchain como estructura de datos, Proof of Work como mecanismo de consenso y una red de <a href="/que-es-un-nodo-bitcoin">nodos independientes</a> que verifica cada bloque.</strong> Las transacciones se firman con la clave privada del emisor, se propagan por la red, los mineros las agrupan en bloques y compiten gastando electricidad para minarlos. Los nodos verifican y aceptan solo los bloques válidos. El sistema no depende de un intermediario y procesa pagos sin pedir permiso.
+        <strong>Bitcoin funciona combinando criptografía de clave pública, una blockchain como estructura de datos, Proof of Work como mecanismo de consenso y una red de <a href="/que-es-un-nodo-bitcoin/">nodos independientes</a> que verifica cada bloque.</strong> Las transacciones se firman con la clave privada del emisor, se propagan por la red, los mineros las agrupan en bloques y compiten gastando electricidad para minarlos. Los nodos verifican y aceptan solo los bloques válidos. El sistema no depende de un intermediario y procesa pagos sin pedir permiso.
       </p>
 
       <h2>Explicación simple</h2>
       <p>
-        Imagina que <a href="/que-es-bitcoin">Bitcoin</a> es un libro de cuentas público en el que cualquiera puede escribir, pero solo si demuestra que tiene la clave de las monedas que quiere mover. Cada cierto tiempo, alguien (un minero) recoge todas las entradas pendientes y propone un nuevo capítulo. Para que ese capítulo sea aceptado, el minero tiene que resolver un acertijo difícil que requiere gastar energía. Una vez resuelto, miles de personas leen el capítulo y comprueban que todo cuadra antes de aceptarlo.
+        Imagina que <a href="/que-es-bitcoin/">Bitcoin</a> es un libro de cuentas público en el que cualquiera puede escribir, pero solo si demuestra que tiene la clave de las monedas que quiere mover. Cada cierto tiempo, alguien (un minero) recoge todas las entradas pendientes y propone un nuevo capítulo. Para que ese capítulo sea aceptado, el minero tiene que resolver un acertijo difícil que requiere gastar energía. Una vez resuelto, miles de personas leen el capítulo y comprueban que todo cuadra antes de aceptarlo.
       </p>
       <p>
         Si todo cuadra, el capítulo se añade al libro y nadie puede borrarlo. Si no, el capítulo es ignorado, da igual cuánta energía costó producirlo. Eso es Bitcoin: un libro contable repartido por todo el mundo donde añadir información es caro y borrarla es prácticamente imposible.
@@ -88,7 +88,7 @@ const faqLd = {
 
       <h3>2. UTXOs: la unidad de saldo</h3>
       <p>
-        Bitcoin no usa cuentas con saldo. Usa <a href="/utxo">UTXOs</a> (Unspent Transaction Outputs): monedas digitales específicas que solo el destinatario puede gastar. Tu balance es la suma de los UTXOs que tu clave privada puede desbloquear.
+        Bitcoin no usa cuentas con saldo. Usa <a href="/utxo/">UTXOs</a> (Unspent Transaction Outputs): monedas digitales específicas que solo el destinatario puede gastar. Tu balance es la suma de los UTXOs que tu clave privada puede desbloquear.
       </p>
 
       <h3>3. Construcción de una transacción</h3>
@@ -99,7 +99,7 @@ const faqLd = {
         <li>Selecciona los UTXOs que servirán como <strong>entradas</strong> (coin selection).</li>
         <li>Construye los <strong>outputs</strong>: uno para el receptor con la cantidad enviada y otro de cambio si sobra.</li>
         <li>Calcula la <strong>fee</strong> en función del tamaño en vbytes y del estado de la mempool.</li>
-        <li>Firma la transacción con la clave privada (firma Schnorr post-<a href="/taproot">Taproot</a>).</li>
+        <li>Firma la transacción con la clave privada (firma Schnorr post-<a href="/taproot/">Taproot</a>).</li>
         <li>Difunde la transacción a los nodos a los que está conectada.</li>
       </ol>
 
@@ -123,7 +123,7 @@ const faqLd = {
 
       <h3>7. Propagación del bloque y verificación</h3>
       <p>
-        Cuando un minero encuentra un bloque válido, lo propaga. Cada <a href="/que-es-un-nodo-bitcoin">nodo</a> que lo recibe verifica:
+        Cuando un minero encuentra un bloque válido, lo propaga. Cada <a href="/que-es-un-nodo-bitcoin/">nodo</a> que lo recibe verifica:
       </p>
       <ul>
         <li>Que el PoW (hash) cumple la dificultad.</li>
@@ -195,31 +195,31 @@ const faqLd = {
 
       <h2>Relación con otras tecnologías</h2>
       <ul>
-        <li><a href="/articulos/proof-of-work">Proof of Work</a> — El consenso que ata Bitcoin a energía física.</li>
-        <li><a href="/utxo">UTXO</a> — El modelo de saldo.</li>
-        <li><a href="/que-es-un-nodo-bitcoin">Nodos</a> — Los verificadores.</li>
-        <li><a href="/taproot">Taproot</a> — La actualización de firmas y privacidad.</li>
-        <li><a href="/lightning-network">Lightning Network</a> — La capa de pagos rápidos.</li>
-        <li><a href="/bitvm">BitVM</a> — Contratos sin soft fork.</li>
-        <li><a href="/articulos/los-21-millones">21 millones</a> — La política monetaria.</li>
+        <li><a href="/articulos/proof-of-work/">Proof of Work</a> — El consenso que ata Bitcoin a energía física.</li>
+        <li><a href="/utxo/">UTXO</a> — El modelo de saldo.</li>
+        <li><a href="/que-es-un-nodo-bitcoin/">Nodos</a> — Los verificadores.</li>
+        <li><a href="/taproot/">Taproot</a> — La actualización de firmas y privacidad.</li>
+        <li><a href="/lightning-network/">Lightning Network</a> — La capa de pagos rápidos.</li>
+        <li><a href="/bitvm/">BitVM</a> — Contratos sin soft fork.</li>
+        <li><a href="/articulos/los-21-millones/">21 millones</a> — La política monetaria.</li>
       </ul>
 
       <h2>Recursos relacionados</h2>
       <ul>
-        <li><a href="/que-es-bitcoin">Qué es Bitcoin (guía pillar)</a></li>
-        <li><a href="/articulos/historia-de-bitcoin">Historia de Bitcoin</a></li>
-        <li><a href="/articulos/que-es-un-bloque-bitcoin">Qué es un bloque en Bitcoin</a></li>
-        <li><a href="/articulos/mineria-de-bitcoin">Qué es la minería de Bitcoin</a></li>
-        <li><a href="/articulos/que-es-el-hash-bitcoin">Qué es el hash (SHA-256)</a></li>
-        <li><a href="/que-es-un-nodo-bitcoin">Qué es un nodo Bitcoin</a></li>
-        <li><a href="/utxo">Qué es un UTXO</a></li>
-        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
-        <li><a href="/taproot">Qué es Taproot</a></li>
-        <li><a href="/bitvm">Qué es BitVM</a></li>
-        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
-        <li><a href="/comparativas/bitcoin-vs-ethereum">Bitcoin vs Ethereum</a></li>
-        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
-        <li><a href="/glosario">Glosario completo</a></li>
+        <li><a href="/que-es-bitcoin/">Qué es Bitcoin (guía pillar)</a></li>
+        <li><a href="/articulos/historia-de-bitcoin/">Historia de Bitcoin</a></li>
+        <li><a href="/articulos/que-es-un-bloque-bitcoin/">Qué es un bloque en Bitcoin</a></li>
+        <li><a href="/articulos/mineria-de-bitcoin/">Qué es la minería de Bitcoin</a></li>
+        <li><a href="/articulos/que-es-el-hash-bitcoin/">Qué es el hash (SHA-256)</a></li>
+        <li><a href="/que-es-un-nodo-bitcoin/">Qué es un nodo Bitcoin</a></li>
+        <li><a href="/utxo/">Qué es un UTXO</a></li>
+        <li><a href="/lightning-network/">Qué es Lightning Network</a></li>
+        <li><a href="/taproot/">Qué es Taproot</a></li>
+        <li><a href="/bitvm/">Qué es BitVM</a></li>
+        <li><a href="/escalabilidad-bitcoin/">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/comparativas/bitcoin-vs-ethereum/">Bitcoin vs Ethereum</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2/">Layer 1 vs Layer 2</a></li>
+        <li><a href="/glosario/">Glosario completo</a></li>
       </ul>
 
       <h2>Fuentes</h2>
@@ -235,7 +235,7 @@ const faqLd = {
     <Faq items={faqs} />
 
     <footer class="mt-16 pt-8 border-t border-line">
-      <a href="/articulos" class="btn">← Todos los artículos</a>
+      <a href="/articulos/" class="btn">← Todos los artículos</a>
     </footer>
   </article>
 </BaseLayout>

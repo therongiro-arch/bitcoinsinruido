@@ -59,7 +59,7 @@ const faqLd = {
     <div class="prose-bsr">
       <h2>Resumen rápido</h2>
       <p>
-        El stack de <a href="/que-es-bitcoin">Bitcoin</a> en 2026 es una pila de capas que escalan velocidad, costo y expresividad sin tocar la base. <strong>L1</strong> es la cadena de bloques asegurada por <a href="/articulos/proof-of-work">Proof of Work</a>. Encima conviven <a href="/lightning-network">Lightning Network</a> (pagos), <a href="/articulos/taproot-assets">Taproot Assets</a> (stablecoins), <a href="/bitvm">BitVM</a>/<a href="/articulos/bitvm-y-citrea">Citrea</a> (contratos), <strong>Liquid</strong> (sidechain federada) y aplicaciones de usuario. Esta página recorre cada capa, qué función cumple y quién está construyendo en ella.
+        El stack de <a href="/que-es-bitcoin/">Bitcoin</a> en 2026 es una pila de capas que escalan velocidad, costo y expresividad sin tocar la base. <strong>L1</strong> es la cadena de bloques asegurada por <a href="/articulos/proof-of-work/">Proof of Work</a>. Encima conviven <a href="/lightning-network/">Lightning Network</a> (pagos), <a href="/articulos/taproot-assets/">Taproot Assets</a> (stablecoins), <a href="/bitvm/">BitVM</a>/<a href="/articulos/bitvm-y-citrea/">Citrea</a> (contratos), <strong>Liquid</strong> (sidechain federada) y aplicaciones de usuario. Esta página recorre cada capa, qué función cumple y quién está construyendo en ella.
       </p>
 
       <h2>Diagrama del stack</h2>
@@ -83,19 +83,19 @@ const faqLd = {
 
       <h2>Capa 1 — Bitcoin base</h2>
       <p>
-        La capa base es la blockchain de Bitcoin: bloques cada ~10 minutos, asegurados por <a href="/articulos/proof-of-work">Proof of Work</a>, verificados por más de 24.000 <a href="/que-es-un-nodo-bitcoin">nodos</a>. Es la capa de máxima seguridad, finalidad y descentralización, y por eso es deliberadamente lenta y limitada en throughput.
+        La capa base es la blockchain de Bitcoin: bloques cada ~10 minutos, asegurados por <a href="/articulos/proof-of-work/">Proof of Work</a>, verificados por más de 24.000 <a href="/que-es-un-nodo-bitcoin/">nodos</a>. Es la capa de máxima seguridad, finalidad y descentralización, y por eso es deliberadamente lenta y limitada en throughput.
       </p>
       <ul>
         <li><strong>Componentes</strong> — Bitcoin Core, btcd, Knots, libbitcoin.</li>
         <li><strong>Throughput</strong> — ~7 tx/s en condiciones normales.</li>
         <li><strong>Coste típico</strong> — 0,5-10 USD por tx.</li>
         <li><strong>Función</strong> — Asentamiento final, reserva de valor, anclaje para las capas superiores.</li>
-        <li><strong>Mejoras activas</strong> — <a href="/taproot">Taproot</a> (2021), <a href="/articulos/bip360-resistencia-cuantica">BIP-360</a> en testnet.</li>
+        <li><strong>Mejoras activas</strong> — <a href="/taproot/">Taproot</a> (2021), <a href="/articulos/bip360-resistencia-cuantica/">BIP-360</a> en testnet.</li>
       </ul>
 
       <h2>Capa 2 — Lightning Network</h2>
       <p>
-        <a href="/lightning-network">Lightning</a> es la L2 más madura. Red de canales bidireccionales que permite pagos instantáneos y casi gratuitos. En 2026 mueve más de 12 millones de tx al mes sobre 18.000+ nodos públicos.
+        <a href="/lightning-network/">Lightning</a> es la L2 más madura. Red de canales bidireccionales que permite pagos instantáneos y casi gratuitos. En 2026 mueve más de 12 millones de tx al mes sobre 18.000+ nodos públicos.
       </p>
       <ul>
         <li><strong>Implementaciones</strong> — LDK (Spiral), Eclair (ACINQ), c-lightning (Blockstream), LND (Lightning Labs).</li>
@@ -106,7 +106,7 @@ const faqLd = {
 
       <h2>Capa 2 — BitVM y Citrea</h2>
       <p>
-        <a href="/bitvm">BitVM</a> permite verificar computación arbitraria sobre Bitcoin con fraud proofs. <a href="/articulos/bitvm-y-citrea">Citrea</a> es el primer ZK-rollup nativo, mainnet desde enero de 2026.
+        <a href="/bitvm/">BitVM</a> permite verificar computación arbitraria sobre Bitcoin con fraud proofs. <a href="/articulos/bitvm-y-citrea/">Citrea</a> es el primer ZK-rollup nativo, mainnet desde enero de 2026.
       </p>
       <ul>
         <li><strong>Citrea</strong> — ZK-rollup EVM-compatible anclado a Bitcoin vía puente Clementine.</li>
@@ -117,9 +117,9 @@ const faqLd = {
 
       <h2>Capa de activos — Taproot Assets, RGB y ordinales</h2>
       <ul>
-        <li><strong><a href="/articulos/taproot-assets">Taproot Assets</a></strong> (Lightning Labs) — Stablecoins y tokens nativos sobre Bitcoin que viajan por Lightning. USDT nativo desde 2025.</li>
+        <li><strong><a href="/articulos/taproot-assets/">Taproot Assets</a></strong> (Lightning Labs) — Stablecoins y tokens nativos sobre Bitcoin que viajan por Lightning. USDT nativo desde 2025.</li>
         <li><strong>RGB</strong> — Protocolo alternativo de smart contracts y activos sobre Bitcoin/Lightning, con un modelo de validación cliente.</li>
-        <li><strong>Ordinals / Runes</strong> — Inscripciones de datos arbitrarios y tokens fungibles sobre <a href="/utxo">UTXOs</a>. Controvertidos por el uso de espacio en bloque.</li>
+        <li><strong>Ordinals / Runes</strong> — Inscripciones de datos arbitrarios y tokens fungibles sobre <a href="/utxo/">UTXOs</a>. Controvertidos por el uso de espacio en bloque.</li>
       </ul>
 
       <h2>Sidechains federadas</h2>
@@ -164,9 +164,9 @@ const faqLd = {
 
       <h2>Qué está aún en construcción</h2>
       <ul>
-        <li><a href="/articulos/covenants">Covenants</a> (OP_CAT, CTV) — Habilitarían vaults y mejores L2.</li>
+        <li><a href="/articulos/covenants/">Covenants</a> (OP_CAT, CTV) — Habilitarían vaults y mejores L2.</li>
         <li>Maduración de BitVM y puentes trust-minimized.</li>
-        <li>Despliegue mainnet de <a href="/articulos/bip360-resistencia-cuantica">BIP-360</a> (resistencia cuántica).</li>
+        <li>Despliegue mainnet de <a href="/articulos/bip360-resistencia-cuantica/">BIP-360</a> (resistencia cuántica).</li>
         <li>PTLCs en Lightning (mejores privacidad y compatibilidad con Taproot Assets).</li>
         <li>Estandarización de BOLT12 (offers reutilizables).</li>
       </ul>
@@ -184,19 +184,19 @@ const faqLd = {
 
       <h2>Recursos relacionados</h2>
       <ul>
-        <li><a href="/que-es-bitcoin">Qué es Bitcoin</a></li>
-        <li><a href="/como-funciona-bitcoin">Cómo funciona Bitcoin</a></li>
-        <li><a href="/lightning-network">Qué es Lightning Network</a></li>
-        <li><a href="/bitvm">Qué es BitVM</a></li>
-        <li><a href="/taproot">Qué es Taproot</a></li>
-        <li><a href="/utxo">Qué es un UTXO</a></li>
-        <li><a href="/que-es-un-nodo-bitcoin">Qué es un nodo Bitcoin</a></li>
-        <li><a href="/que-es-blockchain">Qué es blockchain</a></li>
-        <li><a href="/anatomia-de-una-transaccion-bitcoin">Anatomía de una transacción</a></li>
-        <li><a href="/comparativas/layer-1-vs-layer-2">Layer 1 vs Layer 2</a></li>
-        <li><a href="/escalabilidad-bitcoin">Escalabilidad de Bitcoin</a></li>
-        <li><a href="/futuro-bitcoin">Futuro de Bitcoin</a></li>
-        <li><a href="/glosario">Glosario completo</a></li>
+        <li><a href="/que-es-bitcoin/">Qué es Bitcoin</a></li>
+        <li><a href="/como-funciona-bitcoin/">Cómo funciona Bitcoin</a></li>
+        <li><a href="/lightning-network/">Qué es Lightning Network</a></li>
+        <li><a href="/bitvm/">Qué es BitVM</a></li>
+        <li><a href="/taproot/">Qué es Taproot</a></li>
+        <li><a href="/utxo/">Qué es un UTXO</a></li>
+        <li><a href="/que-es-un-nodo-bitcoin/">Qué es un nodo Bitcoin</a></li>
+        <li><a href="/que-es-blockchain/">Qué es blockchain</a></li>
+        <li><a href="/anatomia-de-una-transaccion-bitcoin/">Anatomía de una transacción</a></li>
+        <li><a href="/comparativas/layer-1-vs-layer-2/">Layer 1 vs Layer 2</a></li>
+        <li><a href="/escalabilidad-bitcoin/">Escalabilidad de Bitcoin</a></li>
+        <li><a href="/futuro-bitcoin/">Futuro de Bitcoin</a></li>
+        <li><a href="/glosario/">Glosario completo</a></li>
       </ul>
 
       <h2>Fuentes</h2>
@@ -214,7 +214,7 @@ const faqLd = {
     <Faq items={faqs} />
 
     <footer class="mt-16 pt-8 border-t border-line">
-      <a href="/articulos" class="btn">← Todos los artículos</a>
+      <a href="/articulos/" class="btn">← Todos los artículos</a>
     </footer>
   </article>
 </BaseLayout>

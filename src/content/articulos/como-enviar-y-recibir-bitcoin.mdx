@@ -30,22 +30,22 @@ related:
 
 ## Resumen rápido
 
-**Enviar Bitcoin es pegar la dirección del destinatario, poner la cantidad, verificar y confirmar; recibir es generar tu dirección y compartirla.** El proceso es sencillo, pero tiene una regla innegociable: **verifica siempre la dirección antes de enviar**, porque las transacciones de Bitcoin son **irreversibles**. Para pagos pequeños y rápidos conviene usar [Lightning](/lightning-network) (segundos, céntimos); para cantidades grandes, la capa base (on-chain). Esta guía te lleva paso a paso por ambos casos.
+**Enviar Bitcoin es pegar la dirección del destinatario, poner la cantidad, verificar y confirmar; recibir es generar tu dirección y compartirla.** El proceso es sencillo, pero tiene una regla innegociable: **verifica siempre la dirección antes de enviar**, porque las transacciones de Bitcoin son **irreversibles**. Para pagos pequeños y rápidos conviene usar [Lightning](/lightning-network/) (segundos, céntimos); para cantidades grandes, la capa base (on-chain). Esta guía te lleva paso a paso por ambos casos.
 
-Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/).
 
 ## Antes de empezar: dos conceptos
 
 ### La dirección de recepción
 
-Una **dirección** es un código que sirve para recibir bitcoin, parecido a un número de cuenta. Las direcciones modernas empiezan por `bc1...`. Se generan en tu [wallet](/articulos/que-es-una-wallet-bitcoin), y puedes usar una nueva cada vez (mejora la privacidad). **Compartir tu dirección es totalmente seguro**: con ella solo se puede enviarte dinero, nunca sacártelo.
+Una **dirección** es un código que sirve para recibir bitcoin, parecido a un número de cuenta. Las direcciones modernas empiezan por `bc1...`. Se generan en tu [wallet](/articulos/que-es-una-wallet-bitcoin/), y puedes usar una nueva cada vez (mejora la privacidad). **Compartir tu dirección es totalmente seguro**: con ella solo se puede enviarte dinero, nunca sacártelo.
 
 ### On-chain vs. Lightning
 
 Hay dos formas de mover bitcoin, y conviene elegir bien:
 
 - **On-chain (capa base):** la transacción se escribe en la blockchain. Tarda unos diez minutos en confirmarse y la comisión depende de la congestión. Ideal para **cantidades grandes** o poco frecuentes.
-- **[Lightning](/lightning-network):** el pago va por la capa 2. Es **casi instantáneo y cuesta fracciones de céntimo**. Ideal para **pagos pequeños y cotidianos**.
+- **[Lightning](/lightning-network/):** el pago va por la capa 2. Es **casi instantáneo y cuesta fracciones de céntimo**. Ideal para **pagos pequeños y cotidianos**.
 
 ## Cómo recibir Bitcoin, paso a paso
 
@@ -64,7 +64,7 @@ Consejo: si vas a recibir una cantidad importante, pide al remitente que haga **
 4. **Introduce la cantidad.** Puedes indicarla en BTC, en satoshis o en tu moneda local (la wallet convierte).
 5. **Elige la comisión (fee).** On-chain, una comisión más alta acelera la confirmación; una más baja la abarata pero puede tardar más. La wallet suele sugerir opciones (rápida/normal/económica).
 6. **VERIFICA LA DIRECCIÓN.** Este es el paso crítico. Comprueba que la dirección coincide con la del destinatario, idealmente revisando los primeros y últimos caracteres. (Ver más abajo por qué.)
-7. **Confirma.** Tu wallet firma la transacción con tu [clave privada](/articulos/que-es-una-clave-privada) y la propaga a la red.
+7. **Confirma.** Tu wallet firma la transacción con tu [clave privada](/articulos/que-es-una-clave-privada/) y la propaga a la red.
 8. **Espera la confirmación.** En Lightning es inmediata; on-chain, la transacción aparece como "pendiente" hasta que entra en un bloque.
 
 ## La regla de oro: las transacciones son irreversibles
@@ -92,13 +92,13 @@ Para pagos pequeños, una confirmación suele bastar. Para cantidades importante
 
 ## Entender las comisiones
 
-La comisión (*fee*) no la cobra ninguna empresa: es lo que pagas a los [mineros](/articulos/mineria-de-bitcoin) por incluir tu transacción en un bloque. Funciona como una subasta por el espacio limitado de cada bloque:
+La comisión (*fee*) no la cobra ninguna empresa: es lo que pagas a los [mineros](/articulos/mineria-de-bitcoin/) por incluir tu transacción en un bloque. Funciona como una subasta por el espacio limitado de cada bloque:
 
 - Cuando hay **poca demanda**, las comisiones son bajas.
 - Cuando hay **congestión**, suben, porque todos compiten por entrar.
 - La comisión **no depende de cuánto envías**, sino del **tamaño en datos** de la transacción.
 
-Si la comisión on-chain te parece alta para un pago pequeño, esa es justo la señal de que deberías usar [Lightning](/lightning-network).
+Si la comisión on-chain te parece alta para un pago pequeño, esa es justo la señal de que deberías usar [Lightning](/lightning-network/).
 
 > Enviar Bitcoin es fácil; enviarlo bien es cuestión de un solo hábito: verificar la dirección antes de confirmar. Ese gesto de tres segundos es lo que separa una transacción tranquila de una pérdida irreversible.
 
@@ -109,13 +109,13 @@ Si la comisión on-chain te parece alta para un pago pequeño, esa es justo la s
 - Poner una comisión tan baja que la transacción queda atascada horas.
 - Mover una cantidad grande sin haber hecho antes una prueba pequeña.
 
-Tienes el catálogo completo en [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin).
+Tienes el catálogo completo en [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin/).
 
 ## Contenido relacionado
 
-- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro) — Guía pillar del silo.
-- [Qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin)
-- [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin)
-- [Qué es una clave privada](/articulos/que-es-una-clave-privada)
-- [Qué es Lightning Network](/lightning-network) — Pagos rápidos y baratos.
-- [Glosario de Bitcoin](/glosario)
+- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/) — Guía pillar del silo.
+- [Qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin/)
+- [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin/)
+- [Qué es una clave privada](/articulos/que-es-una-clave-privada/)
+- [Qué es Lightning Network](/lightning-network/) — Pagos rápidos y baratos.
+- [Glosario de Bitcoin](/glosario/)

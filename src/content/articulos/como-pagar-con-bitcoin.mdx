@@ -44,18 +44,18 @@ related:
 
 **Pagar con Bitcoin en una tienda es tan simple como abrir tu wallet, escanear el código QR del comercio, comprobar el importe y confirmar; si el pago va por Lightning, el dinero llega en uno o dos segundos y cuesta fracciones de céntimo.** Esa es la experiencia real en 2026, y se parece mucho más a pagar con una app del móvil que a la idea de "esperar diez minutos por una transacción". La clave está en usar la vía adecuada: **Lightning** para el día a día (café, compra, un producto online barato) y **on-chain** (la capa base) para importes grandes. Esta guía te lleva paso a paso por un pago en tienda física y online, te explica qué ocurre por dentro cuando escaneas ese QR, compara comisiones y tiempos, y repasa la seguridad, los errores típicos y las implicaciones fiscales para que pagues sin sustos.
 
-Si lo que buscas es **dónde** pagar, ve directo a nuestra página de [comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin), un mapa en tiempo real. Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+Si lo que buscas es **dónde** pagar, ve directo a nuestra página de [comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin/), un mapa en tiempo real. Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/).
 
 ## Qué significa "pagar con Bitcoin" hoy
 
 **Pagar con Bitcoin significa transferir bitcoin desde tu wallet a la del comercio a cambio de un bien o servicio, y en 2026 eso puede ocurrir por dos caminos técnicos distintos: la capa base (on-chain) o la red Lightning (capa 2).** Entender la diferencia no es un tecnicismo: es lo que separa una buena experiencia de pago de una frustrante.
 
-- **On-chain (capa base):** el pago se escribe directamente en la [blockchain](/articulos/que-es-un-bloque-bitcoin) de Bitcoin. Es la forma "clásica". Cada transacción espera a entrar en un bloque, que llega de media **cada diez minutos**, y la comisión depende de cuánta gente compita por espacio en ese momento. Es robusto y definitivo, pero lento y con coste variable. Ideal para **cantidades grandes** o pagos poco frecuentes.
-- **[Lightning](/lightning-network) (capa 2):** una red construida sobre Bitcoin que mueve pagos por canales entre nodos sin escribir cada operación en la cadena. Es **casi instantáneo** y cuesta **fracciones de céntimo**. Es la vía pensada para **pagos pequeños y cotidianos**: un café, la panadería, una suscripción, una propina.
+- **On-chain (capa base):** el pago se escribe directamente en la [blockchain](/articulos/que-es-un-bloque-bitcoin/) de Bitcoin. Es la forma "clásica". Cada transacción espera a entrar en un bloque, que llega de media **cada diez minutos**, y la comisión depende de cuánta gente compita por espacio en ese momento. Es robusto y definitivo, pero lento y con coste variable. Ideal para **cantidades grandes** o pagos poco frecuentes.
+- **[Lightning](/lightning-network/) (capa 2):** una red construida sobre Bitcoin que mueve pagos por canales entre nodos sin escribir cada operación en la cadena. Es **casi instantáneo** y cuesta **fracciones de céntimo**. Es la vía pensada para **pagos pequeños y cotidianos**: un café, la panadería, una suscripción, una propina.
 
 La regla mental es sencilla: **si el importe es pequeño y quieres inmediatez, Lightning; si es una suma importante y no te corre prisa, on-chain**. La mayoría de comercios que aceptan Bitcoin a pie de calle en 2026 lo hacen precisamente por Lightning, porque nadie quiere esperar diez minutos con la cola formándose detrás.
 
-Antes de seguir, conviene tener claro el terreno con dos lecturas base: [qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin) y [cómo enviar y recibir Bitcoin](/articulos/como-enviar-y-recibir-bitcoin), porque pagar en una tienda es, en el fondo, un caso concreto de "enviar" con algunos detalles propios del comercio.
+Antes de seguir, conviene tener claro el terreno con dos lecturas base: [qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin/) y [cómo enviar y recibir Bitcoin](/articulos/como-enviar-y-recibir-bitcoin/), porque pagar en una tienda es, en el fondo, un caso concreto de "enviar" con algunos detalles propios del comercio.
 
 ## Cómo pagar con Bitcoin en una tienda física, paso a paso
 
@@ -135,18 +135,18 @@ La comisión on-chain merece una aclaración porque sorprende a mucha gente: **n
 
 Por dentro, esos mapas funcionan sobre datos abiertos de **OpenStreetMap**. Cada comercio se marca con etiquetas estándar como `payment:onchain=yes` (acepta pagos en la cadena), `payment:lightning=yes` (acepta Lightning) o `payment:lightning_contactless=yes` (Lightning sin contacto, tipo tarjeta), según la documentación del proyecto (OpenStreetMap Wiki; BTC Map). Como cualquiera puede añadir y **reverificar** comercios, la información se mantiene viva por la comunidad, aunque conviene confirmar en el sitio que el negocio sigue aceptando pagos.
 
-Para que no tengas que salir de aquí, hemos reunido y ordenado esa información en nuestra propia página: consulta [**el mapa de comercios que aceptan Bitcoin**](/comercios-que-aceptan-bitcoin) para **buscar negocios cerca de ti** con el detalle de si aceptan Lightning, on-chain o ambos. Es la respuesta directa a "¿dónde puedo gastarlos?"; esta guía se centra en el "¿cómo?".
+Para que no tengas que salir de aquí, hemos reunido y ordenado esa información en nuestra propia página: consulta [**el mapa de comercios que aceptan Bitcoin**](/comercios-que-aceptan-bitcoin/) para **buscar negocios cerca de ti** con el detalle de si aceptan Lightning, on-chain o ambos. Es la respuesta directa a "¿dónde puedo gastarlos?"; esta guía se centra en el "¿cómo?".
 
 ## Qué wallet necesitas para pagar
 
-**Para pagar en tiendas necesitas una wallet con soporte Lightning; puede ser custodial (más fácil de empezar) o de autocustodia Lightning (control total, algo más de gestión), y lo sensato es llevar en ella solo un saldo pequeño para el día a día.** No hay una marca "correcta": lo importante es entender la diferencia de modelo, que desarrollamos a fondo en [tipos de wallets de Bitcoin](/articulos/tipos-de-wallets-bitcoin).
+**Para pagar en tiendas necesitas una wallet con soporte Lightning; puede ser custodial (más fácil de empezar) o de autocustodia Lightning (control total, algo más de gestión), y lo sensato es llevar en ella solo un saldo pequeño para el día a día.** No hay una marca "correcta": lo importante es entender la diferencia de modelo, que desarrollamos a fondo en [tipos de wallets de Bitcoin](/articulos/tipos-de-wallets-bitcoin/).
 
 - **Wallets Lightning custodiales:** un proveedor gestiona por ti los canales y la liquidez. Instalas la app, cargas saldo y ya puedes pagar. Son las más cómodas para empezar y para importes pequeños, pero **el proveedor custodia tus fondos**: aplica el viejo principio de "*not your keys, not your coins*". Trátalas como el monedero del bolsillo, no como la caja fuerte.
 - **Wallets Lightning de autocustodia:** tú controlas las claves y, según el diseño, tus canales o tu liquidez. Te dan **soberanía real** sobre el dinero, a cambio de un poco más de gestión (abrir canales, mantener liquidez entrante/saliente). Son la evolución natural cuando ganas soltura.
 
-Una configuración habitual y saludable: el grueso de tus bitcoins en **almacenamiento en frío / autocustodia on-chain** (bien respaldado con su [frase semilla](/articulos/frase-semilla)), y una **pequeña cantidad en una wallet Lightning del móvil** para gastar, que vas rellenando cuando se agota. Así, si pierdes o te roban el móvil, el riesgo se limita al efectivo que llevabas encima, no a tu patrimonio.
+Una configuración habitual y saludable: el grueso de tus bitcoins en **almacenamiento en frío / autocustodia on-chain** (bien respaldado con su [frase semilla](/articulos/frase-semilla/)), y una **pequeña cantidad en una wallet Lightning del móvil** para gastar, que vas rellenando cuando se agota. Así, si pierdes o te roban el móvil, el riesgo se limita al efectivo que llevabas encima, no a tu patrimonio.
 
-Sea cual sea tu elección, todo lo relativo a proteger las claves y no exponer tu seed sigue vigente al pagar: repásalo en la guía pilar [cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+Sea cual sea tu elección, todo lo relativo a proteger las claves y no exponer tu seed sigue vigente al pagar: repásalo en la guía pilar [cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/).
 
 ## Seguridad al pagar con Bitcoin
 
@@ -158,7 +158,7 @@ Antes de pulsar confirmar, comprueba que **la cantidad coincide** con lo que mar
 
 ### Cuidado con los QR maliciosos
 
-Un QR es opaco al ojo humano: no sabes a dónde apunta hasta que tu wallet lo decodifica. Existe el riesgo de **QR sustituidos** (una pegatina falsa encima del real) o QR que apuntan a una web de phishing. Mitigaciones sencillas: **lee siempre la pantalla de confirmación** de tu wallet (destino e importe) en lugar de confirmar a ciegas, y desconfía de QR pegados en sitios raros o que, al escanearlos, te llevan a "conectar la wallet" o "validar" en una web. Ninguna compra legítima te pedirá tu [frase semilla](/articulos/frase-semilla): si eso ocurre, es un robo, como explicamos en [estafas en Bitcoin](/articulos/estafas-en-bitcoin).
+Un QR es opaco al ojo humano: no sabes a dónde apunta hasta que tu wallet lo decodifica. Existe el riesgo de **QR sustituidos** (una pegatina falsa encima del real) o QR que apuntan a una web de phishing. Mitigaciones sencillas: **lee siempre la pantalla de confirmación** de tu wallet (destino e importe) en lugar de confirmar a ciegas, y desconfía de QR pegados en sitios raros o que, al escanearlos, te llevan a "conectar la wallet" o "validar" en una web. Ninguna compra legítima te pedirá tu [frase semilla](/articulos/frase-semilla/): si eso ocurre, es un robo, como explicamos en [estafas en Bitcoin](/articulos/estafas-en-bitcoin/).
 
 ### Asume que no hay reembolsos automáticos
 
@@ -194,7 +194,7 @@ En la práctica, para un café esto es una cantidad ínfima, pero **la obligaci�
 6. **Confundir Lightning y on-chain.** Enviar a una dirección on-chain cuando el comercio esperaba Lightning, o al revés. Solución: fíjate en el tipo de factura (una dirección `bc1...` es on-chain; una cadena que empieza por `lnbc...` es Lightning).
 7. **Olvidar la parte fiscal** en compras relevantes. Solución: lleva un registro de tus operaciones.
 
-Tienes el catálogo ampliado de descuidos en [errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin).
+Tienes el catálogo ampliado de descuidos en [errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin/).
 
 ## Lo que ya funciona hoy vs lo que aún es incipiente
 
@@ -228,7 +228,7 @@ Para pagos en tiendas, casi siempre Lightning: es instantáneo y cuesta fraccion
 
 ### ¿Dónde puedo pagar con Bitcoin cerca de mí?
 
-La forma más práctica es consultar un mapa de comercios como BTC Map, que se nutre de OpenStreetMap y muestra bares, tiendas y servicios que aceptan Bitcoin, con etiquetas para pagos on-chain (₿) y Lightning (⚡). Puedes ver el listado y buscar por tu zona en nuestra [página de comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin).
+La forma más práctica es consultar un mapa de comercios como BTC Map, que se nutre de OpenStreetMap y muestra bares, tiendas y servicios que aceptan Bitcoin, con etiquetas para pagos on-chain (₿) y Lightning (⚡). Puedes ver el listado y buscar por tu zona en nuestra [página de comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin/).
 
 ### ¿Cuánto cuesta pagar con Bitcoin?
 
@@ -252,7 +252,7 @@ No. Una vez confirmada, una transacción de Bitcoin es irreversible y no hay ser
 
 ## Conclusión
 
-Pagar con Bitcoin en 2026 ya no es un ejercicio de fe tecnológica: es escanear un QR, mirar el importe y confirmar, con Lightning liquidando en un par de segundos por céntimos. La única "curva de aprendizaje" real es interiorizar **cuándo usar Lightning y cuándo on-chain**, llevar un saldo de gasto separado de tu ahorro y no saltarte nunca la verificación antes de confirmar. Con eso, pagar es tan fluido como cualquier app del móvil, con la diferencia de que el dinero es tuyo de verdad y el pago es definitivo. Cuando quieras dar el paso, busca dónde gastar en [el mapa de comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin) y repasa la seguridad en [cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+Pagar con Bitcoin en 2026 ya no es un ejercicio de fe tecnológica: es escanear un QR, mirar el importe y confirmar, con Lightning liquidando en un par de segundos por céntimos. La única "curva de aprendizaje" real es interiorizar **cuándo usar Lightning y cuándo on-chain**, llevar un saldo de gasto separado de tu ahorro y no saltarte nunca la verificación antes de confirmar. Con eso, pagar es tan fluido como cualquier app del móvil, con la diferencia de que el dinero es tuyo de verdad y el pago es definitivo. Cuando quieras dar el paso, busca dónde gastar en [el mapa de comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin/) y repasa la seguridad en [cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/).
 
 > Pagar con Bitcoin bien hecho es aburrido: escaneas, confirmas y ya está. Esa "aburrición" es exactamente la señal de que la tecnología ha madurado.
 
@@ -268,11 +268,11 @@ Pagar con Bitcoin en 2026 ya no es un ejercicio de fe tecnológica: es escanear 
 
 ## Contenido relacionado
 
-- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro) — Guía pilar del silo de uso y seguridad.
-- [Cómo enviar y recibir Bitcoin](/articulos/como-enviar-y-recibir-bitcoin) — La base sobre la que se apoya cualquier pago.
-- [Tipos de wallets (fría, caliente, hardware)](/articulos/tipos-de-wallets-bitcoin) — Qué wallet usar para gastar y cuál para guardar.
-- [Qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin) — El punto de partida.
-- [Estafas en Bitcoin](/articulos/estafas-en-bitcoin) — Cómo intentan engañarte al pagar.
-- [Frase semilla](/articulos/frase-semilla) — Protege las claves que nadie debe pedirte al pagar.
-- [Comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin) — El mapa para encontrar dónde pagar.
-- [Glosario de Bitcoin](/glosario)
+- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/) — Guía pilar del silo de uso y seguridad.
+- [Cómo enviar y recibir Bitcoin](/articulos/como-enviar-y-recibir-bitcoin/) — La base sobre la que se apoya cualquier pago.
+- [Tipos de wallets (fría, caliente, hardware)](/articulos/tipos-de-wallets-bitcoin/) — Qué wallet usar para gastar y cuál para guardar.
+- [Qué es una wallet de Bitcoin](/articulos/que-es-una-wallet-bitcoin/) — El punto de partida.
+- [Estafas en Bitcoin](/articulos/estafas-en-bitcoin/) — Cómo intentan engañarte al pagar.
+- [Frase semilla](/articulos/frase-semilla/) — Protege las claves que nadie debe pedirte al pagar.
+- [Comercios que aceptan Bitcoin](/comercios-que-aceptan-bitcoin/) — El mapa para encontrar dónde pagar.
+- [Glosario de Bitcoin](/glosario/)

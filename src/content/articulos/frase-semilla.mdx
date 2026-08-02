@@ -39,9 +39,9 @@ related:
 
 ## Resumen rápido
 
-**La frase semilla (o *seed phrase*) es la copia de seguridad de todo tu Bitcoin: 12 o 24 palabras con las que se regeneran todas tus claves privadas y, por tanto, el acceso a todos tus fondos.** No es una contraseña que puedas cambiar: es el respaldo maestro de tu [wallet](/articulos/que-es-una-wallet-bitcoin). Quien tenga esas palabras controla tu dinero al instante y de forma irreversible; quien las pierda, pierde el acceso para siempre. Por eso, en la práctica, "proteger tu Bitcoin" se reduce en gran parte a **una sola cosa: proteger bien la frase semilla**. Este artículo explica qué es exactamente, cómo funciona por dentro (el estándar BIP-39), cómo respaldarla sin cometer los errores típicos y cómo evitar que te la roben.
+**La frase semilla (o *seed phrase*) es la copia de seguridad de todo tu Bitcoin: 12 o 24 palabras con las que se regeneran todas tus claves privadas y, por tanto, el acceso a todos tus fondos.** No es una contraseña que puedas cambiar: es el respaldo maestro de tu [wallet](/articulos/que-es-una-wallet-bitcoin/). Quien tenga esas palabras controla tu dinero al instante y de forma irreversible; quien las pierda, pierde el acceso para siempre. Por eso, en la práctica, "proteger tu Bitcoin" se reduce en gran parte a **una sola cosa: proteger bien la frase semilla**. Este artículo explica qué es exactamente, cómo funciona por dentro (el estándar BIP-39), cómo respaldarla sin cometer los errores típicos y cómo evitar que te la roben.
 
-Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+Este artículo forma parte del silo [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/).
 
 ## Qué es exactamente una frase semilla
 
@@ -55,7 +55,7 @@ Esa lista es tu **frase semilla**. También la verás llamada *seed phrase*, *fr
 
 La idea clave es esta: esa frase **no es un accesorio de tu wallet, es tu wallet**. La aplicación que instalas en el móvil o el dispositivo hardware que tienes en la mano son solo herramientas para usar las claves. Las claves de verdad —y la copia de seguridad que las regenera— están en esas palabras. Si mañana se rompe tu móvil, se pierde tu wallet hardware o desaparece la empresa que hizo la app, **escribes esas 12 o 24 palabras en cualquier otra wallet compatible y recuperas todo: saldo, historial y direcciones**.
 
-Para entender por qué unas palabras pueden contener todo eso, conviene saber qué es una [clave privada](/articulos/que-es-una-clave-privada). En resumen: en Bitcoin, quien controla la clave privada controla los fondos. El problema es que una clave privada en bruto es un número enorme e ilegible, imposible de copiar a mano sin equivocarse. La frase semilla resuelve ese problema: es una forma **legible y respaldable** de ese secreto.
+Para entender por qué unas palabras pueden contener todo eso, conviene saber qué es una [clave privada](/articulos/que-es-una-clave-privada/). En resumen: en Bitcoin, quien controla la clave privada controla los fondos. El problema es que una clave privada en bruto es un número enorme e ilegible, imposible de copiar a mano sin equivocarse. La frase semilla resuelve ese problema: es una forma **legible y respaldable** de ese secreto.
 
 ## Cómo nace la frase: de la aleatoriedad a 12 o 24 palabras
 
@@ -160,7 +160,7 @@ Un respaldo sin verificar no es un respaldo: es una suposición.
 
 ## Errores de respaldo que cuestan el dinero
 
-Resumiendo los fallos más habituales (tienes el catálogo ampliado en [errores comunes](/articulos/errores-comunes-bitcoin) y [cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin)):
+Resumiendo los fallos más habituales (tienes el catálogo ampliado en [errores comunes](/articulos/errores-comunes-bitcoin/) y [cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin/)):
 
 1. **Guardarla en digital** "solo un momento" (foto para copiarla luego). Ese momento basta.
 2. **Tener una sola copia**, expuesta a un único incendio o pérdida.
@@ -180,7 +180,7 @@ Una idea intuitiva pero **peligrosa**: partir las 24 palabras en dos mitades y g
 Es decir: empeoras la seguridad *y* la resistencia a pérdidas a la vez. Si tu objetivo es repartir el respaldo en varias piezas, usa un método diseñado matemáticamente para ello:
 
 - **Shamir Secret Sharing (SLIP-39):** divide la copia en N partes de las que basta un subconjunto (por ejemplo, 3 de 5) para reconstruirla. La clave es que **una parte por separado no revela absolutamente nada** de la frase, ni siquiera de forma parcial. Algunas wallets hardware lo soportan de fábrica.
-- **Multisig:** en lugar de repartir una frase, usas **varias claves independientes** y exiges varias firmas para gastar (por ejemplo, 2 de 3). Perder o que te roben una sola llave no compromete los fondos. Es el estándar para patrimonios importantes; tienes contexto en [tipos de wallets](/articulos/tipos-de-wallets-bitcoin) y en la guía pilar de [cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+- **Multisig:** en lugar de repartir una frase, usas **varias claves independientes** y exiges varias firmas para gastar (por ejemplo, 2 de 3). Perder o que te roben una sola llave no compromete los fondos. Es el estándar para patrimonios importantes; tienes contexto en [tipos de wallets](/articulos/tipos-de-wallets-bitcoin/) y en la guía pilar de [cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/).
 
 ## El robo más común: "introduce tu frase para validar/recuperar"
 
@@ -197,7 +197,7 @@ La regla es **absoluta y sin excepciones**:
 
 > Ningún servicio, soporte, wallet o web legítimos te pedirá jamás tu frase semilla. La frase solo se introduce en **una** circunstancia: cuando **tú** restauras tu propia wallet en un dispositivo de confianza. En cualquier otro contexto en que te la pidan, es un robo. Punto.
 
-Tienes el panorama completo de engaños en [estafas en Bitcoin](/articulos/estafas-en-bitcoin).
+Tienes el panorama completo de engaños en [estafas en Bitcoin](/articulos/estafas-en-bitcoin/).
 
 ## No te olvides de la herencia
 
@@ -218,7 +218,7 @@ Un respaldo perfecto tiene una cara incómoda: si solo tú sabes dónde está y 
 
 La frase semilla es, a la vez, lo más simple y lo más importante de la autocustodia: doce o veinticuatro palabras que concentran el control total de tu dinero. Entender que **debajo de tu wallet hay una frase que lo regenera todo** es lo que te hace tratarla con el respeto que merece. No es burocracia ni paranoia: es la diferencia entre tener bitcoins de verdad y solo creer que los tienes. Protégela bien una vez, con método, y habrás resuelto la mayor parte de la seguridad en Bitcoin.
 
-Sigue por [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin) para el plan completo por niveles, o vuelve a la guía pilar [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro).
+Sigue por [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin/) para el plan completo por niveles, o vuelve a la guía pilar [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/).
 
 ## Fuentes
 
@@ -230,10 +230,10 @@ Sigue por [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin) par
 
 ## Contenido relacionado
 
-- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro) — Guía pilar del silo de seguridad.
-- [Qué es una clave privada](/articulos/que-es-una-clave-privada) — El secreto que respalda la frase.
-- [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin) — Plan de seguridad por niveles.
-- [Tipos de wallets (fría, caliente, hardware)](/articulos/tipos-de-wallets-bitcoin) — Dónde vive tu frase.
-- [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin) — Los descuidos que cuestan fondos.
-- [Estafas en Bitcoin](/articulos/estafas-en-bitcoin) — Cómo intentan que entregues la seed.
-- [Glosario de Bitcoin](/glosario)
+- [Cómo usar Bitcoin de forma segura](/articulos/como-usar-bitcoin-seguro/) — Guía pilar del silo de seguridad.
+- [Qué es una clave privada](/articulos/que-es-una-clave-privada/) — El secreto que respalda la frase.
+- [Cómo proteger tus Bitcoin](/articulos/como-proteger-tus-bitcoin/) — Plan de seguridad por niveles.
+- [Tipos de wallets (fría, caliente, hardware)](/articulos/tipos-de-wallets-bitcoin/) — Dónde vive tu frase.
+- [Errores comunes al usar Bitcoin](/articulos/errores-comunes-bitcoin/) — Los descuidos que cuestan fondos.
+- [Estafas en Bitcoin](/articulos/estafas-en-bitcoin/) — Cómo intentan que entregues la seed.
+- [Glosario de Bitcoin](/glosario/)
