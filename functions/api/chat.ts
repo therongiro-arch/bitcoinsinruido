@@ -52,16 +52,21 @@ const MAX_TOTAL_CHARS = 24000;
  * empezó a fallar con 400 INVALID_ARGUMENT. Un alias móvil no protege de las
  * retiradas de Google: solo cambia el modo de romperse. Una cascada explícita
  * sí, porque degrada en vez de caerse.
+ *
+ * NO incluir `gemini-2.5-flash`: esta clave recibe 404 NOT_FOUND ("no longer
+ * available to new users"). Los candidatos van ordenados por lo que de verdad
+ * funciona, no por lo que debería funcionar.
  */
 const FALLBACK_MODELS = [
-  'gemini-2.5-flash',
+  // Verificado contra la clave del proyecto (2026-08-09): responde correctamente.
   'gemini-3.5-flash',
   'gemini-3.6-flash',
-  'gemini-2.5-flash-lite',
+  'gemini-3.5-flash-lite',
 ];
 
-// Tope de intentos contra la API: acota la latencia del peor caso.
-const MAX_UPSTREAM_ATTEMPTS = 4;
+// Tope de intentos contra la API: acota la latencia del peor caso. En el camino
+// feliz el primer intento acierta, así que no penaliza.
+const MAX_UPSTREAM_ATTEMPTS = 5;
 // Tope de espera SOLO para la fase de cabeceras. Una vez empieza el streaming
 // se cancela el temporizador, para no truncar respuestas largas.
 const UPSTREAM_HEADERS_TIMEOUT_MS = 15000;
