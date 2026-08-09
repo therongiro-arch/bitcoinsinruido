@@ -8,10 +8,16 @@
  * Requisitos de configuración (Cloudflare Pages → Settings → Variables and
  * Secrets), tanto en Production como en Preview:
  *   - GEMINI_API_KEY  (secret, obligatorio)  · clave de Google AI Studio
- *   - GEMINI_MODEL    (variable, opcional)    · por defecto "gemini-flash-latest"
+ *   - GEMINI_MODEL    (variable, opcional)    · fuerza un modelo concreto; si no
+ *     se define se usa la cascada FALLBACK_MODELS. Conviene dejarla SIN definir:
+ *     un valor obsoleto ahí desactiva la cascada y vuelve a romper el chat.
  *
  * La respuesta se transmite en streaming (SSE) para dar sensación de escritura
  * en vivo. Cada evento es `data: {"text":"..."}` y el cierre es `data: [DONE]`.
+ *
+ * Diagnóstico en vivo:
+ *   npx wrangler pages deployment tail <deployment-id> --project-name=bitcoinsinruido
+ * Los eventos se emiten con prefijo `[chat]`.
  */
 
 interface Env {
@@ -34,21 +40,74 @@ interface ChatRequest {
 const MAX_MESSAGES = 24;
 const MAX_CHARS_PER_MESSAGE = 4000;
 const MAX_TOTAL_CHARS = 24000;
-// Alias "latest": apunta siempre al modelo Flash vigente, de modo que la web no
-// se rompe cuando Google retira una versión concreta (p. ej. gemini-2.5-flash
-// dejó de estar disponible para claves nuevas). Es un modelo con razonamiento
-// interno ("thinking"); lo desactivamos abajo para respuestas rápidas y baratas.
-const DEFAULT_MODEL = 'gemini-flash-latest';
+
+/**
+ * Modelos candidatos, en orden de preferencia. Se prueban en cascada: si uno
+ * falla con un error recuperable (modelo retirado, argumento no soportado,
+ * cuota de ese modelo agotada) se intenta el siguiente.
+ *
+ * POR QUÉ UNA LISTA Y NO UN ALIAS: hasta ahora se usaba el alias
+ * `gemini-flash-latest`, que es un puntero móvil. Google lo movió a la familia
+ * Gemini 3, que ya NO acepta `thinkingConfig.thinkingBudget`, y toda petición
+ * empezó a fallar con 400 INVALID_ARGUMENT. Un alias móvil no protege de las
+ * retiradas de Google: solo cambia el modo de romperse. Una cascada explícita
+ * sí, porque degrada en vez de caerse.
+ *
+ * NO incluir `gemini-2.5-flash`: esta clave recibe 404 NOT_FOUND ("no longer
+ * available to new users"). Los candidatos van ordenados por lo que de verdad
+ * funciona, no por lo que debería funcionar.
+ */
+const FALLBACK_MODELS = [
+  // Verificado contra la clave del proyecto (2026-08-09): responde correctamente.
+  'gemini-3.5-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash-lite',
+];
+
+// Tope de intentos contra la API: acota la latencia del peor caso. En el camino
+// feliz el primer intento acierta, así que no penaliza.
+const MAX_UPSTREAM_ATTEMPTS = 5;
+// Tope de espera SOLO para la fase de cabeceras. Una vez empieza el streaming
+// se cancela el temporizador, para no truncar respuestas largas.
+const UPSTREAM_HEADERS_TIMEOUT_MS = 15000;
+
+/**
+ * Familias de "thinking" soportadas por cada modelo:
+ *  - Gemini 2.5 usa `thinkingBudget` (0 = desactivado).
+ *  - Gemini 3.x sustituyó ese campo por `thinkingLevel` y rechaza el anterior.
+ * Si el modelo no encaja en ninguna familia conocida no se envía nada y se deja
+ * el valor por defecto del modelo.
+ */
+function thinkingConfigFor(model: string): Record<string, unknown> | undefined {
+  if (model.startsWith('gemini-2.5')) return { thinkingBudget: 0 };
+  if (model.startsWith('gemini-3')) return { thinkingLevel: 'minimal' };
+  return undefined;
+}
 
 // Dominios autorizados a usar el endpoint (protege contra hotlinking del proxy).
 // Se permite el propio host de la request, el dominio de producción y las
 // preview de Cloudflare Pages (*.pages.dev).
 const ALLOWED_HOST_SUFFIXES = ['bitcoinsinruidos.com', 'pages.dev'];
 
-function jsonError(message: string, status = 400): Response {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+/**
+ * Códigos que Cloudflare INTERCEPTA en dominios de zona: sustituye el cuerpo de
+ * la respuesta por su página genérica `error code: 502` en text/plain.
+ *
+ * Comprobado en producción: la misma Function devolvía el JSON correcto en
+ * `bitcoinsinruido.pages.dev` y una página opaca en `bitcoinsinruidos.com`.
+ * Por eso el widget solo podía enseñar su mensaje de fallback: el JSON con el
+ * motivo real nunca llegaba al navegador. Nunca devolvemos estos códigos.
+ */
+const STATUS_MASKED_BY_CLOUDFLARE = new Set([502, 504]);
+
+function jsonError(message: string, status = 400, extra?: Record<string, unknown>): Response {
+  const safeStatus = STATUS_MASKED_BY_CLOUDFLARE.has(status) ? 503 : status;
+  return new Response(JSON.stringify({ error: message, status: safeStatus, ...extra }), {
+    status: safeStatus,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
   });
 }
 
@@ -196,71 +255,226 @@ export const onRequestPost = async (context: {
     return jsonError('La conversación debe terminar con un mensaje del usuario.');
   }
 
-  const model = (env.GEMINI_MODEL || DEFAULT_MODEL).trim();
-  const upstreamUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+  const systemInstruction = buildSystemInstruction(body.page);
+
+  // Toda la fase de llamada a Gemini va envuelta: cualquier excepción
+  // inesperada se convierte en un JSON útil, nunca en un 5xx opaco.
+  try {
+    const outcome = await callGeminiWithFallback(apiKey, env.GEMINI_MODEL, {
+      systemInstruction,
+      contents,
+    });
+
+    if (!outcome.ok) {
+      console.error(
+        '[chat] fallo upstream definitivo',
+        JSON.stringify({ attempts: outcome.attempts })
+      );
+      return jsonError(outcome.message, outcome.status, { detail: outcome.detail });
+    }
+
+    console.log('[chat] ok', JSON.stringify({ model: outcome.model }));
+
+    // Transforma la SSE de Gemini en una SSE simple para el cliente.
+    const stream = transformGeminiStream(outcome.body);
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-store, no-transform',
+        // OJO: no se envía `Connection: keep-alive`. Es una cabecera hop-by-hop
+        // que el runtime de Workers gestiona por su cuenta; fijarla a mano no
+        // aporta nada y ensucia la respuesta.
+        'X-Accel-Buffering': 'no',
+        'X-Chat-Model': outcome.model,
+      },
+    });
+  } catch (err) {
+    console.error('[chat] excepción no controlada', String(err));
+    return jsonError('Error interno del asistente. Inténtalo de nuevo en unos minutos.', 500);
+  }
+};
+
+/** Resultado de la cascada de intentos contra la API de Gemini. */
+type GeminiOutcome =
+  | { ok: true; model: string; body: ReadableStream<Uint8Array> }
+  | { ok: false; status: number; message: string; detail: string; attempts: string[] };
+
+/**
+ * Llama a Gemini probando varios modelos/configuraciones hasta que uno responde.
+ *
+ * Motivo: Google retira modelos y cambia campos del payload sin previo aviso
+ * (fue exactamente lo que tumbó el chat). En vez de depender de un único
+ * identificador, se recorre una cascada y, ante un 400 por argumento no
+ * soportado, se reintenta el mismo modelo sin `thinkingConfig`.
+ */
+async function callGeminiWithFallback(
+  apiKey: string,
+  configuredModel: string | undefined,
+  payload: { systemInstruction: string; contents: Array<{ role: string; parts: Array<{ text: string }> }> }
+): Promise<GeminiOutcome> {
+  // El modelo configurado por variable de entorno manda; después, la cascada.
+  const models: string[] = [];
+  const configured = configuredModel?.trim();
+  if (configured) models.push(configured);
+  for (const m of FALLBACK_MODELS) if (!models.includes(m)) models.push(m);
+
+  // Cada modelo se prueba con su thinkingConfig y, si procede, sin él.
+  const plan: Array<{ model: string; thinking?: Record<string, unknown> }> = [];
+  for (const model of models) {
+    const thinking = thinkingConfigFor(model);
+    plan.push({ model, thinking });
+    if (thinking) plan.push({ model });
+  }
+
+  const attempts: string[] = [];
+  let lastStatus = 503;
+  let lastDetail = 'sin respuesta del servicio de IA';
+
+  for (const step of plan.slice(0, MAX_UPSTREAM_ATTEMPTS)) {
+    const result = await callGeminiOnce(apiKey, step.model, step.thinking, payload);
+
+    if (result.ok) return { ok: true, model: step.model, body: result.body };
+
+    lastStatus = result.status;
+    lastDetail = result.detail;
+    attempts.push(`${step.model}${step.thinking ? '+thinking' : ''} -> ${result.status}: ${result.detail}`);
+    console.error(
+      '[chat] intento fallido',
+      JSON.stringify({ model: step.model, thinking: step.thinking ?? null, status: result.status, detail: result.detail })
+    );
+
+    // La clave es inválida o no tiene permisos: reintentar con otro modelo
+    // no arregla nada y solo gasta tiempo y cuota.
+    if (isApiKeyProblem(result.status, result.detail)) {
+      return {
+        ok: false,
+        status: 503,
+        message:
+          'El asistente no está disponible: la clave de la API de IA no es válida o ha sido revocada.',
+        detail: result.detail,
+        attempts,
+      };
+    }
+  }
+
+  // Cuota agotada: mensaje específico, es la causa más habitual en tier gratuito.
+  if (lastStatus === 429) {
+    return {
+      ok: false,
+      status: 429,
+      message:
+        'El asistente ha alcanzado su límite de consultas por ahora. Inténtalo de nuevo en unos minutos.',
+      detail: lastDetail,
+      attempts,
+    };
+  }
+
+  return {
+    ok: false,
+    status: 503,
+    message: 'El asistente no está disponible ahora mismo. Inténtalo de nuevo en unos minutos.',
+    detail: lastDetail,
+    attempts,
+  };
+}
+
+function isApiKeyProblem(status: number, detail: string): boolean {
+  const d = detail.toLowerCase();
+  return (
+    status === 401 ||
+    status === 403 ||
+    d.includes('api key not valid') ||
+    d.includes('api_key_invalid') ||
+    d.includes('permission denied')
+  );
+}
+
+/** Una única llamada a la API, con timeout en la fase de cabeceras. */
+async function callGeminiOnce(
+  apiKey: string,
+  model: string,
+  thinking: Record<string, unknown> | undefined,
+  payload: { systemInstruction: string; contents: Array<{ role: string; parts: Array<{ text: string }> }> }
+): Promise<
+  | { ok: true; body: ReadableStream<Uint8Array> }
+  | { ok: false; status: number; detail: string }
+> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
     model
   )}:streamGenerateContent?alt=sse`;
 
-  const geminiPayload = {
-    systemInstruction: {
-      role: 'system',
-      parts: [{ text: buildSystemInstruction(body.page) }],
-    },
-    contents,
-    generationConfig: {
-      temperature: 0.6,
-      topP: 0.95,
-      maxOutputTokens: 1024,
-      // Desactiva el razonamiento interno: para un asistente de FAQ no aporta
-      // calidad y consumiría el presupuesto de tokens (dejando la respuesta
-      // vacía) además de encarecer y ralentizar cada llamada.
-      thinkingConfig: { thinkingBudget: 0 },
-    },
+  const generationConfig: Record<string, unknown> = {
+    temperature: 0.6,
+    topP: 0.95,
+    maxOutputTokens: 1024,
+  };
+  // Se desactiva el razonamiento interno cuando el modelo lo permite: en un
+  // asistente de FAQ no aporta calidad, encarece y puede agotar el presupuesto
+  // de tokens dejando la respuesta vacía.
+  if (thinking) generationConfig.thinkingConfig = thinking;
+
+  const requestBody = JSON.stringify({
+    systemInstruction: { role: 'system', parts: [{ text: payload.systemInstruction }] },
+    contents: payload.contents,
+    generationConfig,
     safetySettings: [
       { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
       { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
       { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
       { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
     ],
-  };
+  });
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), UPSTREAM_HEADERS_TIMEOUT_MS);
 
   let upstream: Response;
   try {
-    upstream = await fetch(upstreamUrl, {
+    upstream = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
-      body: JSON.stringify(geminiPayload),
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: requestBody,
+      signal: controller.signal,
     });
-  } catch {
-    return jsonError('No se pudo contactar con el servicio de IA.', 502);
+  } catch (err) {
+    return { ok: false, status: 504, detail: `no se pudo contactar con la API: ${String(err)}` };
+  } finally {
+    // Se limpia en cuanto llegan las cabeceras: el streaming posterior no debe
+    // verse abortado por este temporizador.
+    clearTimeout(timer);
   }
 
   if (!upstream.ok || !upstream.body) {
-    let detail = '';
-    try {
-      const errJson = (await upstream.json()) as { error?: { message?: string } };
-      detail = errJson?.error?.message ? ` (${errJson.error.message})` : '';
-    } catch {
-      /* respuesta no-JSON */
-    }
-    return jsonError(`El servicio de IA devolvió un error${detail}.`, 502);
+    return { ok: false, status: upstream.status, detail: await readUpstreamError(upstream) };
   }
+  return { ok: true, body: upstream.body };
+}
 
-  // Transforma la SSE de Gemini en una SSE simple para el cliente.
-  const stream = transformGeminiStream(upstream.body);
-  return new Response(stream, {
-    status: 200,
-    headers: {
-      'Content-Type': 'text/event-stream; charset=utf-8',
-      'Cache-Control': 'no-cache, no-transform',
-      Connection: 'keep-alive',
-      'X-Accel-Buffering': 'no',
-    },
-  });
-};
+/** Extrae el motivo real del error de Gemini, sea JSON o texto plano. */
+async function readUpstreamError(upstream: Response): Promise<string> {
+  let raw = '';
+  try {
+    raw = await upstream.text();
+  } catch {
+    return `respuesta ilegible (HTTP ${upstream.status})`;
+  }
+  try {
+    const parsed = JSON.parse(raw) as {
+      error?: { message?: string; status?: string; details?: unknown };
+    };
+    if (parsed?.error?.message) {
+      const status = parsed.error.status ? ` [${parsed.error.status}]` : '';
+      // `details` suele traer el campo concreto que Google rechaza: es justo
+      // lo que faltaba para diagnosticar sin adivinar.
+      const details = parsed.error.details ? ` ${JSON.stringify(parsed.error.details)}` : '';
+      return `${parsed.error.message}${status}${details}`.slice(0, 500);
+    }
+  } catch {
+    /* no era JSON */
+  }
+  return raw.slice(0, 500) || `HTTP ${upstream.status} sin cuerpo`;
+}
 
 // Rechaza cualquier método que no sea POST.
 export const onRequest = async (context: {
@@ -284,6 +498,12 @@ function transformGeminiStream(source: ReadableStream<Uint8Array>): ReadableStre
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
   let buffer = '';
+  // Estado para poder explicar una respuesta vacía en vez de dejar la burbuja
+  // en blanco (fallo silencioso que ya se dio al agotar el presupuesto de
+  // tokens con los modelos "thinking").
+  let sentAnyText = false;
+  let finishReason = '';
+  let blockReason = '';
 
   const send = (controller: TransformStreamDefaultController<Uint8Array>, text: string) => {
     controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
@@ -302,12 +522,22 @@ function transformGeminiStream(source: ReadableStream<Uint8Array>): ReadableStre
         if (!data || data === '[DONE]') continue;
         try {
           const parsed = JSON.parse(data) as {
-            candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+            candidates?: Array<{
+              content?: { parts?: Array<{ text?: string }> };
+              finishReason?: string;
+            }>;
+            promptFeedback?: { blockReason?: string };
           };
-          const parts = parsed.candidates?.[0]?.content?.parts;
+          const candidate = parsed.candidates?.[0];
+          if (candidate?.finishReason) finishReason = candidate.finishReason;
+          if (parsed.promptFeedback?.blockReason) blockReason = parsed.promptFeedback.blockReason;
+          const parts = candidate?.content?.parts;
           if (parts) {
             for (const p of parts) {
-              if (typeof p.text === 'string' && p.text) send(controller, p.text);
+              if (typeof p.text === 'string' && p.text) {
+                sentAnyText = true;
+                send(controller, p.text);
+              }
             }
           }
         } catch {
@@ -327,9 +557,28 @@ function transformGeminiStream(source: ReadableStream<Uint8Array>): ReadableStre
       // Asegura un separador final por si el último evento no lo trae.
       if (buffer && !buffer.endsWith('\n\n')) buffer += '\n\n';
       processBuffer(controller);
+
+      if (!sentAnyText) {
+        console.error(
+          '[chat] respuesta vacía',
+          JSON.stringify({ finishReason, blockReason })
+        );
+        send(controller, emptyAnswerMessage(finishReason, blockReason));
+      }
       controller.enqueue(encoder.encode('data: [DONE]\n\n'));
     },
   });
 
   return source.pipeThrough(transformer);
+}
+
+/** Traduce el motivo técnico de una respuesta vacía a algo accionable. */
+function emptyAnswerMessage(finishReason: string, blockReason: string): string {
+  if (blockReason || finishReason === 'SAFETY') {
+    return 'No puedo responder a eso: el filtro de contenido ha bloqueado la respuesta. Prueba a reformular la pregunta.';
+  }
+  if (finishReason === 'MAX_TOKENS') {
+    return 'La respuesta se ha cortado por longitud. Prueba a hacer una pregunta más concreta.';
+  }
+  return 'No he obtenido respuesta del modelo. Prueba a reformular la pregunta en unos segundos.';
 }

@@ -692,11 +692,21 @@
         });
 
         if (!res.ok || !res.body) {
-          let msg = 'No he podido responder ahora mismo.';
+          // El servidor responde con JSON {error, status}. Si el cuerpo NO es
+          // JSON significa que algo intermedio (p. ej. una página de error del
+          // edge de Cloudflare) lo ha sustituido: en ese caso al menos se
+          // muestra el código HTTP, que es lo mínimo para poder diagnosticar.
+          let msg = '';
           try {
             const err = await res.json();
             if (err?.error) msg = err.error;
-          } catch { /* ignore */ }
+          } catch { /* cuerpo no-JSON */ }
+          if (!msg) {
+            msg = res.status === 429
+              ? 'He alcanzado el límite de consultas. Inténtalo de nuevo en unos minutos.'
+              : `El asistente no está disponible ahora mismo (error HTTP ${res.status}). Inténtalo de nuevo en unos minutos.`;
+          }
+          console.error('[chat] respuesta de error', res.status, msg);
           botBubble.innerHTML = renderMarkdown(`⚠️ ${msg}`);
           isStreaming = false;
           sendBtn.disabled = false;
