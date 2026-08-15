@@ -1,0 +1,10 @@
+Bitcoin no usa saldo como un banco.
+
+Usa UTXOs.
+
+Piensa en billetes:
+No tienes 50€, tienes 2×20€ + 1×10€.
+
+Cuando pagas, gastas billetes completos y recibes cambio.
+
+Así funciona Bitcoin. Sin banco. Sin intermediario.
