@@ -1,0 +1,9 @@
+BitVM: contratos inteligentes en Bitcoin.
+
+Sin modificar el protocolo base.
+
+En enero de 2026, Citrea lanzó el primer ZK-rollup sobre Bitcoin en mainnet.
+
+Agrupa miles de transacciones y las verifica con una prueba matemática compacta.
+
+Bitcoin evoluciona sin perder lo que lo hace seguro.
