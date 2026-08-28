@@ -1,0 +1,10 @@
+21.000.000 de Bitcoin.
+
+No es una promesa.
+Es código matemático.
+
+Cada ~4 años la recompensa de minería se reduce a la mitad.
+La suma de esa serie converge exactamente en 21M.
+
+Ningún CEO puede cambiarlo.
+Ningún gobierno puede imprimirlos.
