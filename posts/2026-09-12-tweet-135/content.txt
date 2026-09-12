@@ -1,0 +1,10 @@
+Taproot: la mejora más importante de Bitcoin en años.
+
+Activada en 2021. Casi nadie la entiende.
+
+Introduce firmas Schnorr:
+→ Transacciones más pequeñas
+→ Más privadas
+→ Más baratas
+
+La privacidad no es un lujo. Es parte del protocolo.
