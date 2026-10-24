@@ -1,0 +1,7 @@
+¿Y si pudieras poner condiciones sobre cómo se gasta tu Bitcoin?
+
+Eso son los Covenants.
+
+Propuestas como OP_CAT y CTV permitirían heredar Bitcoin con reglas, crear bóvedas automáticas, restringir destinos de pago.
+
+Debate activo. Posible activación en 2026.
