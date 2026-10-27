@@ -1,0 +1,9 @@
+El halving de Bitcoin no es un evento.
+
+Es una ley matemática.
+
+Cada ~4 años, la recompensa por minar un bloque se divide a la mitad.
+
+Menos Bitcoin nuevo → misma demanda → escasez programada.
+
+No hay comité que lo vote. Está en el código.
