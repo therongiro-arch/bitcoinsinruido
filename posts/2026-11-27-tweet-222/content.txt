@@ -1,0 +1,9 @@
+Bitcoin es lento para pagos del día a día.
+
+Lightning Network lo resuelve.
+
+Abre un "canal" con alguien.
+Haz miles de pagos instantáneos y baratos dentro de ese canal.
+Cuando cierras, solo eso va a la blockchain.
+
+Cash App vio un crecimiento de 7x en Lightning durante 2024.
